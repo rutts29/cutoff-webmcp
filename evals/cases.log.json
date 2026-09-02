@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Read the current shift log",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Tell me what has happened across this shift so far."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_shift_log",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Read the log and add a shift note",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Read the current shift record, then add a note that the walk-in must be checked before lunch."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_shift_log",
+            "arguments": {}
+          },
+          {
+            "functionName": "add_shift_note",
+            "arguments": {
+              "text": "the walk-in must be checked before lunch"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

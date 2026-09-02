@@ -22,13 +22,27 @@ export function getUsableStock(item: StockItem): number {
   return Math.max(0, item.onHand - item.expiring);
 }
 
-function calculateCases(item: StockItem, covers: number): number {
-  const demand = covers * item.usagePerCover;
-  const need =
-    demand * (1 + item.safety) -
-    (getUsableStock(item) + item.inTransit);
+export type LineCalculation = Readonly<{
+  demand: number;
+  need: number;
+  calculatedCases: number;
+  usable: number;
+}>;
 
-  return Math.max(0, Math.ceil(need / item.caseSize));
+export function calculateLine(
+  item: StockItem,
+  covers: number,
+): LineCalculation {
+  const demand = Math.max(0, covers) * item.usagePerCover;
+  const usable = getUsableStock(item);
+  const need = demand * (1 + item.safety) - (usable + item.inTransit);
+
+  return {
+    demand,
+    need,
+    calculatedCases: Math.max(0, Math.ceil(need / item.caseSize)),
+    usable,
+  };
 }
 
 export function calculatePlan({
@@ -40,7 +54,7 @@ export function calculatePlan({
 }>): OrderPlan {
   const safeCovers = Math.max(0, covers);
   const lines = items.map((item) => {
-    const cases = calculateCases(item, safeCovers);
+    const cases = calculateLine(item, safeCovers).calculatedCases;
     return {
       skuId: item.id,
       cases,

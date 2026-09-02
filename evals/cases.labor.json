@@ -1,0 +1,101 @@
+[
+  {
+    "name": "Open Labor and read the plan",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "How does this roster compare with the working forecast?"
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_labor_plan",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Record a Labor absence",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Check the roster and record that Rosa Alvarez cannot make prep and close."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_labor_plan",
+            "arguments": {}
+          },
+          {
+            "functionName": "add_labor_signal",
+            "arguments": {
+              "kind": "absence",
+              "staffId": "s11"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Preview Labor without adopting",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Review the current roster and show me proposed shift changes without adopting them."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_labor_plan",
+            "arguments": {}
+          },
+          {
+            "functionName": "create_labor_preview",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Preview and adopt Labor",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Review the current plan, preview the shift changes, and adopt that roster."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_labor_plan",
+            "arguments": {}
+          },
+          {
+            "functionName": "create_labor_preview",
+            "arguments": {}
+          },
+          {
+            "functionName": "adopt_labor_plan",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  }
+]

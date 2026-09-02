@@ -1,9 +1,9 @@
+import { SEED_ITEMS } from "../data/seed";
 import {
-  BASE_COVERS,
-  SEED_COVERS,
-  SEED_EVENT_UPLIFTS,
-  SEED_ITEMS,
-} from "../data/seed";
+  getPreset,
+  isPresetId,
+  type PresetId,
+} from "../data/presets";
 import type {
   LocalSignal,
   OrderPlan,
@@ -11,11 +11,38 @@ import type {
   ReasonCode,
   ReviewPins,
 } from "../domain/types";
+import type {
+  AddLaborSignalInput,
+  AddLaborSignalResult,
+  AdoptLaborPlanResult,
+  LaborEngineState,
+  LaborPreview,
+  UndoLaborAdoptionResult,
+} from "../domain/labor";
+import type {
+  LogWasteResult,
+  RecordStockCountResult,
+  StockEngineState,
+  WasteReason,
+} from "../domain/stock";
 import {
   calculatePlan,
   createOrderPreview,
   REASON_CODES,
 } from "../engine/orderEngine";
+import {
+  createSeedStockState,
+  logWaste as applyWaste,
+  recordStockCount as applyStockCount,
+} from "../engine/stockEngine";
+import {
+  addLaborSignal as applyLaborSignal,
+  adoptLaborPlan as applyLaborPlan,
+  createLaborPreview,
+  createSeedLaborState,
+  undoLaborAdoption as applyLaborUndo,
+} from "../engine/laborEngine";
+import type { Section } from "../domain/sections";
 
 export const RECEIPT_STORAGE_KEY = "cutoff:last-receipt";
 
@@ -30,6 +57,7 @@ export type ActivityEntry = Readonly<{
   inputSummary: string;
   resultSummary: string;
   effect: ActivityEffect;
+  section: Section;
 }>;
 
 export type DraftPlan = Readonly<{
@@ -39,6 +67,7 @@ export type DraftPlan = Readonly<{
 
 export type HandoffReceipt = Readonly<{
   id: string;
+  presetId: PresetId;
   store: string;
   serviceDate: string;
   revision: number;
@@ -57,20 +86,45 @@ export type HandoffReceipt = Readonly<{
 }>;
 
 export type ReviewState = Readonly<{
+  presetId: PresetId;
   store: "Northgate";
-  serviceDate: "2026-09-05";
-  cutoffAt: "2026-09-04T22:00:00";
-  deliveryAt: "2026-09-05T06:30:00";
+  serviceDate: string;
+  cutoffAt: string;
+  deliveryAt: string;
+  baseCovers: number;
+  eventUplifts: readonly Readonly<{ id: string; covers: number }>[];
   savedPlan: OrderPlan;
+  stock: StockEngineState;
+  labor: LaborEngineState;
+  laborPreviewStaleReason: string | null;
   draft: DraftPlan;
   signals: readonly LocalSignal[];
   pins: ReviewPins;
   focusedSkuId: string | null;
   preview: OrderPreview | null;
+  orderPreviewStaleReason: string | null;
+  pendingOrderChanges: number;
   revision: number;
   activity: readonly ActivityEntry[];
   lastReceipt: HandoffReceipt | null;
   undoAvailable: boolean;
+}>;
+
+export type ShiftLogEntry = Readonly<{
+  id: string;
+  at: string;
+  section: Section;
+  actor: ActivityActor;
+  tool?: string;
+  summary: string;
+}>;
+
+export type ShiftLog = Readonly<{
+  presetId: PresetId;
+  serviceDate: string;
+  entries: readonly ShiftLogEntry[];
+  total: number;
+  revision: number;
 }>;
 
 export type ReceiptStorage = Pick<
@@ -127,6 +181,12 @@ type StorageUnavailableError = Readonly<{
 }>;
 
 type Success<T extends object> = Readonly<{ ok: true }> & Readonly<T>;
+
+type RecordStockCountError = Exclude<RecordStockCountResult, { ok: true }>;
+type LogWasteError = Exclude<LogWasteResult, { ok: true }>;
+type AddLaborSignalError = Exclude<AddLaborSignalResult, { ok: true }>;
+type AdoptLaborPlanError = Exclude<AdoptLaborPlanResult, { ok: true }>;
+type UndoLaborAdoptionError = Exclude<UndoLaborAdoptionResult, { ok: true }>;
 
 export type ReviewStore = Readonly<{
   getState: () => ReviewState;
@@ -205,11 +265,109 @@ export type ReviewStore = Readonly<{
     | Success<{ receipt: HandoffReceipt; revision: number }>
     | StaleRevisionError
     | StorageUnavailableError;
-  recordReadActivity: (
-    tool: string,
-    inputSummary: string,
-    resultSummary: string,
+  recordStockCount: (
+    skuId: string,
+    onHand: number,
+    expiring: number,
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) =>
+    | Success<{
+        skuId: string;
+        previous: Extract<RecordStockCountResult, { ok: true }>["previous"];
+        current: Extract<RecordStockCountResult, { ok: true }>["current"];
+        revision: number;
+        orderPreviewInvalidated: boolean;
+      }>
+    | StaleRevisionError
+    | RecordStockCountError;
+  logWaste: (
+    skuId: string,
+    quantity: number,
+    reason: WasteReason,
+    note: string | undefined,
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) =>
+    | Success<{
+        entry: Extract<LogWasteResult, { ok: true }>["entry"];
+        cost: number;
+        newOnHand: number;
+        newExpiring: number;
+        weekTotal: number;
+        revision: number;
+        orderPreviewInvalidated: boolean;
+      }>
+    | StaleRevisionError
+    | LogWasteError;
+  addLaborSignal: (
+    input: AddLaborSignalInput,
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) =>
+    | Success<{
+        signalId: string;
+        kind: AddLaborSignalInput["kind"];
+        staffId: string;
+        revision: number;
+        laborPreviewInvalidated: boolean;
+      }>
+    | StaleRevisionError
+    | AddLaborSignalError;
+  previewLaborPlan: (
+    note: string | undefined,
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) => Success<{ preview: LaborPreview; revision: number }> | StaleRevisionError;
+  adoptLaborPlan: (
+    previewId: string,
+    expectedRevision: number,
+    note: string | undefined,
+    actor: ActivityActor,
+    tool?: string,
+  ) =>
+    | Success<{
+        revision: number;
+        scheduledTotal: number;
+        undoAvailable: true;
+        noExternalAction: true;
+      }>
+    | StaleRevisionError
+    | AdoptLaborPlanError;
+  undoLaborAdoption: (
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) =>
+    | Success<{
+        revision: number;
+        scheduledTotal: number;
+        undoAvailable: false;
+      }>
+    | StaleRevisionError
+    | UndoLaborAdoptionError;
+  discardLaborPreview: (
+    expectedRevision: number,
+    actor: ActivityActor,
+  ) => Success<{ revision: number }> | StaleRevisionError;
+  recordSectionOpen: (
+    section: Section,
+    actor: ActivityActor,
+    tool?: string,
   ) => void;
+  getShiftLog: (section?: Section, limit?: number) => ShiftLog;
+  addShiftNote: (
+    text: string,
+    section: Section,
+    expectedRevision: number,
+    actor: ActivityActor,
+    tool?: string,
+  ) => Success<{ noteId: string; revision: number }> | StaleRevisionError;
+  switchPreset: (presetId: PresetId, actor: ActivityActor) => void;
   resetDemo: (actor: ActivityActor) => void;
 }>;
 
@@ -363,8 +521,10 @@ function readReceipt(storage: ReceiptStorage | undefined): HandoffReceipt | null
     if (
       !isObject(value) ||
       !isBoundedString(value.id, 1, 100) ||
+      typeof value.presetId !== "string" ||
+      !isPresetId(value.presetId) ||
       value.store !== "Northgate" ||
-      value.serviceDate !== "2026-09-05" ||
+      value.serviceDate !== getPreset(value.presetId).serviceDate ||
       typeof value.revision !== "number" ||
       !Number.isInteger(value.revision) ||
       value.revision < 0 ||
@@ -422,6 +582,7 @@ function readReceipt(storage: ReceiptStorage | undefined): HandoffReceipt | null
     }
     return {
       id: value.id,
+      presetId: value.presetId,
       store: value.store,
       serviceDate: value.serviceDate,
       revision: value.revision,
@@ -459,14 +620,40 @@ function unchangedReasons(plan: OrderPlan): Readonly<Record<string, ReasonCode>>
   );
 }
 
-function initialState(lastReceipt: HandoffReceipt | null): ReviewState {
-  const savedPlan = calculatePlan({ items: SEED_ITEMS, covers: SEED_COVERS });
+function initialState(
+  presetId: PresetId,
+  lastReceipt: HandoffReceipt | null,
+): ReviewState {
+  const preset = getPreset(presetId);
+  const stock = createSeedStockState(SEED_ITEMS, {
+    lastCountedAt: preset.stockLastCountedAt,
+    ...(preset.stockWasteRows ? { wasteRows: preset.stockWasteRows } : {}),
+  });
+  const labor = createSeedLaborState(
+    0,
+    preset.laborShifts
+      ? {
+          shifts: preset.laborShifts,
+          onCall: preset.onCall ?? [],
+        }
+      : undefined,
+  );
+  const savedPlan = calculatePlan({
+    items: SEED_ITEMS,
+    covers: preset.seedCovers,
+  });
   return {
+    presetId,
     store: "Northgate",
-    serviceDate: "2026-09-05",
-    cutoffAt: "2026-09-04T22:00:00",
-    deliveryAt: "2026-09-05T06:30:00",
+    serviceDate: preset.serviceDate,
+    cutoffAt: preset.cutoffAt,
+    deliveryAt: preset.deliveryAt,
+    baseCovers: preset.baseCovers,
+    eventUplifts: preset.eventUplifts,
     savedPlan,
+    stock,
+    labor,
+    laborPreviewStaleReason: null,
     draft: {
       plan: savedPlan,
       reasons: unchangedReasons(savedPlan),
@@ -475,6 +662,8 @@ function initialState(lastReceipt: HandoffReceipt | null): ReviewState {
     pins: { bookingIds: [], lineOverrides: {} },
     focusedSkuId: null,
     preview: null,
+    orderPreviewStaleReason: null,
+    pendingOrderChanges: 0,
     revision: 0,
     activity: [],
     lastReceipt,
@@ -499,6 +688,7 @@ function activityEntry(
   resultSummary: string,
   effect: ActivityEffect,
   tool?: string,
+  section: Section = "order",
 ): ActivityEntry {
   return {
     id: createId("activity"),
@@ -508,6 +698,7 @@ function activityEntry(
     inputSummary,
     resultSummary,
     effect,
+    section,
   };
 }
 
@@ -519,7 +710,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
   const createId = options.createId ?? defaultCreateId;
   const listeners = new Set<() => void>();
   const undoHistory: DraftPlan[] = [];
-  let state = initialState(readReceipt(storage));
+  const storedReceipt = readReceipt(storage);
+  let state = initialState(storedReceipt?.presetId ?? "saturday", storedReceipt);
 
   const emit = () => {
     for (const listener of listeners) {
@@ -539,7 +731,26 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       ? null
       : staleRevision(state.revision);
 
-  const invalidatePreview = (): boolean => state.preview !== null;
+  const buildPreview = (
+    source: Pick<ReviewState, "draft" | "signals" | "pins" | "stock">,
+    revision: number,
+  ): OrderPreview =>
+    createOrderPreview({
+      savedPlan: source.draft.plan,
+      items: source.stock.items,
+      baseCovers: state.baseCovers,
+      eventUplifts: state.eventUplifts,
+      signals: source.signals,
+      pins: source.pins,
+      id: createId("preview"),
+      baseRevision: revision,
+    });
+
+  const previewAfterPageChange = (
+    source: Pick<ReviewState, "draft" | "signals" | "pins" | "stock">,
+    revision: number,
+  ): OrderPreview | null =>
+    state.preview !== null ? buildPreview(source, revision) : null;
 
   return {
     getState: () => state,
@@ -553,7 +764,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         return revisionError;
       }
 
-      const previewBecameStale = invalidatePreview();
+      const previewBecameStale = state.preview !== null;
       const base = {
         id: createId("signal"),
         label: input.label,
@@ -577,13 +788,29 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         signal.kind === "booking"
           ? [...state.pins.bookingIds, signal.id]
           : state.pins.bookingIds;
+      const nextPins = { ...state.pins, bookingIds };
+      const nextSignals = [...state.signals, signal];
+      const refreshedPreview =
+        actor === "page"
+          ? previewAfterPageChange(
+              {
+                draft: state.draft,
+                signals: nextSignals,
+                pins: nextPins,
+                stock: state.stock,
+              },
+              nextRevision,
+            )
+          : null;
       const entry = activityEntry(
         createId,
         now,
         actor,
         `${signal.kind}: ${signal.label}`,
-        previewBecameStale
-          ? `Signal added at revision ${nextRevision}; prior preview cleared.`
+        refreshedPreview
+          ? `Signal added at revision ${nextRevision}; preview refreshed.`
+          : previewBecameStale
+            ? `Signal added at revision ${nextRevision}; prior preview cleared.`
           : `Signal added at revision ${nextRevision}.`,
         "draft",
         tool,
@@ -591,9 +818,13 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
 
       setState({
         ...state,
-        signals: [...state.signals, signal],
-        pins: { ...state.pins, bookingIds },
-        preview: null,
+        signals: nextSignals,
+        pins: nextPins,
+        preview: refreshedPreview,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: refreshedPreview
+          ? 0
+          : state.pendingOrderChanges + 1,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -606,16 +837,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       }
 
       const nextRevision = state.revision + 1;
-      const preview = createOrderPreview({
-        savedPlan: state.draft.plan,
-        items: SEED_ITEMS,
-        baseCovers: BASE_COVERS,
-        eventUplifts: SEED_EVENT_UPLIFTS,
-        signals: state.signals,
-        pins: state.pins,
-        id: createId("preview"),
-        baseRevision: nextRevision,
-      });
+      const preview = buildPreview(state, nextRevision);
       const entry = activityEntry(
         createId,
         now,
@@ -628,6 +850,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       setState({
         ...state,
         preview,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: 0,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -641,7 +865,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       if (
         state.preview === null ||
         state.preview.id !== previewId ||
-        state.preview.baseRevision !== state.revision
+        state.orderPreviewStaleReason !== null ||
+        state.pendingOrderChanges > 0
       ) {
         return {
           ok: false,
@@ -656,7 +881,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         covers: state.preview.covers.after,
         laborHours: state.preview.laborHours.after,
         lines: state.preview.lines.map((line) => {
-          const item = SEED_ITEMS.find(
+          const item = state.stock.items.find(
             (candidate) => candidate.id === line.skuId,
           );
           return {
@@ -683,7 +908,17 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       setState({
         ...state,
         draft: { plan, reasons },
+        labor:
+          state.labor.preview === null
+            ? state.labor
+            : { ...state.labor, preview: null },
+        laborPreviewStaleReason:
+          state.labor.preview === null
+            ? state.laborPreviewStaleReason
+            : "Working order covers changed since this labor preview. Preview again.",
         preview: null,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: 0,
         revision: nextRevision,
         activity: [...state.activity, entry],
         undoAvailable: true,
@@ -717,7 +952,17 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       setState({
         ...state,
         draft: previous,
+        labor:
+          state.labor.preview === null
+            ? state.labor
+            : { ...state.labor, preview: null },
+        laborPreviewStaleReason:
+          state.labor.preview === null
+            ? state.laborPreviewStaleReason
+            : "Working order covers changed since this labor preview. Preview again.",
         preview: null,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: 0,
         revision: nextRevision,
         activity: [...state.activity, entry],
         undoAvailable: undoHistory.length > 0,
@@ -741,6 +986,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       setState({
         ...state,
         preview: null,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: 0,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -753,24 +1000,43 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       }
       const nextRevision = state.revision + 1;
       const safeCases = Math.max(0, Math.floor(cases));
+      const nextPins = {
+        ...state.pins,
+        lineOverrides: {
+          ...state.pins.lineOverrides,
+          [skuId]: safeCases,
+        },
+      };
+      const refreshedPreview =
+        actor === "page"
+          ? previewAfterPageChange(
+              {
+                draft: state.draft,
+                signals: state.signals,
+                pins: nextPins,
+                stock: state.stock,
+              },
+              nextRevision,
+            )
+          : null;
       const entry = activityEntry(
         createId,
         now,
         actor,
         `Pin ${skuId} at ${safeCases} cases.`,
-        `Quantity pinned at revision ${nextRevision}; active preview cleared.`,
+        refreshedPreview
+          ? `Quantity pinned at revision ${nextRevision}; preview refreshed.`
+          : `Quantity pinned at revision ${nextRevision}.`,
         "draft",
       );
       setState({
         ...state,
-        pins: {
-          ...state.pins,
-          lineOverrides: {
-            ...state.pins.lineOverrides,
-            [skuId]: safeCases,
-          },
-        },
-        preview: null,
+        pins: nextPins,
+        preview: refreshedPreview,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: refreshedPreview
+          ? 0
+          : state.pendingOrderChanges + 1,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -784,18 +1050,37 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       const { [skuId]: _removed, ...lineOverrides } =
         state.pins.lineOverrides;
       const nextRevision = state.revision + 1;
+      const nextPins = { ...state.pins, lineOverrides };
+      const refreshedPreview =
+        actor === "page"
+          ? previewAfterPageChange(
+              {
+                draft: state.draft,
+                signals: state.signals,
+                pins: nextPins,
+                stock: state.stock,
+              },
+              nextRevision,
+            )
+          : null;
       const entry = activityEntry(
         createId,
         now,
         actor,
         `Remove the ${skuId} quantity pin.`,
-        `Pin removed at revision ${nextRevision}; active preview cleared.`,
+        refreshedPreview
+          ? `Pin removed at revision ${nextRevision}; preview refreshed.`
+          : `Pin removed at revision ${nextRevision}.`,
         "draft",
       );
       setState({
         ...state,
-        pins: { ...state.pins, lineOverrides },
-        preview: null,
+        pins: nextPins,
+        preview: refreshedPreview,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: refreshedPreview
+          ? 0
+          : state.pendingOrderChanges + 1,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -807,21 +1092,40 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         return revisionError;
       }
       const nextRevision = state.revision + 1;
+      const nextPins = {
+        ...state.pins,
+        bookingIds: state.pins.bookingIds.filter((id) => id !== signalId),
+      };
+      const refreshedPreview =
+        actor === "page"
+          ? previewAfterPageChange(
+              {
+                draft: state.draft,
+                signals: state.signals,
+                pins: nextPins,
+                stock: state.stock,
+              },
+              nextRevision,
+            )
+          : null;
       const entry = activityEntry(
         createId,
         now,
         actor,
         `Remove the ${signalId} booking pin.`,
-        `Booking pin removed at revision ${nextRevision}; active preview cleared.`,
+        refreshedPreview
+          ? `Booking pin removed at revision ${nextRevision}; preview refreshed.`
+          : `Booking pin removed at revision ${nextRevision}.`,
         "draft",
       );
       setState({
         ...state,
-        pins: {
-          ...state.pins,
-          bookingIds: state.pins.bookingIds.filter((id) => id !== signalId),
-        },
-        preview: null,
+        pins: nextPins,
+        preview: refreshedPreview,
+        orderPreviewStaleReason: null,
+        pendingOrderChanges: refreshedPreview
+          ? 0
+          : state.pendingOrderChanges + 1,
         revision: nextRevision,
         activity: [...state.activity, entry],
       });
@@ -839,6 +1143,294 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       });
       return { ok: true, revision: currentRevision };
     },
+    recordStockCount: (
+      skuId,
+      onHand,
+      expiring,
+      expectedRevision,
+      actor,
+      tool,
+    ) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = applyStockCount({
+        state: { ...state.stock, revision: state.revision },
+        skuId,
+        onHand,
+        expiring,
+        countedAt: now(),
+        hasOrderPreview: state.preview !== null,
+      });
+      if (!result.ok) {
+        return result;
+      }
+      const staleReason = result.orderPreviewInvalidated
+        ? "Stock counts changed since this preview. Preview again."
+        : null;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        `Record ${skuId}: ${onHand} on hand, ${expiring} expiring.`,
+        result.orderPreviewInvalidated
+          ? `Count recorded at revision ${result.revision}; order preview is stale.`
+          : `Count recorded at revision ${result.revision}.`,
+        "draft",
+        tool,
+        "stock",
+      );
+      setState({
+        ...state,
+        stock: result.state,
+        orderPreviewStaleReason: staleReason,
+        pendingOrderChanges: state.pendingOrderChanges + 1,
+        revision: result.revision,
+        activity: [...state.activity, entry],
+      });
+      return {
+        ok: true,
+        skuId: result.skuId,
+        previous: result.previous,
+        current: result.current,
+        revision: result.revision,
+        orderPreviewInvalidated: result.orderPreviewInvalidated,
+      };
+    },
+    logWaste: (
+      skuId,
+      quantity,
+      reason,
+      note,
+      expectedRevision,
+      actor,
+      tool,
+    ) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = applyWaste({
+        state: { ...state.stock, revision: state.revision },
+        skuId,
+        quantity,
+        reason,
+        ...(note ? { note } : {}),
+        entryId: createId("waste"),
+        loggedAt: now(),
+        hasOrderPreview: state.preview !== null,
+      });
+      if (!result.ok) {
+        return result;
+      }
+      const staleReason = result.orderPreviewInvalidated
+        ? "Stock counts changed since this preview. Preview again."
+        : null;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        `Log ${quantity} ${skuId} as ${reason}.`,
+        result.orderPreviewInvalidated
+          ? `Waste logged at revision ${result.revision}; order preview is stale.`
+          : `Waste logged at revision ${result.revision}.`,
+        "draft",
+        tool,
+        "stock",
+      );
+      setState({
+        ...state,
+        stock: result.state,
+        orderPreviewStaleReason: staleReason,
+        pendingOrderChanges: state.pendingOrderChanges + 1,
+        revision: result.revision,
+        activity: [...state.activity, entry],
+      });
+      return {
+        ok: true,
+        entry: result.entry,
+        cost: result.entry.cost,
+        newOnHand: result.newOnHand,
+        newExpiring: result.newExpiring,
+        weekTotal: result.weekSummary.totalCost,
+        revision: result.revision,
+        orderPreviewInvalidated: result.orderPreviewInvalidated,
+      };
+    },
+    addLaborSignal: (input, expectedRevision, actor, tool) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = applyLaborSignal({
+        state: state.labor,
+        signalId: createId("labor-signal"),
+        input,
+      });
+      if (!result.ok) {
+        return result;
+      }
+      const nextRevision = state.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        result.signal.kind === "absence"
+          ? `Record ${result.signal.staffId} absent.`
+          : `Add ${result.signal.hours} ${result.signal.daypart} hours for ${result.signal.staffId}.`,
+        result.laborPreviewInvalidated
+          ? `Labor signal added at revision ${nextRevision}; prior labor preview cleared.`
+          : `Labor signal added at revision ${nextRevision}.`,
+        "draft",
+        tool,
+        "labor",
+      );
+      setState({
+        ...state,
+        labor: result.state,
+        laborPreviewStaleReason: null,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return {
+        ok: true,
+        signalId: result.signal.id,
+        kind: result.signal.kind,
+        staffId: result.signal.staffId,
+        revision: nextRevision,
+        laborPreviewInvalidated: result.laborPreviewInvalidated,
+      };
+    },
+    previewLaborPlan: (note, expectedRevision, actor, tool) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = createLaborPreview({
+        state: state.labor,
+        forecastCovers: state.draft.plan.covers,
+        previewId: createId("labor-preview"),
+      });
+      const nextRevision = state.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        note?.trim() || "Check the roster against the working order.",
+        `Labor preview ${result.preview.id} created for ${result.preview.requiredTotal} required hours.`,
+        "draft",
+        tool,
+        "labor",
+      );
+      setState({
+        ...state,
+        labor: result.state,
+        laborPreviewStaleReason: null,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return { ok: true, preview: result.preview, revision: nextRevision };
+    },
+    adoptLaborPlan: (previewId, expectedRevision, note, actor, tool) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = applyLaborPlan({ state: state.labor, previewId });
+      if (!result.ok) {
+        return result;
+      }
+      const nextRevision = state.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        note?.trim() || `Adopt labor preview ${previewId}.`,
+        `Labor plan adopted at revision ${nextRevision}. Nothing was sent outside this page.`,
+        "draft",
+        tool,
+        "labor",
+      );
+      setState({
+        ...state,
+        labor: result.state,
+        laborPreviewStaleReason: null,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return {
+        ok: true,
+        revision: nextRevision,
+        scheduledTotal: result.scheduledTotal,
+        undoAvailable: true,
+        noExternalAction: true,
+      };
+    },
+    undoLaborAdoption: (expectedRevision, actor, tool) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const result = applyLaborUndo({ state: state.labor });
+      if (!result.ok) {
+        return result;
+      }
+      const nextRevision = state.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        "Undo the last adopted labor preview.",
+        `Previous working roster restored at revision ${nextRevision}.`,
+        "draft",
+        tool,
+        "labor",
+      );
+      setState({
+        ...state,
+        labor: result.state,
+        laborPreviewStaleReason: null,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return {
+        ok: true,
+        revision: nextRevision,
+        scheduledTotal: result.scheduledTotal,
+        undoAvailable: false,
+      };
+    },
+    discardLaborPreview: (expectedRevision, actor) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const nextRevision = state.revision + 1;
+      const nextLaborRevision = state.labor.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        "Discard the active labor preview.",
+        `Labor preview cleared at revision ${nextRevision}.`,
+        "draft",
+        undefined,
+        "labor",
+      );
+      setState({
+        ...state,
+        labor: {
+          ...state.labor,
+          preview: null,
+          revision: nextLaborRevision,
+        },
+        laborPreviewStaleReason: null,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return { ok: true, revision: nextRevision };
+    },
     saveHandoffReceipt: (
       managerSummary,
       expectedRevision,
@@ -852,6 +1444,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       const nextRevision = state.revision + 1;
       const receipt: HandoffReceipt = {
         id: createId("receipt"),
+        presetId: state.presetId,
         store: state.store,
         serviceDate: state.serviceDate,
         revision: nextRevision,
@@ -860,7 +1453,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         lines: state.draft.plan.lines.map((line) => ({
           skuId: line.skuId,
           name:
-            SEED_ITEMS.find((item) => item.id === line.skuId)?.name ??
+            state.stock.items.find((item) => item.id === line.skuId)?.name ??
             line.skuId,
           cases: line.cases,
           reason: state.draft.reasons[line.skuId] ?? REASON_CODES.UNCHANGED,
@@ -886,7 +1479,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         createId,
         now,
         actor,
-        "Save a handoff receipt.",
+        `Handoff: ${managerSummary}`,
         `Receipt ${receipt.id} saved locally. Nothing was sent outside this page.`,
         "save",
         tool,
@@ -899,17 +1492,104 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       });
       return { ok: true, receipt, revision: nextRevision };
     },
-    recordReadActivity: (tool, inputSummary, resultSummary) => {
+    recordSectionOpen: (section, actor, tool) => {
       const entry = activityEntry(
         createId,
         now,
-        "tool",
-        inputSummary,
-        resultSummary,
+        actor,
+        `Open the ${section} section.`,
+        `Section changed with revision ${state.revision} preserved.`,
         "read",
         tool,
+        section,
       );
       setState({ ...state, activity: [...state.activity, entry] });
+    },
+    getShiftLog: (section, limit = 50) => {
+      const activityEntries: ShiftLogEntry[] = state.activity.map((entry) => ({
+        id: entry.id,
+        at: entry.at,
+        section: entry.section,
+        actor: entry.actor,
+        ...(entry.tool ? { tool: entry.tool } : {}),
+        summary: `${entry.inputSummary} ${entry.resultSummary}`,
+      }));
+      const receiptIsRecorded =
+        state.lastReceipt === null ||
+        state.activity.some((entry) =>
+          entry.resultSummary.includes(state.lastReceipt?.id ?? ""),
+        );
+      const receiptEntries: ShiftLogEntry[] =
+        state.lastReceipt && !receiptIsRecorded
+          ? [
+              {
+                id: state.lastReceipt.id,
+                at: state.lastReceipt.savedAt,
+                section: "order",
+                actor: "page",
+                summary: `Handoff: ${state.lastReceipt.managerSummary} Saved locally at revision ${state.lastReceipt.revision}.`,
+              },
+            ]
+          : [];
+      const allEntries = [...activityEntries].reverse();
+      allEntries.push(...receiptEntries);
+      allEntries.sort((left, right) => right.at.localeCompare(left.at));
+      const filtered = section
+        ? allEntries.filter((entry) => entry.section === section)
+        : allEntries;
+      const safeLimit = Math.min(200, Math.max(1, Math.floor(limit)));
+      const entries = filtered.slice(0, safeLimit);
+      return {
+        presetId: state.presetId,
+        serviceDate: state.serviceDate,
+        entries,
+        total: filtered.length,
+        revision: state.revision,
+      };
+    },
+    addShiftNote: (text, section, expectedRevision, actor, tool) => {
+      const revisionError = checkRevision(expectedRevision);
+      if (revisionError) {
+        return revisionError;
+      }
+      const nextRevision = state.revision + 1;
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        text.trim(),
+        `Shift note saved at revision ${nextRevision}.`,
+        "draft",
+        tool,
+        section,
+      );
+      setState({
+        ...state,
+        revision: nextRevision,
+        activity: [...state.activity, entry],
+      });
+      return { ok: true, noteId: entry.id, revision: nextRevision };
+    },
+    switchPreset: (presetId, actor) => {
+      undoHistory.length = 0;
+      try {
+        storage?.removeItem(RECEIPT_STORAGE_KEY);
+      } catch {
+        // The in-memory preset switch remains safe when storage is blocked.
+      }
+      const preset = getPreset(presetId);
+      const reset = initialState(presetId, null);
+      const entry = activityEntry(
+        createId,
+        now,
+        actor,
+        `Switch to ${preset.label}.`,
+        `Preset ${presetId} loaded at revision 0.`,
+        "draft",
+        undefined,
+        "order",
+      );
+      setState({ ...reset, activity: [entry] });
     },
     resetDemo: (actor) => {
       const nextRevision = state.revision + 1;
@@ -919,7 +1599,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       } catch {
         // The in-memory reset remains safe even when browser storage is blocked.
       }
-      const reset = initialState(null);
+      const reset = initialState(state.presetId, null);
       const entry = activityEntry(
         createId,
         now,

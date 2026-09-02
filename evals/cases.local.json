@@ -85,7 +85,7 @@
       {
         "role": "user",
         "type": "message",
-        "content": "Save a note for the morning manager to review the current order before cutoff."
+        "content": "Save a handoff receipt for the morning manager to review the current order before cutoff."
       }
     ],
     "expectedCall": [
@@ -123,6 +123,186 @@
     "expectedCall": [
       {
         "functionName": "get_order_context",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Read one stock-line calculation",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Show me the calculation behind the brioche buns line."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_line_detail",
+        "arguments": {
+          "skuId": "buns"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Open the stock desk",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Open the stock section."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "open_section",
+        "arguments": {
+          "section": "stock"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Read current stock and waste",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "What is on the shelf and what have we wasted this week?"
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_stock_status",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start a shelf count from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Chicken is actually 30 kilos and six of it goes off tomorrow. Record that count."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_stock_status",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start a waste record from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Log two heads of expired lettuce as waste."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_stock_status",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Read the current labor plan",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "How does the roster compare with the working forecast?"
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_labor_plan",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start an absence record from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Rosa cannot make the prep and close shift. Record her absence."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_labor_plan",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start a labor preview from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Show me the shift changes you would make, but do not adopt them."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_labor_plan",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start labor adoption from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Review the labor plan, preview the changes, and adopt that roster."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_labor_plan",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Read the current shift log",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "What has happened across this shift so far?"
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_shift_log",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Start a shift note from current state",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Leave a shift note that the walk-in must be checked before lunch."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_shift_log",
         "arguments": {}
       }
     ]

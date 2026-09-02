@@ -1,13 +1,28 @@
 import {
   type FormEvent,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
 } from "react";
 
-import { SEED_ITEMS } from "./data/seed";
-import type { LocalSignal, ReasonCode, StockItem } from "./domain/types";
+import {
+  pathForSection,
+  SECTION_DEFINITIONS,
+  type Section,
+} from "./domain/sections";
+import { getPreset, PRESETS, PRESET_IDS, type PresetId } from "./data/presets";
+import type { LocalSignal, ReasonCode } from "./domain/types";
+import {
+  buildOrderSheetCsv,
+  getOrderSheetCsvFilename,
+} from "./engine/exportEngine";
+import { calculateLine } from "./engine/orderEngine";
+import { StockPage } from "./StockPage";
+import { LaborPage } from "./LaborPage";
+import { ShiftLogPage } from "./ShiftLogPage";
 import {
   createReviewStore,
   type HandoffReceipt,
@@ -20,6 +35,8 @@ import "./styles.css";
 type AppProps = Readonly<{
   store?: ReviewStore;
   modelContext?: WebMCP.ModelContext;
+  section?: Section;
+  navigate?: (section: Section) => void;
 }>;
 
 type SignalKind = "booking" | "event_cancelled" | "operator_note";
@@ -82,16 +99,34 @@ function useReviewState(store: ReviewStore): ReviewState {
 }
 
 function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: ReviewStore }>) {
-  const item = SEED_ITEMS.find((candidate) => candidate.id === state.focusedSkuId);
+  const item = state.stock.items.find(
+    (candidate) => candidate.id === state.focusedSkuId,
+  );
   const [quantity, setQuantity] = useState("");
+  const [pinError, setPinError] = useState("");
+  const panelRef = useRef<HTMLElement>(null);
+  const previousItemId = useRef<string | null>(null);
 
   useEffect(() => {
     if (!item) {
       setQuantity("");
+      setPinError("");
       return;
     }
     setQuantity(String(state.pins.lineOverrides[item.id] ?? lineCases(state, item.id)));
+    setPinError("");
   }, [item, state.pins.lineOverrides, state.draft.plan.lines]);
+
+  useEffect(() => {
+    if (
+      item &&
+      item.id !== previousItemId.current &&
+      window.matchMedia?.("(max-width: 720px)").matches
+    ) {
+      panelRef.current?.focus();
+    }
+    previousItemId.current = item?.id ?? null;
+  }, [item]);
 
   if (!item) {
     return (
@@ -103,23 +138,32 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
   }
 
   const covers = state.preview?.covers.after ?? state.draft.plan.covers;
-  const demand = covers * item.usagePerCover;
-  const usable = Math.max(0, item.onHand - item.expiring);
-  const need = demand * (1 + item.safety) - usable - item.inTransit;
+  const calculation = calculateLine(item, covers);
+  const { demand, need } = calculation;
   const pin = state.pins.lineOverrides[item.id];
   const previewLine = state.preview?.lines.find((line) => line.skuId === item.id);
   const reason = previewLine?.reason ?? state.draft.reasons[item.id] ?? "UNCHANGED";
 
   const pinQuantity = () => {
     const parsed = Number(quantity);
-    if (!Number.isInteger(parsed) || parsed < 0) {
+    if (!Number.isInteger(parsed) || parsed < 0 || parsed > 10_000) {
+      setPinError("Enter a whole number from 0 to 10,000");
       return;
     }
-    store.pinLineQuantity(item.id, parsed, state.revision, "page");
+    const result = store.pinLineQuantity(item.id, parsed, state.revision, "page");
+    setPinError(result.ok ? "" : "The order changed. Review it and try again");
   };
 
+  const pinErrorId = `pin-error-${item.id}`;
+
   return (
-    <aside id="numbers" className="detail-panel" aria-label={`${item.name} stock line math`}>
+    <aside
+      id="numbers"
+      className="detail-panel"
+      aria-label={`${item.name} stock line math`}
+      ref={panelRef}
+      tabIndex={-1}
+    >
       <div className="detail-heading">
         <div>
           <p className="eyebrow">Stock line math</p>
@@ -131,31 +175,53 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
       <div className="formula" aria-label="Filled order formula">
         <p><span>demand</span><code>{formatNumber(covers)} × {item.usagePerCover} = {demand.toFixed(2)}</code></p>
         <p><span>need</span><code>{demand.toFixed(2)} × {(1 + item.safety).toFixed(2)} − ({item.onHand} − {item.expiring}) − {item.inTransit} = {need.toFixed(2)}</code></p>
-        <p><span>cases</span><code>max(0, ceil({need.toFixed(2)} / {item.caseSize})) = {previewLine?.afterCases ?? lineCases(state, item.id)}</code></p>
+        <p><span>cases</span><code>max(0, ceil({need.toFixed(2)} / {item.caseSize})) = {calculation.calculatedCases}</code></p>
       </div>
+      <div className="case-decision" aria-label={`${item.name} case decision`}>
+        <p><span>Calculated</span>{" "}<strong className="mono">{calculation.calculatedCases}</strong></p>
+        <p><span>Pinned</span>{" "}<strong className="mono">{pin ?? "None"}</strong></p>
+      </div>
+      {item.lastCountedAt !== getPreset(state.presetId).stockLastCountedAt ? (
+        <p className="count-updated-note">Count updated. The reason code still explains the order recommendation.</p>
+      ) : null}
       <p className="safety-note"><strong>{Math.round(item.safety * 100)}% safety.</strong> Running out costs more margin than the waste.</p>
       <div className="pin-control">
         <label htmlFor={`pin-${item.id}`}>Pin quantity</label>
         <div>
           <input
             id={`pin-${item.id}`}
+            aria-describedby={pinError ? pinErrorId : undefined}
+            aria-invalid={pinError ? "true" : undefined}
             aria-label={`${item.name} quantity pin`}
             inputMode="numeric"
+            max="10000"
             min="0"
             step="1"
             type="number"
             value={quantity}
-            onChange={(event) => setQuantity(event.target.value)}
+            onChange={(event) => {
+              setQuantity(event.target.value);
+              setPinError("");
+            }}
           />
           <button type="button" onClick={pinQuantity}>Pin quantity</button>
         </div>
+        {pinError ? <p id={pinErrorId} className="field-error" role="alert">{pinError}</p> : null}
         {pin !== undefined ? <button className="text-button" type="button" onClick={() => store.removeLinePin(item.id, state.revision, "page")}>Remove pin</button> : null}
       </div>
     </aside>
   );
 }
 
-function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: ReviewStore }>) {
+function OrderSheet({
+  state,
+  store,
+  serviceLabel,
+}: Readonly<{
+  state: ReviewState;
+  store: ReviewStore;
+  serviceLabel: string;
+}>) {
   const selectLine = (skuId: string) => {
     if (state.focusedSkuId !== skuId) {
       store.focusSku(skuId, state.revision, "page");
@@ -166,7 +232,7 @@ function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: Revi
       <div className="section-heading">
         <div>
           <p className="eyebrow">Supplier order sheet</p>
-          <h2 id="sheet-heading">Stock lines for Sat 5 Sep</h2>
+          <h2 id="sheet-heading">Stock lines for {serviceLabel}</h2>
         </div>
         <p className="mono section-note">10 lines · revision {state.revision}</p>
       </div>
@@ -185,7 +251,7 @@ function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: Revi
             </tr>
           </thead>
           <tbody>
-            {SEED_ITEMS.map((item) => {
+            {state.stock.items.map((item) => {
               const saved = state.savedPlan.lines.find((line) => line.skuId === item.id)?.cases ?? 0;
               const preview = state.preview?.lines.find((line) => line.skuId === item.id);
               const current = preview?.afterCases ?? lineCases(state, item.id);
@@ -242,6 +308,7 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
   const [label, setLabel] = useState("");
   const [covers, setCovers] = useState("80");
   const [labelError, setLabelError] = useState("");
+  const [coversError, setCoversError] = useState("");
 
   const addSignal = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -252,7 +319,8 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
     }
     if (kind === "booking") {
       const parsedCovers = Number(covers);
-      if (!Number.isInteger(parsedCovers) || parsedCovers < 1) {
+      if (!Number.isInteger(parsedCovers) || parsedCovers < 1 || parsedCovers > 2_000) {
+        setCoversError("Enter covers as a whole number from 1 to 2,000");
         return;
       }
       store.addLocalSignal({ kind, label: cleanLabel, covers: parsedCovers }, state.revision, "page");
@@ -261,12 +329,14 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
     }
     setLabel("");
     setLabelError("");
+    setCoversError("");
   };
 
   return (
     <section className="signals-panel" aria-labelledby="signals-heading">
       <div className="section-heading">
         <div>
+          <p className="panel-step">Step 1</p>
           <p className="eyebrow">Local signals</p>
           <h2 id="signals-heading">What changed on the ground</h2>
         </div>
@@ -301,7 +371,26 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
           ) : null}
         </label>
         {kind === "booking" ? <label>Booking covers
-          <input aria-label="Booking covers" type="number" min="1" value={covers} onChange={(event) => setCovers(event.target.value)} />
+          <input
+            aria-describedby={coversError ? "booking-covers-error" : undefined}
+            aria-invalid={coversError ? "true" : undefined}
+            aria-label="Booking covers"
+            type="number"
+            max="2000"
+            min="1"
+            value={covers}
+            onChange={(event) => {
+              setCovers(event.target.value);
+              if (coversError) {
+                setCoversError("");
+              }
+            }}
+          />
+          {coversError ? (
+            <span id="booking-covers-error" className="field-error" role="alert">
+              {coversError}
+            </span>
+          ) : null}
         </label> : null}
         <button type="submit">Add signal</button>
       </form>
@@ -355,7 +444,7 @@ function ActivityPanel({
       <div className="section-heading">
         <div>
           <p className="eyebrow">Activity</p>
-          <h2 id="activity-heading">Order review activity</h2>
+          <h2 id="activity-heading">Shift activity</h2>
         </div>
       </div>
       <ol className="activity-list">
@@ -371,11 +460,6 @@ function ActivityPanel({
           </li>
         ))}
       </ol>
-      {status.supported ? (
-        <p className="agent-tools-status" role="status" aria-live="polite">
-          {status.toolCount} agent tools available on this page
-        </p>
-      ) : null}
       {status.error ? <p className="alert" role="alert">{status.error}</p> : null}
     </section>
   );
@@ -430,7 +514,12 @@ function HandoffReceiptPanel({ receipt }: Readonly<{ receipt: HandoffReceipt }>)
   );
 }
 
-export function App({ store: providedStore, modelContext }: AppProps) {
+export function App({
+  store: providedStore,
+  modelContext,
+  section = "order",
+  navigate,
+}: AppProps) {
   const ownedStore = useMemo(() => createReviewStore(), []);
   const store = providedStore ?? ownedStore;
   const state = useReviewState(store);
@@ -438,19 +527,83 @@ export function App({ store: providedStore, modelContext }: AppProps) {
   const [handoffSummary, setHandoffSummary] = useState("");
   const [handoffError, setHandoffError] = useState("");
   const [promptNotice, setPromptNotice] = useState("");
+  const [orderControlError, setOrderControlError] = useState("");
+  const [orderControlNotice, setOrderControlNotice] = useState("");
+  const sectionDefinition = SECTION_DEFINITIONS.find(
+    (candidate) => candidate.id === section,
+  ) ?? SECTION_DEFINITIONS[0];
+  const preset = getPreset(state.presetId);
+  const pageTitleRef = useRef<HTMLHeadingElement>(null);
+  const previousSection = useRef(section);
+  const previewSummaryRef = useRef<HTMLElement>(null);
+  const focusPreviewSummary = useRef(false);
+
+  useLayoutEffect(() => {
+    const mount = mountWebMCPTools({
+      store,
+      modelContext,
+      onStatus: setStatus,
+      section,
+      navigate,
+    });
+    return mount.cleanup;
+  }, [store, modelContext, navigate, section]);
 
   useEffect(() => {
-    const mount = mountWebMCPTools({ store, modelContext, onStatus: setStatus });
-    return mount.cleanup;
-  }, [store, modelContext]);
+    if (previousSection.current !== section) {
+      pageTitleRef.current?.focus();
+      previousSection.current = section;
+    }
+  }, [section]);
+
+  useEffect(() => {
+    if (focusPreviewSummary.current && state.preview) {
+      previewSummaryRef.current?.focus();
+      focusPreviewSummary.current = false;
+    }
+  }, [state.preview]);
 
   const forecastAfter = state.preview?.covers.after ?? state.draft.plan.covers;
   const laborAfter = state.preview?.laborHours.after ?? state.draft.plan.laborHours;
   const costAfter = state.preview?.totals.afterCost ?? state.draft.plan.totalCost;
   const hasPreview = state.preview !== null;
   const canAdopt =
-    state.preview !== null && state.preview.baseRevision === state.revision;
-  const preview = () => store.previewOrderPlan("Manual preview from the order sheet.", state.revision, "page");
+    state.preview !== null &&
+    state.orderPreviewStaleReason === null &&
+    state.pendingOrderChanges === 0;
+  const runOrderControl = (
+    action: () => { ok: boolean },
+    successMessage: string,
+  ) => {
+    setOrderControlError("");
+    setOrderControlNotice("");
+    const result = action();
+    if (!result.ok) {
+      setOrderControlError("The order changed. Review it and try again");
+      return;
+    }
+    setOrderControlNotice(successMessage);
+  };
+  const preview = () => {
+    setOrderControlError("");
+    setOrderControlNotice("");
+    return store.previewOrderPlan(
+      "Manual preview from the order sheet.",
+      state.revision,
+      "page",
+    );
+  };
+  const previewPendingChanges = () => {
+    focusPreviewSummary.current = true;
+    preview();
+  };
+  const moveToSection = (nextSection: Section) => {
+    if (nextSection === section) {
+      return;
+    }
+    store.recordSectionOpen(nextSection, "page");
+    navigate?.(nextSection);
+  };
   const copyDemoPrompt = async () => {
     setPromptNotice("");
     if (!navigator.clipboard?.writeText) {
@@ -487,58 +640,228 @@ export function App({ store: providedStore, modelContext }: AppProps) {
     setHandoffSummary("");
     setHandoffError("");
   };
+  const downloadOrderSheet = () => {
+    const csv = buildOrderSheetCsv({
+      items: state.stock.items,
+      workingPlan: state.draft.plan,
+      reasons: state.draft.reasons,
+    });
+    const file = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = getOrderSheetCsvFilename(state.serviceDate);
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <main className="app-shell">
+      <a className="skip-link" href="#page-title">Skip to current section</a>
       <aside className="cutoff-rail" aria-label="Supplier cutoff">
         <span>Cutoff</span>
         <strong>22:00</strong>
-        <span>Fri 4 Sep</span>
+        <span>{preset.cutoffLabel}</span>
       </aside>
       <div className="paper">
         <header className="app-header">
           <div>
             <div className="header-kicker">
-              <p className="eyebrow">Restaurant supplier order · synthetic data</p>
+              <p className="eyebrow">Cutoff · Shift operations desk</p>
               <span className="synthetic-tag">Synthetic</span>
             </div>
             <h1>Cutoff</h1>
             <p className="hero-copy">Revise the supplier order when the forecast is wrong. Covers, labor hours, and stock cases for one location before cutoff.</p>
-            <p className="header-subtitle">Northgate · service Sat 5 Sep · delivery 06:30</p>
+            <p className="header-subtitle">Northgate · service {preset.serviceLabel} · delivery 06:30</p>
           </div>
           <div className="header-actions">
+            <label htmlFor="preset-select">
+              Service day
+              <select
+                id="preset-select"
+                value={state.presetId}
+                onChange={(event) => {
+                  const presetId = event.target.value as PresetId;
+                  if (PRESET_IDS.some((candidate) => candidate === presetId)) {
+                    store.switchPreset(presetId, "page");
+                  }
+                }}
+              >
+                {PRESET_IDS.map((presetId) => (
+                  <option key={presetId} value={presetId}>{PRESETS[presetId].label}</option>
+                ))}
+              </select>
+            </label>
             <button className="text-button reset-button" type="button" onClick={() => store.resetDemo("page")}>Reset demo</button>
           </div>
         </header>
 
         <p className="demo-banner">Synthetic demo data. One fictional restaurant, ten stock items. No supplier is connected.</p>
 
-        <section className="forecast-strip" aria-label="Forecast and order summary">
-          <div><p className="eyebrow">Forecast covers</p><strong className="big-number">{formatNumber(state.savedPlan.covers)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${forecastAfter}`} className={forecastAfter === state.savedPlan.covers ? "metric-current" : "metric-current changed-cell"}>{formatNumber(forecastAfter)}</span></strong><small>covers</small></div>
-          <div><p className="eyebrow">Labor hours</p><strong className="big-number">{state.savedPlan.laborHours} <span className="metric-arrow">→</span> <span key={`${state.revision}-${laborAfter}`} className={laborAfter === state.savedPlan.laborHours ? "metric-current" : "metric-current changed-cell"}>{laborAfter}</span></strong><small>hours</small></div>
-          <div><p className="eyebrow">Supplier order cost</p><strong className="big-number">{formatNumber(state.savedPlan.totalCost)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${costAfter}`} className={costAfter === state.savedPlan.totalCost ? "metric-current" : "metric-current changed-cell"}>{formatNumber(costAfter)}</span></strong><small>units</small></div>
-          <div className="forecast-notes"><p>Base 830</p><p>Derby uplift +310</p><p>Pinned bookings +{state.preview?.covers.pinnedBookings ?? 0}</p></div>
+        <nav className="section-tabs" aria-label="Shift desk sections">
+          {SECTION_DEFINITIONS.map((candidate) => (
+            <a
+              key={candidate.id}
+              aria-current={candidate.id === section ? "page" : undefined}
+              href={pathForSection(candidate.id)}
+              onClick={(event) => {
+                if (
+                  !navigate ||
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                ) {
+                  return;
+                }
+                event.preventDefault();
+                moveToSection(candidate.id);
+              }}
+            >
+              {candidate.label}
+            </a>
+          ))}
+        </nav>
+
+        <section className="page-intro" aria-labelledby="page-title">
+          <p className="eyebrow">Current section</p>
+          <h2 id="page-title" ref={pageTitleRef} tabIndex={-1}>
+            {sectionDefinition.label}
+          </h2>
+          <p>
+            {sectionDefinition.description}
+          </p>
         </section>
 
+        <ol className="workflow-strip" aria-label="Shift review steps">
+          {sectionDefinition.steps.map((step, index) => (
+            <li key={step.title}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step.title}</strong>
+              <small>{step.detail}</small>
+            </li>
+          ))}
+        </ol>
+        <p className="agent-collaboration-note">Your agent can do every step with you on this page.</p>
+
+        {section === "stock" ? (
+          <>
+            <StockPage
+              state={state}
+              store={store}
+              openOrder={() => moveToSection("order")}
+            />
+            <ActivityPanel state={state} status={status} />
+          </>
+        ) : section === "labor" ? (
+          <>
+            <LaborPage state={state} store={store} />
+            <ActivityPanel state={state} status={status} />
+          </>
+        ) : section === "log" ? (
+          <>
+            <ShiftLogPage state={state} store={store} />
+            {status.error ? <p className="alert" role="alert">{status.error}</p> : null}
+          </>
+        ) : (
+          <>
+
+        <section className="forecast-strip" aria-label="Forecast and order summary">
+          <div><p className="eyebrow">Forecast covers</p><strong className="big-number"><span className="metric-pair">{formatNumber(state.savedPlan.covers)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${forecastAfter}`} className={forecastAfter === state.savedPlan.covers ? "metric-current" : "metric-current changed-cell"}>{formatNumber(forecastAfter)}</span></span></strong><small>covers</small></div>
+          <div><p className="eyebrow">Labor hours</p><strong className="big-number"><span className="metric-pair">{state.savedPlan.laborHours} <span className="metric-arrow">→</span> <span key={`${state.revision}-${laborAfter}`} className={laborAfter === state.savedPlan.laborHours ? "metric-current" : "metric-current changed-cell"}>{laborAfter}</span></span></strong><small>hours</small></div>
+          <div><p className="eyebrow">Supplier order cost</p><strong className="big-number"><span className="metric-pair">{formatNumber(state.savedPlan.totalCost)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${costAfter}`} className={costAfter === state.savedPlan.totalCost ? "metric-current" : "metric-current changed-cell"}>{formatNumber(costAfter)}</span></span></strong><small>units</small></div>
+          <div className="forecast-notes"><p>Base {formatNumber(state.baseCovers)}</p><p>{preset.eventSummary}</p><p>Pinned bookings +{state.preview?.covers.pinnedBookings ?? 0}</p></div>
+        </section>
+
+        {state.orderPreviewStaleReason ? (
+          <section className="stale-preview-strip" role="status">
+            <p>
+              <strong>Order preview needs a refresh</strong>
+              <span>{state.orderPreviewStaleReason}</span>
+            </p>
+            <button type="button" onClick={previewPendingChanges}>Preview again</button>
+          </section>
+        ) : null}
+
+        {state.pendingOrderChanges > 0 ? (
+          <section className="pending-strip" aria-live="polite">
+            <p>
+              <strong>{state.pendingOrderChanges} {state.pendingOrderChanges === 1 ? "change" : "changes"} not previewed</strong>
+              <span>The working order still shows the last calculated plan.</span>
+            </p>
+            <button type="button" onClick={previewPendingChanges}>Preview pending changes</button>
+          </section>
+        ) : null}
+        {state.preview ? (
+          <section
+            className="preview-summary"
+            ref={previewSummaryRef}
+            role="status"
+            tabIndex={-1}
+          >
+            Preview ready: {formatNumber(state.preview.covers.after)} covers, {state.preview.laborHours.after} labor hours, {formatNumber(state.preview.totals.afterCost)} units.
+          </section>
+        ) : null}
+
         <div className="main-grid">
-          <OrderSheet state={state} store={store} />
+          <OrderSheet state={state} store={store} serviceLabel={preset.serviceLabel} />
           <DetailPanel state={state} store={store} />
           <SignalForm state={state} store={store} />
           <section className="controls-panel" aria-label="Order plan">
+            <p className="panel-step">Step 2</p>
             <p className="eyebrow">Order plan</p>
             <div className="control-buttons">
               <button type="button" onClick={preview}>Preview replan</button>
-              <button type="button" disabled={!canAdopt} onClick={() => state.preview && store.adoptOrderDraft(state.preview.id, state.revision, undefined, "page")}>Adopt order plan</button>
-              <button type="button" disabled={!state.undoAvailable} onClick={() => store.undoAdoption(state.revision, "page")}>Undo adoption</button>
-              <button type="button" disabled={!hasPreview} className="text-button" onClick={() => store.discardPreview(state.revision, "page")}>Discard preview</button>
+              <button
+                type="button"
+                disabled={!canAdopt}
+                onClick={() => {
+                  const currentPreview = state.preview;
+                  if (!currentPreview) {
+                    return;
+                  }
+                  runOrderControl(
+                    () => store.adoptOrderDraft(
+                      currentPreview.id,
+                      state.revision,
+                      undefined,
+                      "page",
+                    ),
+                    "Order plan adopted",
+                  );
+                }}
+              >
+                Adopt order plan
+              </button>
+              <button
+                type="button"
+                disabled={!state.undoAvailable}
+                onClick={() => runOrderControl(
+                  () => store.undoAdoption(state.revision, "page"),
+                  "Order adoption undone",
+                )}
+              >
+                Undo adoption
+              </button>
+              <button
+                type="button"
+                disabled={!hasPreview}
+                className="text-button"
+                onClick={() => runOrderControl(
+                  () => store.discardPreview(state.revision, "page"),
+                  "Order preview discarded",
+                )}
+              >
+                Discard preview
+              </button>
             </div>
-            {state.preview ? (
-              <p className="preview-status" role="status" aria-live="polite">
-                Preview ready: {formatNumber(state.preview.covers.after)} covers, {state.preview.laborHours.after} labor hours, {formatNumber(state.preview.totals.afterCost)} units.
-              </p>
-            ) : null}
             <p>Nothing is sent to a supplier from this page.</p>
+            <p className="field-error" role={orderControlError ? "alert" : undefined}>{orderControlError}</p>
+            <p className="field-status" role={orderControlNotice ? "status" : undefined}>{orderControlNotice}</p>
+            <button type="button" className="secondary-button" onClick={downloadOrderSheet}>Download order sheet (CSV)</button>
             <form className="handoff-form" onSubmit={saveHandoff} noValidate>
+              <p className="panel-step">Step 3</p>
               <label htmlFor="handoff-summary">Handoff summary</label>
               <textarea
                 id="handoff-summary"
@@ -563,12 +886,14 @@ export function App({ store: providedStore, modelContext }: AppProps) {
           <ActivityPanel state={state} status={status} />
           {state.lastReceipt ? <HandoffReceiptPanel receipt={state.lastReceipt} /> : null}
         </div>
+          </>
+        )}
 
         <footer className="app-footer">
           <nav aria-label="Project links">
             <a href="/trajectory">How this was built</a>
             <a href="https://github.com/rutts29/cutoff-webmcp" rel="noreferrer">GitHub repository</a>
-            <a href="#numbers">How the numbers work</a>
+            <a href="/#numbers">How the numbers work</a>
             <button className="text-button" type="button" onClick={() => void copyDemoPrompt()}>Copy demo prompt</button>
           </nav>
           <p className="copy-notice" aria-live="polite">{promptNotice}</p>

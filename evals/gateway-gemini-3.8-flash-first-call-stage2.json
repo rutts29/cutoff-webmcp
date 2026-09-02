@@ -1,0 +1,253 @@
+{
+  "createdAt": "2026-09-02T22:02:38Z",
+  "transport": "curl",
+  "api": "openai-chat-completions",
+  "model": "google/gemini-3.8-flash",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/chat/completions",
+  "status": "complete",
+  "totalCases": 17,
+  "attemptedCases": 17,
+  "scoredCases": 17,
+  "passedCases": 17,
+  "failedCases": 0,
+  "results": [
+    {
+      "name": "Start cancellation from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1745,
+        "completionTokens": 186,
+        "totalTokens": 1931
+      }
+    },
+    {
+      "name": "Read current order",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1745,
+        "completionTokens": 82,
+        "totalTokens": 1827
+      }
+    },
+    {
+      "name": "Start cancellation and replan from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1748,
+        "completionTokens": 58,
+        "totalTokens": 1806
+      }
+    },
+    {
+      "name": "Start booking update from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1751,
+        "completionTokens": 75,
+        "totalTokens": 1826
+      }
+    },
+    {
+      "name": "Start restrained preview from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1748,
+        "completionTokens": 116,
+        "totalTokens": 1864
+      }
+    },
+    {
+      "name": "Start handoff from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1751,
+        "completionTokens": 307,
+        "totalTokens": 2058
+      }
+    },
+    {
+      "name": "Start preview and adopt from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1750,
+        "completionTokens": 149,
+        "totalTokens": 1899
+      }
+    },
+    {
+      "name": "Start pin-aware preview from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1760,
+        "completionTokens": 174,
+        "totalTokens": 1934
+      }
+    },
+    {
+      "name": "Read one stock-line calculation",
+      "expectedFirstCall": "get_line_detail",
+      "actualCalls": [
+        "get_line_detail"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1747,
+        "completionTokens": 174,
+        "totalTokens": 1921
+      }
+    },
+    {
+      "name": "Open the stock desk",
+      "expectedFirstCall": "open_section",
+      "actualCalls": [
+        "open_section"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1741,
+        "completionTokens": 73,
+        "totalTokens": 1814
+      }
+    },
+    {
+      "name": "Read current stock and waste",
+      "expectedFirstCall": "get_stock_status",
+      "actualCalls": [
+        "get_stock_status"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1749,
+        "completionTokens": 116,
+        "totalTokens": 1865
+      }
+    },
+    {
+      "name": "Start a shelf count from current state",
+      "expectedFirstCall": "get_stock_status",
+      "actualCalls": [
+        "get_stock_status"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1755,
+        "completionTokens": 169,
+        "totalTokens": 1924
+      }
+    },
+    {
+      "name": "Start a waste record from current state",
+      "expectedFirstCall": "get_stock_status",
+      "actualCalls": [
+        "get_stock_status"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1745,
+        "completionTokens": 199,
+        "totalTokens": 1944
+      }
+    },
+    {
+      "name": "Read the current labor plan",
+      "expectedFirstCall": "get_labor_plan",
+      "actualCalls": [
+        "get_labor_plan"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1746,
+        "completionTokens": 136,
+        "totalTokens": 1882
+      }
+    },
+    {
+      "name": "Start an absence record from current state",
+      "expectedFirstCall": "get_labor_plan",
+      "actualCalls": [
+        "get_labor_plan"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1749,
+        "completionTokens": 102,
+        "totalTokens": 1851
+      }
+    },
+    {
+      "name": "Start a labor preview from current state",
+      "expectedFirstCall": "get_labor_plan",
+      "actualCalls": [
+        "get_labor_plan"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1751,
+        "completionTokens": 161,
+        "totalTokens": 1912
+      }
+    },
+    {
+      "name": "Start labor adoption from current state",
+      "expectedFirstCall": "get_labor_plan",
+      "actualCalls": [
+        "get_labor_plan"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1750,
+        "completionTokens": 210,
+        "totalTokens": 1960
+      }
+    }
+  ]
+}

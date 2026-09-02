@@ -4,6 +4,55 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-03, expansion Stage 3 (Codex, build lead)
+
+- Added the Shift log as the fourth decision page. It reads the existing activity and receipts newest first, filters by section, accepts bounded local notes, and downloads filtered service-day JSON without maintaining a second audit store.
+- Added `get_shift_log` and `add_shift_note`. Shift log registers those tools plus `open_section`; note text is marked as untrusted, and notes bump the shared revision without invalidating either preview.
+- Added the Saturday and rainy-Tuesday presets. Switching presets performs a full seed reset at revision 0, clears previews, undo state, and receipts, and records the new preset in activity. Tool reads and receipts report the active preset.
+- Reproduced the Tuesday locked order and labor results: 520 covers, 44 hours, and 1,281 cost units at seed; a 40-person booking previews 560 covers, 47 hours, and 1,447 units; the labor preview adds Nadia at lunch and Sam at dinner for 52 scheduled hours.
+- Added client-side working-order CSV export with the exact seven columns, seed row order, quoted fields, and service-date filename. The addendum's Saturday TOTAL assertion says 71 cases, but its authoritative ten row values total 78. The exporter and regression test use the truthful derived total of 78 with cost 3,629.
+- Rewrote the README, demo plan, and Devpost draft around the four-section desk, per-page tool lifecycle, shared revision, presets, downloads, and local-only boundary.
+- Expanded the generated runtime schema to 16 tool definitions, the first-call fixture to 19 cases, and the full-chain fixture to 21 cases. GPT-5.6 Sol, Gemini 3.8 Flash, and DeepSeek V4 Pro passed 19 of 19 clarified first-call cases. Sonnet passed 18 of 19 because it made the correct labor read plus one safe parallel order read; the raw result remains unchanged.
+- Closed the final accessibility and security findings. Invalid quantity pins now announce bounded errors; placeholders pass contrast; route titles, the skip link, and waste landmark are named; order adoption, undo, and discard announce completion; Tuesday receipts restore to the correct preset; read-only tools no longer write activity; visible form limits match adapter limits; and only standard WebMCP behavior hints ship.
+- Added `nosniff`, no-referrer, restrictive browser-permission, and deny-framing headers for Vercel. A new CSP was deliberately excluded because it could interfere with the preview toolbar and browser-extension testing without protecting a backend, account, or external request path that this static app does not have.
+- Fixed a Chrome-only route-transition race found during the final Portless review. `open_section` now remains registered for the app lifetime while route-specific tools rotate, so asynchronous abort cleanup cannot reject a duplicate navigation tool. A browser-faithful regression test covers delayed removal.
+- Passed 102 of 102 deterministic, store, adapter, registration, accessibility, and UI tests and a clean TypeScript and Vite build before the final preview and release gates.
+- Repeated the complete local ladder through the canonical Portless URL, `https://cutoff.localhost`. System Chrome loaded every decision route at 1,280 px and 390 px, completed the Saturday and Tuesday cross-page flow, downloaded Shift-log JSON, and logged no console errors. A separate flag-enabled transition run kept `open_section` present with exact route tool sets and no registration warning. The Codex in-app browser reported the exact route tool sets.
+
+### 2026-09-03, expansion Stage 2 (Codex, build lead)
+
+- Added a pure labor engine, the Saturday and Tuesday roster seeds, one shared labor state, deterministic daypart suggestions, reversible adoption, and labor-preview invalidation from order adoption and undo.
+- Added `get_labor_plan`, `add_labor_signal`, `create_labor_preview`, and the dynamic `adopt_labor_plan`. Labor exposes four tools at rest and five while a current preview is adoptable.
+- Reproduced all locked labor assertions. The 910-cover plan requires 76 hours; the preview releases Tom Walsh and Jonas Weber, and Rosa Alvarez's prep absence adds Nadia Haddad for four hours. Saved-demand control and release-guard cases also pass.
+- Applied the corrected authoritative split for 830 covers: 70 total, 25 lunch, 34 dinner, and 11 prep. The formula takes precedence over the superseded value in the first addendum draft.
+- Closed the accessibility review findings for scheduled-value labels, status contrast, and duplicate announcements. Updated tool wording so absence inputs omit daypart and hours, and `open_section` is explicitly unnecessary when the destination tools are already available.
+- Passed 83 of 83 tests at the Stage 2 boundary and a clean production build. The final Labor route browser suite passed 8 of 8 steps on the non-production preview at `https://cutoff-webmcp-hgvgx8xyk-ruttansh-bhatelias-projects.vercel.app`.
+- The 17-case first-call suite scored Sonnet 16, Gemini 17, GPT-5.6 Sol 17, and DeepSeek 14. The misses were safe prerequisite reads rather than unintended writes; no fixture or tool contract was weakened to hide them.
+
+### 2026-09-03, expansion Stage 1 (Codex, build lead)
+
+- Added live Stock state and a pure stock engine. The seeded waste ledger totals 74.97, with 44.60 expired, 15.60 overproduction, 13.60 prep, and 1.17 dropped.
+- Added the Stock count sheet, waste form, waste summary, current-count timestamps, shared activity entries, and a cross-page stale-preview notice. Order calculations now read the live on-hand and expiring counts.
+- Added `get_stock_status`, `record_stock_count`, and `log_waste`. Stock exposes those three tools plus `open_section`; Order remains six tools at rest and seven with a current preview.
+- Reproduced every locked Stage 1 assertion. At 910 covers, chicken 30/6 produces 16 cases and a 2,835-unit order while the cancellation reason stays primary. The same count at 1,140 covers produces 21 cases. Logging two expired lettuce heads produces 7 on hand, 2 expiring, a 2.33-unit entry, and a 77.30-unit weekly total without changing its two-case recommendation.
+- Fixed a route lifecycle defect found by the browser evaluator. `open_section` had deferred the route change until after the evaluator prepared its next step. The page now commits navigation and route-scoped registration before the tool result resolves; direct headless Chrome confirmed an immediate six-to-four tool swap with no console errors.
+- Closed the Stage 1 accessibility findings: tinted-panel text now passes contrast, Stock errors are associated with their fields, and successful count and waste writes announce a scoped status without making the activity log live.
+- Passed 68 of 68 tests and a clean TypeScript and Vite build. The final Stock route browser suite passed 5 of 5 steps, and the expanded first-call suite passed 13 of 13 cases with Claude Sonnet 5 through Vercel AI Gateway.
+- Deployed the final non-production preview at `https://cutoff-webmcp-qp6gtt0gu-ruttansh-bhatelias-projects.vercel.app`. Production was not changed. Review evidence remains under ignored `output/review1/`.
+- Self-review: Review 1 passed. Stage 2 is blocked because the brief says its roster seed and deterministic suggestion outcomes are locked in a Stage 2 addendum, but no addendum is present. Stage 3 likewise depends on absent rainy-Tuesday locked numbers.
+
+### 2026-09-03, expansion Stage 0 (Codex, build lead)
+
+- Added one shared shift-desk shell with Order, Stock, Labor, and Shift log routes. One store and monotonic revision survive client-side navigation.
+- Added route-scoped registration. Order exposes six tools at rest and seven with a current preview; placeholder routes expose only `open_section`. A live local recorder confirmed that navigation aborts all six Order registrations before Stock registers its one tool.
+- Added `get_line_detail` and `open_section`, generated the seven-tool eval schema from the runtime catalog, expanded the first-call fixture from 8 to 10 cases, and expanded the full-chain fixture from 8 to 12 cases.
+- Fixed pending order changes. A page signal or quantity pin refreshes an active preview; without a preview, the sheet shows an explicit pending strip until the manager previews.
+- Split drawer math into the calculated recommendation and pinned decision. The formula remains calculated even when the manager pins another value.
+- Rebuilt the signal form around container queries and shrink-safe tracks. Added the shared three-step explainer, page titles, step labels, and placeholder panels; removed visible WebMCP detection chrome.
+- Passed 55 of 55 tests and a clean TypeScript and Vite build. Captured 1280 px and 390 px evidence for all four routes, plus the workflow, pending, drawer, signal-form, and route-invalidation artifacts under ignored `output/review0/`.
+- Closed the Stage 0 accessibility pass. Pending preview moves focus to its visible result, invalid booking covers have an associated error, modified tab activation keeps native browser behavior, route changes focus the new page title, and narrow-screen row selection brings the drawer into view.
+- Deployed the user-approved non-production Vercel Preview at `https://cutoff-webmcp-odv083psh-ruttansh-bhatelias-projects.vercel.app`. All five public routes return 200 with `X-Robots-Tag: noindex`; Chrome completed the responsive interaction and navigation smoke test with no console errors, and the Codex in-app browser reported six Order tools and only `open_section` on Stock. Production was not changed.
+
 ### 2026-09-02, Round 4 audit hardening (Codex, build lead)
 
 - Reworked the visible hierarchy around the restaurant outcome, synthetic-data notice, supplier-order totals, stock-line math, and local handoff. Fixed the signal form's desktop alignment and preserved the single-column mobile layout.
@@ -102,6 +151,23 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 | Date | Agent / browser | Flow | Result | Notes |
 |---|---|---|---|---|
+| 2026-09-03 | System Chrome / final Stage 3 Vercel Preview | WebMCP route-registration stress test | Pass | Fifty rapid Order, Stock, Labor, and Shift log transitions produced 101 immediate and next-task observations. Every observation contained the exact route tool set; `open_section` was never absent, and no registration error appeared. |
+| 2026-09-03 | System Chrome and Codex in-app browser / final Stage 3 Vercel Preview | Full business flow and route-scoped tools | Pass | Chrome reproduced Saturday 910 covers, 76 hours, and 2,767 cost units, then Tuesday 520/44/1,281 to 560/47/1,447 with a 52-hour labor preview and valid Shift-log JSON. The in-app browser exposed exactly 6 Order, 4 Stock, 4 Labor, and 3 Shift-log tools. |
+| 2026-09-03 | Vercel CLI | Stage 3 preview authorization recovery | Pass | The same approved Vercel account accepted the deployment after the earlier authorization failure. No alternate host or workaround was used. |
+| 2026-09-03 | Vitest and Vite / Node 24.18 | Expansion Stage 3 presets, Shift log, export, shared store, adapters, registration, accessibility, and UI | Pass | 102 of 102 tests and a clean production build. Tuesday order and labor results, Shift log filters and notes, preset-correct receipt restoration, bounded forms, CSV output, live control confirmations, and delayed WebMCP unregistration are covered. |
+| 2026-09-03 | System Chrome and Codex in-app browser / `https://cutoff.localhost` | Final local Stage 3 route, responsive, tool-set, and full-flow ladder | Pass | All four decision routes loaded at 1,280 px and 390 px with no root overflow or console errors. Chrome completed the Saturday and Tuesday flow and retained the shared navigation tool through every SPA transition; the in-app browser exposed Order 6, Stock 4, Labor 4, and Shift log 3 tools at rest. |
+| 2026-09-03 | Vercel CLI | Final Stage 3 non-production preview | Infrastructure blocked | Vercel rejected the authorized preview before upload with `Not authorized`. No alternate host or deployment workaround was used; browser authorization must be restored before the preview gate continues. |
+| 2026-09-03 | Vercel AI Gateway / current model families | Expanded 19-case first-call suite | Mixed, recorded | GPT-5.6 Sol, Gemini 3.8 Flash, and DeepSeek V4 Pro passed 19 of 19. Sonnet passed 18 of 19 after one correct Labor read included an extra safe Order read. |
+| 2026-09-03 | `webmcp-evals` / Claude Sonnet 5 / Stage 2 Vercel Preview | Labor read, absence, preview, and adoption chains | Pass | 8 of 8 steps after neutral schema clarification. The report is `evals/reports/browser-gateway-sonnet-5-stage2-labor-post-contract/report-1788387668128.json`. |
+| 2026-09-03 | Vitest and Vite / Node 24.18 | Expansion Stage 2 labor engine, store, tools, UI, and accessibility | Pass | 83 of 83 tests and a clean production build at the stage boundary. All Saturday locked splits, suggestions, adoption, undo, and cross-page invalidation assertions pass. |
+| 2026-09-03 | Vitest and Vite / Node 24.18 | Expansion Stage 1 stock engine, store, route lifecycle, tools, UI, and accessibility | Pass | 68 of 68 tests and a clean production build. All locked Stage 1 totals and cross-page invalidation assertions pass. |
+| 2026-09-03 | Headless Chrome / final Vercel Preview | Immediate `open_section` route and tool-set transition | Pass | The tool result completed, the URL moved to `/stock`, six Order tools were replaced by exactly four Stock tools, and the console stayed clear. |
+| 2026-09-03 | Vercel AI Gateway / Claude Sonnet 5 | Expanded 13-case first-call suite | Pass | 13 of 13 cases. The schema and model call remained outside the app bundle. |
+| 2026-09-03 | `webmcp-evals` / Claude Sonnet 5 / Vercel Preview | Expanded cross-route browser chains | Mixed, recorded | The pre-fix run passed 25 of 35 steps. After the lifecycle fix, it passed 27 of 32. Remaining misses came from the runner retaining an unavailable Order schema for one step after navigation; raw reports are retained. |
+| 2026-09-03 | `webmcp-evals` / Claude Sonnet 5 / final `/stock` preview | Stock read, record-count, and log-waste chains | Pass | 5 of 5 steps. Each mutation read the Stock revision first and then called the intended Stock tool. |
+| 2026-09-03 | Playwright and Codex in-app browser / final Vercel Preview | Stock at 1280 px and 390 px, route-scoped tools, and accessibility tree | Pass | Stock exposed exactly four tools. Controls remained named and keyboard reachable; screenshots are under ignored `output/review1/`. |
+| 2026-09-03 | Headed Chrome and Codex in-app browser / Vercel Preview | Deployed Stage 0 routes, responsive interactions, shared revision, browser history, and route-scoped registration | Pass | `/`, `/stock`, `/labor`, `/log`, and `/trajectory` returned 200. Chrome preserved revision 2 across Stock and back, restored focus to Order, and logged no console errors. The in-app browser reported six Order tools and only `open_section` on Stock. Production was unchanged. |
+| 2026-09-03 | Vitest, Vite, headed Chrome, and Codex in-app browser / `https://cutoff.localhost` | Expansion Stage 0 shell, pending previews, line detail, responsive routes, accessibility, and registration lifecycle | Pass locally | 55 of 55 tests; clean build; Order registered six tools, aborted them on navigation, and Stock registered only `open_section`; no console errors. |
 | 2026-09-02 | Vitest / Node 24.18 | Engine, store, tool adapters, and UI | Pass | 29 of 29 tests; exact Section 4 table and totals. |
 | 2026-09-02 | System Chrome 151 / `https://cutoff.localhost:1355/` | Booking, cancellation, preview, and adopt | Pass | Secure context; WebMCP detected; tools changed 4 to 5 to 4; adopted 910 covers, 76 hours, and 2,767 units. |
 | 2026-09-02 | System Chrome 151 / `http://localhost:4428/` | Direct-origin registration smoke test | Pass | Secure context; WebMCP detected; four base tools registered without Portless. |
@@ -164,5 +230,4 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 Ideas noted during the build that are out of scope for the submission.
 
-- Second scenario preset (staff shortage as a warning signal).
 - Waste exposure column per line.

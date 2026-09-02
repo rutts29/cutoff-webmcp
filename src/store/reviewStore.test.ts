@@ -119,7 +119,7 @@ describe("review store", () => {
     expect(store.getState().preview).toBeNull();
   });
 
-  it("removes a booking pin and clears the active preview", () => {
+  it("removes a booking pin and refreshes the active preview", () => {
     const store = makeStore();
     const booking = addBooking(store);
     expectSuccess(booking);
@@ -138,7 +138,8 @@ describe("review store", () => {
 
     expectSuccess(removed);
     expect(store.getState().pins.bookingIds).toStrictEqual([]);
-    expect(store.getState().preview).toBeNull();
+    expect(store.getState().preview).not.toBeNull();
+    expect(store.getState().preview?.covers.after).toBe(1_140);
     expect(store.getState().revision).toBe(3);
   });
 
@@ -167,7 +168,7 @@ describe("review store", () => {
     });
   });
 
-  it("keeps a preview adoptable across view-only updates", () => {
+  it("keeps a preview adoptable across view-only row focus", () => {
     const store = makeStore();
     const preview = store.previewOrderPlan(
       undefined,
@@ -181,14 +182,6 @@ describe("review store", () => {
     const focused = store.focusSku("lettuce", previewRevision, "page");
     expectSuccess(focused);
     expect(focused.revision).toBe(previewRevision);
-    expect(store.getState().revision).toBe(previewRevision);
-    expect(store.getState().preview?.id).toBe(preview.preview.id);
-
-    store.recordReadActivity(
-      "get_order_context",
-      "Read the live order context.",
-      `Returned revision ${previewRevision} with 10 lines.`,
-    );
     expect(store.getState().revision).toBe(previewRevision);
     expect(store.getState().preview?.id).toBe(preview.preview.id);
 
@@ -254,6 +247,23 @@ describe("review store", () => {
     expect(restored.getState().lastReceipt?.managerSummary).toBe(
       "Morning manager: check the revised draft before cutoff.",
     );
+  });
+
+  it("restores a Tuesday receipt on its matching preset after reload", () => {
+    const storage = createMemoryStorage();
+    const store = makeStore(storage);
+    store.switchPreset("tuesday", "page");
+    const receipt = store.saveHandoffReceipt(
+      "Tuesday opener: verify covers before lunch.",
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(receipt);
+
+    const restored = makeStore(storage);
+    expect(restored.getState().presetId).toBe("tuesday");
+    expect(restored.getState().lastReceipt).toStrictEqual(receipt.receipt);
+    expect(restored.getShiftLog("order").entries[0]?.id).toBe(receipt.receipt.id);
   });
 
   it("does not crash when receipt storage is unavailable", () => {
@@ -429,5 +439,437 @@ describe("review store", () => {
       tool.getState().lastReceipt,
     );
     expect(manual.getState().revision).toBe(tool.getState().revision);
+  });
+
+  it("records a stock count and invalidates the shared order preview", () => {
+    const store = makeStore();
+    expectSuccess(addBooking(store));
+    expectSuccess(addCancellation(store));
+    const firstPreview = store.previewOrderPlan(
+      "Preview the cancellation and booking.",
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(firstPreview);
+
+    const count = store.recordStockCount(
+      "chicken",
+      30,
+      6,
+      store.getState().revision,
+      "tool",
+      "record_stock_count",
+    );
+
+    expectSuccess(count);
+    expect(count).toMatchObject({
+      previous: { onHand: 42, expiring: 6 },
+      current: { onHand: 30, expiring: 6 },
+      orderPreviewInvalidated: true,
+    });
+    expect(store.getState().preview?.id).toBe(firstPreview.preview.id);
+    expect(store.getState().preview?.baseRevision).not.toBe(
+      store.getState().revision,
+    );
+    expect(store.getState().orderPreviewStaleReason).toBe(
+      "Stock counts changed since this preview. Preview again.",
+    );
+    expect(store.getState().activity.at(-1)).toMatchObject({
+      section: "stock",
+      tool: "record_stock_count",
+    });
+
+    const refreshed = store.previewOrderPlan(
+      "Refresh after the count.",
+      store.getState().revision,
+      "tool",
+      "create_order_preview",
+    );
+    expectSuccess(refreshed);
+    expect(
+      refreshed.preview.lines.find((line) => line.skuId === "chicken"),
+    ).toMatchObject({ afterCases: 16, reason: "DEMAND_DOWN_EVENT_CANCELLED" });
+    expect(refreshed.preview.totals.afterCost).toBe(2_835);
+    expect(store.getState().orderPreviewStaleReason).toBeNull();
+  });
+
+  it("uses a current stock count in a saved-plan preview", () => {
+    const store = makeStore();
+    const count = store.recordStockCount(
+      "chicken",
+      30,
+      6,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(count);
+
+    const preview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(preview);
+    expect(
+      preview.preview.lines.find((line) => line.skuId === "chicken"),
+    ).toMatchObject({ afterCases: 21 });
+  });
+
+  it("logs expired waste and updates stock and weekly totals", () => {
+    const store = makeStore();
+    const result = store.logWaste(
+      "lettuce",
+      2,
+      "expired",
+      undefined,
+      store.getState().revision,
+      "tool",
+      "log_waste",
+    );
+
+    expectSuccess(result);
+    expect(result).toMatchObject({
+      cost: 2.33,
+      newOnHand: 7,
+      newExpiring: 2,
+      weekTotal: 77.3,
+      orderPreviewInvalidated: false,
+    });
+    expect(store.getState().activity.at(-1)).toMatchObject({
+      section: "stock",
+      tool: "log_waste",
+    });
+
+    const preview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(preview);
+    expect(
+      preview.preview.lines.find((line) => line.skuId === "lettuce"),
+    ).toMatchObject({ afterCases: 2 });
+  });
+
+  it("runs the locked 910-cover labor flow and undoes only the adoption", () => {
+    const store = makeStore();
+    expectSuccess(addBooking(store));
+    expectSuccess(addCancellation(store));
+    const orderPreview = store.previewOrderPlan(
+      "Replan after the local signals.",
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(orderPreview);
+    expectSuccess(
+      store.adoptOrderDraft(
+        orderPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+    expect(store.getState().draft.plan.covers).toBe(910);
+
+    expectSuccess(
+      store.addLaborSignal(
+        { kind: "absence", staffId: "s11", note: "Cannot make close." },
+        store.getState().revision,
+        "page",
+      ),
+    );
+    const laborPreview = store.previewLaborPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(laborPreview);
+    expect(laborPreview.preview.totals).toStrictEqual({
+      scheduledBefore: 88,
+      scheduledAfter: 80,
+      required: 76,
+      releases: 2,
+      covers: 1,
+    });
+
+    expectSuccess(
+      store.adoptLaborPlan(
+        laborPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+    expect(store.getState().labor.shifts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ staffId: "s04", status: "released" }),
+        expect.objectContaining({ staffId: "s10", status: "released" }),
+        expect.objectContaining({ staffId: "s11", status: "absent" }),
+        expect.objectContaining({ staffId: "oc1", status: "cover", hours: 4 }),
+      ]),
+    );
+    expectSuccess(
+      store.undoLaborAdoption(
+        store.getState().revision,
+        "page",
+      ),
+    );
+    expect(store.getState().labor.shifts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ staffId: "s04", status: "scheduled" }),
+        expect.objectContaining({ staffId: "s10", status: "scheduled" }),
+        expect.objectContaining({ staffId: "s11", status: "absent" }),
+      ]),
+    );
+    expect(
+      store.getState().labor.shifts.some((shift) => shift.staffId === "oc1"),
+    ).toBe(false);
+  });
+
+  it("keeps unrelated page previews current and invalidates labor on order adoption", () => {
+    const store = makeStore();
+    const orderPreview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(orderPreview);
+    expectSuccess(
+      store.addLaborSignal(
+        { kind: "absence", staffId: "s11" },
+        store.getState().revision,
+        "page",
+      ),
+    );
+    expectSuccess(
+      store.adoptOrderDraft(
+        orderPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+
+    const laborPreview = store.previewLaborPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(laborPreview);
+    expectSuccess(
+      store.recordStockCount(
+        "chicken",
+        30,
+        6,
+        store.getState().revision,
+        "page",
+      ),
+    );
+    expect(store.getState().labor.preview?.id).toBe(laborPreview.preview.id);
+    expectSuccess(
+      store.adoptLaborPlan(
+        laborPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+
+    const nextLaborPreview = store.previewLaborPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(nextLaborPreview);
+    expectSuccess(addBooking(store));
+    const changedOrder = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(changedOrder);
+    expectSuccess(
+      store.adoptOrderDraft(
+        changedOrder.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+    expect(store.getState().labor.preview).toBeNull();
+    expect(store.getState().laborPreviewStaleReason).toMatch(
+      /working order covers changed/i,
+    );
+  });
+
+  it("switches to the locked Tuesday preset at revision zero", () => {
+    const store = makeStore();
+    expectSuccess(addBooking(store));
+
+    store.switchPreset("tuesday", "page");
+
+    const state = store.getState();
+    expect(state.presetId).toBe("tuesday");
+    expect(state.revision).toBe(0);
+    expect(state.serviceDate).toBe("2026-09-08");
+    expect(state.savedPlan).toMatchObject({
+      covers: 520,
+      laborHours: 44,
+      totalCost: 1_281,
+    });
+    expect(state.savedPlan.lines.map((line) => line.cases)).toStrictEqual([
+      7, 3, 2, 4, 1, 3, 0, 6, 0, 0,
+    ]);
+    expect(state.activity).toHaveLength(1);
+    expect(state.activity[0]?.inputSummary).toMatch(/rainy midweek/i);
+    expect(state.undoAvailable).toBe(false);
+  });
+
+  it("matches the locked Tuesday booking and labor previews", () => {
+    const store = makeStore();
+    store.switchPreset("tuesday", "page");
+    const booking = store.addLocalSignal(
+      { kind: "booking", label: "Tuesday booking", covers: 40 },
+      0,
+      "page",
+    );
+    expectSuccess(booking);
+    const orderPreview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(orderPreview);
+    expect(orderPreview.preview.covers.after).toBe(560);
+    expect(orderPreview.preview.laborHours.after).toBe(47);
+    expect(orderPreview.preview.totals.afterCost).toBe(1_447);
+    expect(orderPreview.preview.lines.map((line) => line.afterCases)).toStrictEqual([
+      8, 3, 3, 5, 1, 3, 0, 7, 0, 0,
+    ]);
+    expect(orderPreview.preview.lines.map((line) => line.reason)).toStrictEqual([
+      "DEMAND_UP_PINNED_BOOKING",
+      "UNCHANGED",
+      "DEMAND_UP_PINNED_BOOKING",
+      "DEMAND_UP_PINNED_BOOKING",
+      "EXPIRING_STOCK_EXCLUDED",
+      "EXPIRING_STOCK_EXCLUDED",
+      "COVERED_BY_STOCK",
+      "DEMAND_UP_PINNED_BOOKING",
+      "COVERED_BY_STOCK",
+      "COVERED_BY_STOCK",
+    ]);
+    expectSuccess(
+      store.adoptOrderDraft(
+        orderPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+    const laborPreview = store.previewLaborPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(laborPreview);
+    expect(laborPreview.preview.requiredTotal).toBe(47);
+    expect(laborPreview.preview.totals).toStrictEqual({
+      scheduledBefore: 44,
+      scheduledAfter: 52,
+      required: 47,
+      releases: 0,
+      covers: 2,
+    });
+    expect(laborPreview.preview.dayparts).toMatchObject([
+      {
+        id: "lunch",
+        required: 16,
+        scheduledBefore: 15,
+        scheduledAfter: 19,
+        reason: "UNDER_SCHEDULED_FORECAST_UP",
+        actions: [{ type: "cover", staffId: "oc1", hours: 4 }],
+      },
+      {
+        id: "dinner",
+        required: 24,
+        scheduledBefore: 22,
+        scheduledAfter: 26,
+        reason: "UNDER_SCHEDULED_FORECAST_UP",
+        actions: [{ type: "cover", staffId: "oc2", hours: 4 }],
+      },
+      {
+        id: "prep",
+        required: 7,
+        scheduledBefore: 7,
+        scheduledAfter: 7,
+        reason: "WITHIN_TOLERANCE",
+        actions: [],
+      },
+    ]);
+  });
+
+  it("filters the shift log and keeps a new shift note independent of previews", () => {
+    const store = makeStore();
+    expectSuccess(
+      store.recordStockCount("chicken", 31, 4, 0, "page"),
+    );
+    expectSuccess(
+      store.logWaste(
+        "chicken",
+        1,
+        "prep",
+        "Trim loss",
+        store.getState().revision,
+        "page",
+      ),
+    );
+    const stockLog = store.getShiftLog("stock");
+    expect(stockLog.total).toBe(2);
+    expect(stockLog.entries).toHaveLength(2);
+    expect(stockLog.entries.every((entry) => entry.section === "stock")).toBe(true);
+    expect(stockLog.entries[0]?.summary).toMatch(/^Log 1 chicken/);
+
+    const preview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(preview);
+    const note = store.addShiftNote(
+      "Check the walk-in before lunch.",
+      "stock",
+      store.getState().revision,
+      "tool",
+      "add_shift_note",
+    );
+    expectSuccess(note);
+    expect(store.getState().preview?.id).toBe(preview.preview.id);
+    const log = store.getShiftLog();
+    expect(log.entries[0]).toMatchObject({
+      id: note.noteId,
+      section: "stock",
+      actor: "tool",
+      tool: "add_shift_note",
+    });
+    expect(log.entries[0]?.summary).toContain("Check the walk-in before lunch.");
+  });
+
+  it("restores a saved receipt into the shift log after reload", () => {
+    const storage = createMemoryStorage();
+    const store = makeStore(storage);
+    const receipt = store.saveHandoffReceipt(
+      "Check the working order before cutoff.",
+      0,
+      "tool",
+      "save_handoff_receipt",
+    );
+    expectSuccess(receipt);
+
+    const restored = makeStore(storage);
+    expect(restored.getShiftLog("order").entries[0]).toMatchObject({
+      id: receipt.receipt.id,
+      actor: "page",
+      summary: expect.stringContaining("Check the working order before cutoff."),
+    });
   });
 });

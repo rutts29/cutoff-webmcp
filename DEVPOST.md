@@ -1,53 +1,66 @@
 # Cutoff
 
-Cutoff is a WebMCP supplier-order review for restaurant managers handling a late change before a supplier deadline.
+Cutoff is a WebMCP shift operations desk for restaurant managers handling local changes before a supplier cutoff.
 
-## Why this fits WebMCP
+## Inspiration
 
-The key facts exist only in the open page. They include an unsaved 80-person booking, quantity pins, the focused stock line, the current preview, and a monotonic revision. The agent must read that live state and run the page's own deterministic ordering engine.
+A forecast can be internally correct and still miss what just happened on the floor: a nearby event was cancelled, a private booking arrived, a shelf count changed, or a staff member called out. Those facts affect the order and the roster together, but they often live in separate notes or in the manager's head.
 
-A screenshot or copied table is not enough. It can miss an unsaved pin, become stale after one action, or force the agent to reproduce business math outside the product. WebMCP gives the agent narrow, typed access to the same review the manager sees.
+Cutoff makes that exception work inspectable. The manager and their browser agent use the same revisioned state across Order, Stock, Labor, and Shift log.
 
-Cutoff exposes five page-owned tools. Four are always available. The fifth, `adopt_order_preview`, registers only while a current preview exists. This dynamic tool lifecycle matches the action the manager can take at that moment.
+## What it does
 
-## How the user experience improves
+The Saturday scenario begins with 1,140 covers, 95 labor hours, and a 3,629-unit supplier order. The manager records an 80-person booking, and their agent adds a cancelled derby. Cutoff previews 910 covers, 76 hours, and a 2,767-unit order, with a reason on every line.
 
-The manager starts with a saved plan for 1,140 covers, 95 labor hours, and an order cost of 3,629 units. They add an 80-person booking by hand, then tell their agent that the derby match is cancelled.
+The manager can inspect the exact stock formula, pin a quantity, adopt or undo the order, count stock, log waste, record an absence, preview deterministic roster changes, and save a local handoff. The Shift log joins those actions into one downloadable service-day record. A rainy Tuesday preset proves the same engines work against a different seed.
 
-The agent reads the live review, adds the cancellation, and asks the page to preview a new plan. The visible sheet updates to 910 covers, 76 labor hours, and a cost of 2,767 units. Each of the ten lines shows its saved quantity, preview quantity, delta, and one reason code. Clicking a row opens the exact formula with real values.
+No tool can transmit an order or update an external rota. Order and labor previews remain proposals until adopted, and every consequential local write requires the current shared revision.
 
-Nothing is hidden behind a chat transcript. The tool call changes the shared page before the agent's next read. The manager can correct a quantity, preview again, adopt the order preview, undo adoption, and save a local receipt. The app also works as a normal order-review interface when WebMCP is unavailable.
+## How we built it
 
-## What the human and agent can do together
+Cutoff is a static React and TypeScript application. Each decision page has a small pure engine, while thin WebMCP adapters validate input, enforce revision rules, call one shared store, and return compact structured results. Human controls call the same store methods.
 
-The manager contributes facts that the forecast cannot know. In the demo, they pin a private booking and may pin lettuce at four cases because the next delivery is unreliable. Their agent contributes speed and consistency. It reads the current state, adds the cancelled event, runs the deterministic preview, and saves the requested handoff.
+The page uses the imperative `document.modelContext.registerTool` API. Route changes abort the old registration set and expose only the tools relevant to the page the manager is viewing. Order and Labor add their adoption tool only while a current preview exists.
 
-The manager keeps every consequential choice. A preview never changes the saved plan. Adoption changes only the working order. No tool can submit or transmit an order, and every receipt states that nothing was sent outside the page.
+This page-owned design matters because the agent needs state it cannot scrape reliably: unsaved signals, stock counts, quantity pins, roster absences, preview objects, and the shared revision. Hand-built tools carry that state directly instead of wrapping visible controls or a server API.
 
-The result is a shared exception review instead of a hand calculation or a blind recommendation. Both participants work against one revisioned sheet. The activity panel records exact WebMCP tool names; browser-driven UI interactions appear as `page action` because the page cannot reliably infer who drove the browser.
+The tools form read and reversible-action layers. There is no sensitive external action because the application has no supplier, scheduling, account, or backend integration. Operator notes and handoff text are marked as untrusted content, and all tool descriptions state their result shapes.
 
-## How WebMCP was implemented
+## What WebMCP adds
 
-Cutoff uses the imperative `document.modelContext.registerTool` API in the top-level page. The registration module feature-detects WebMCP, registers through one lifecycle, and uses `AbortController` cleanup so React StrictMode does not leave duplicate tools.
+Without WebMCP, an agent would have to interpret table pixels, miss unsaved local state, and reproduce the business math outside the product. With WebMCP, it reads the same store as the manager, supplies the revision it observed, and invokes the page's deterministic operations. Every result appears in the shared interface before the next decision.
 
-The app is static and client-side. Registering tools from the page avoids a server whose only job would be an MCP endpoint, and keeps the order state in the manager's browser.
+The tool surface follows page state rather than advertising every capability everywhere: six Order tools at rest, four Stock tools, four Labor tools at rest, and three Shift log tools. Dynamic adoption tools appear only when their preview is current. `open_section` moves the visible page and returns the destination tool set.
 
-The tools are hand-built around page state an agent cannot scrape reliably: unsaved pins, the revision, the preview object, and the conditional adoption action. They are not generated from the visible controls or an API. `operator_note` also gives the agent a first-class way to record an operational fact that is absent from the forecast.
+## Challenges
 
-One answer tool reads the review. Four reversible action tools change local state. There is no sensitive action because the page cannot transmit an order.
+The difficult part was not exposing functions. It was keeping preview, adoption, cross-page invalidation, undo, navigation, and tool registration truthful under one revision. A stock count must stale an order preview but not a labor preview. Order adoption must invalidate labor demand. Row focus must remain view-only. A route change must replace tools before the navigation result resolves.
 
-Tool schemas reject unknown fields and keep free text bounded. Every mutating tool requires `expectedRevision`. A stale call returns a structured error with the current revision and a recovery instruction. `adopt_order_preview` also checks that the preview id and base revision still match.
+We also kept the evaluation record honest. Static harnesses can measure the required first read but cannot supply live revision state; browser suites measure the ordered chains. Safe extra reads, infrastructure failures, and corrected fixtures remain in the raw reports.
 
-The adapters are thin. They validate input, call one revisioned store, and shape compact output. The store calls a pure order engine that owns all demand, labor, quantity, cost, pin, and reason calculations. Human controls call the same store methods as WebMCP tools.
+## Accomplishments
 
-The test suite reproduces the locked ten-line table and totals. It also covers stale revisions, stale previews, registration cleanup, dynamic tool registration, storage failures, receipt reload, keyboard actions, and matching UI and tool transitions. Model-backed evals check both the required first read and the full live browser chains. Four current model families passed the final 8-of-8 first-call suite. Sonnet passed all 17 live browser steps; Gemini and DeepSeek each made one extra safe preview call without adopting or sending anything.
+- One client-side state model across four useful decision pages
+- Exact deterministic order, stock, waste, labor, preset, export, and log tests
+- Page-scoped and state-scoped WebMCP registration with abort cleanup
+- Structured stale-write recovery and reversible local adoption
+- Current-model first-call checks through a separate eval harness
+- Accessible keyboard controls, responsive layouts, reduced-motion handling, and local-only storage
 
-Ora's production audit scored Shared Experience, Tool Quality, and Trust at 100. Its Task Completion run classified Cutoff as a document editor and asked for paragraph editing and a share link. Those capabilities are outside this product, so the five tools remain focused on one answer flow and four reversible local actions.
+## What we learned
 
-## Submission links
+WebMCP is strongest when the page and the tools are designed together. The agent interface should expose state and outcomes that a screenshot cannot provide, while the visible interface gives the manager the same result and final control.
+
+We also learned that page scope is part of the contract. Registering tools on unrelated pages would make discovery look broader but would weaken the shared-context model. Cutoff keeps each decision tool where that decision lives.
+
+## What's next
+
+The current submission stays synthetic and local. Future work could connect an explicitly approved data import, add waste exposure per order line, or test more service-day presets. None of those belongs in the current external-action boundary.
+
+## Links
 
 - Live app: https://cutoff-webmcp.vercel.app/
-- Source repository: https://github.com/rutts29/cutoff-webmcp
+- Source: https://github.com/rutts29/cutoff-webmcp
 - Demo video: add after upload
 
-All data is synthetic. Cutoff is not affiliated with any restaurant, supplier, ordering platform, or agent provider.
+All locations, people, events, inventory, quantities, and costs are fictional. Cutoff is not affiliated with any restaurant, supplier, workforce system, or agent provider.

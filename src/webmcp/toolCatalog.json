@@ -1,7 +1,7 @@
 {
   "get_order_context": {
     "title": "Get order context",
-    "description": "Reads the current restaurant supplier-order review. Returns guide, store, serviceDate, cutoffAt, deliveryAt, forecast, draft, lines, focusedSkuId, pins, signals, previewId, and revision.",
+    "description": "Reads the current restaurant supplier-order review. Returns guide, presetId, store, serviceDate, cutoffAt, deliveryAt, forecast, draft, lines, focusedSkuId, pins, signals, previewId, and revision.",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -10,6 +10,27 @@
     "annotations": {
       "readOnlyHint": true,
       "untrustedContentHint": true
+    }
+  },
+  "get_line_detail": {
+    "title": "Get line detail",
+    "description": "Reads the calculation and current decision for one stock line in the order review. Returns item, unit, caseSize, usagePerCover, onHand, expiring, usable, inTransit, safety, safetyRationale, demand, need, calculatedCases, pinnedCases, currentReason, and expiringShare.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A stock line selected by its stable SKU identifier.",
+      "properties": {
+        "skuId": {
+          "type": "string",
+          "enum": ["chicken", "patties", "buns", "fries", "lettuce", "tomatoes", "cheese", "cola", "oil", "boxes"],
+          "description": "Stable SKU identifier from get_order_context."
+        }
+      },
+      "required": ["skuId"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "untrustedContentHint": false
     }
   },
   "add_local_signal": {
@@ -118,7 +139,7 @@
   },
   "save_handoff_receipt": {
     "title": "Save handoff receipt",
-    "description": "Stores a manager handoff summary as a local browser receipt. Operator notes are operational facts in the order review; handoff receipts are shift records. Returns receiptId, revision, and confirmation that the result stayed in this browser.",
+    "description": "Stores a manager handoff summary as a local browser receipt. Operator notes are operational facts in the order review; handoff receipts are shift records. Returns receiptId, presetId, revision, and confirmation that the result stayed in this browser.",
     "inputSchema": {
       "type": "object",
       "description": "A local handoff receipt tied to a specific review revision.",
@@ -141,6 +162,299 @@
     "annotations": {
       "readOnlyHint": false,
       "untrustedContentHint": true
+    }
+  },
+  "get_stock_status": {
+    "title": "Get stock status",
+    "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns presetId; items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "untrustedContentHint": true
+    }
+  },
+  "record_stock_count": {
+    "title": "Record stock count",
+    "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A shelf count tied to a specific shared revision.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_stock_status or the previous mutation result."
+        },
+        "skuId": {
+          "type": "string",
+          "enum": ["chicken", "patties", "buns", "fries", "lettuce", "tomatoes", "cheese", "cola", "oil", "boxes"],
+          "description": "Stable SKU identifier from get_stock_status."
+        },
+        "onHand": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Physical on-hand quantity in the item's unit."
+        },
+        "expiring": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Quantity within onHand that expires before service."
+        }
+      },
+      "required": ["expectedRevision", "skuId", "onHand"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": false
+    }
+  },
+  "log_waste": {
+    "title": "Log waste",
+    "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A waste record tied to a specific shared revision.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_stock_status or the previous mutation result."
+        },
+        "skuId": {
+          "type": "string",
+          "enum": ["chicken", "patties", "buns", "fries", "lettuce", "tomatoes", "cheese", "cola", "oil", "boxes"],
+          "description": "Stable SKU identifier from get_stock_status."
+        },
+        "quantity": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100000,
+          "description": "Wasted quantity in the item's unit."
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["expired", "prep", "dropped", "overproduction"],
+          "description": "Operational reason for the waste entry."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Human-authored detail stored with the waste entry."
+        }
+      },
+      "required": ["expectedRevision", "skuId", "quantity", "reason"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": true
+    }
+  },
+  "get_labor_plan": {
+    "title": "Get labor plan",
+    "description": "Reads service-day staffing against the covers in the working order. Returns presetId, forecastCovers, requiredTotal, dayparts with required, scheduled, gap, and shifts, onCall, signals, laborPreviewId, and revision.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "untrustedContentHint": true
+    }
+  },
+  "add_labor_signal": {
+    "title": "Add labor signal",
+    "description": "Records one absence or extra shift in revisioned local roster state and clears a current labor preview. The working order stays unchanged. Returns signalId, kind, staffId, revision, and laborPreviewInvalidated.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A roster signal tied to a specific shared revision.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_labor_plan or the previous mutation result."
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["absence", "extra_shift"],
+          "description": "Roster change represented by an absence or an added shift."
+        },
+        "staffId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Stable roster or on-call staff identifier from get_labor_plan."
+        },
+        "daypart": {
+          "type": "string",
+          "enum": ["lunch", "dinner", "prep"],
+          "description": "Daypart for kind extra_shift. Omit for kind absence."
+        },
+        "hours": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Whole scheduled hours for kind extra_shift. Omit for kind absence."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Human-authored detail stored with the roster signal."
+        }
+      },
+      "required": ["expectedRevision", "kind", "staffId"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": true
+    }
+  },
+  "create_labor_preview": {
+    "title": "Create labor preview",
+    "description": "Creates and renders a revisioned staffing preview from the working order and roster signals. The adopted roster stays unchanged. Returns previewId, revision, dayparts with gaps, reasons, and actions, plus scheduled and required totals.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A staffing preview tied to a specific shared revision.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_labor_plan or the previous mutation result."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Short human-authored reason stored with the preview activity."
+        }
+      },
+      "required": ["expectedRevision"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": false
+    }
+  },
+  "adopt_labor_plan": {
+    "title": "Adopt labor plan",
+    "description": "Changes the local working roster to the active labor preview after manager approval. This reversible action is registered while that preview is current. Returns revision, scheduledTotal, undoAvailable, and noExternalAction.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A roster adoption tied to the active labor preview and shared revision.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_labor_plan or the previous mutation result."
+        },
+        "previewId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Active preview identifier from create_labor_preview."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Human-authored detail stored with the adoption activity."
+        }
+      },
+      "required": ["expectedRevision", "previewId"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": false
+    }
+  },
+  "get_shift_log": {
+    "title": "Get shift log",
+    "description": "Reads the newest recorded actions for the active service day, optionally filtered by section. Returns presetId, serviceDate, entries with id, time, section, actor, tool, and summary, plus total and revision.",
+    "inputSchema": {
+      "type": "object",
+      "description": "Optional section filter and result limit for the current shift record.",
+      "properties": {
+        "section": {
+          "type": "string",
+          "enum": ["order", "stock", "labor", "log"],
+          "description": "Optional section filter for recorded actions."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50,
+          "description": "Maximum number of newest entries returned, from 1 to 200."
+        }
+      },
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "untrustedContentHint": true
+    }
+  },
+  "add_shift_note": {
+    "title": "Add shift note",
+    "description": "Adds a local note to the active service-day record without changing either preview. Returns noteId and revision.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A human-authored note tied to a shared revision and optional section.",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required shared revision from get_shift_log or the previous mutation result."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Shift note text stored in this browser."
+        },
+        "section": {
+          "type": "string",
+          "enum": ["order", "stock", "labor", "log"],
+          "default": "log",
+          "description": "Section associated with the note."
+        }
+      },
+      "required": ["expectedRevision", "text"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": true
+    }
+  },
+  "open_section": {
+    "title": "Open shift section",
+    "description": "Moves the manager to a different order, stock, labor, or shift-log section while preserving store and revision. It is redundant if the destination section's tools are already available. Returns section, toolNames registered on the destination, and revision.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A destination in the shared shift operations desk.",
+      "properties": {
+        "section": {
+          "type": "string",
+          "enum": ["order", "stock", "labor", "log"],
+          "description": "Destination section in the shift operations desk."
+        }
+      },
+      "required": ["section"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": false
     }
   }
 }

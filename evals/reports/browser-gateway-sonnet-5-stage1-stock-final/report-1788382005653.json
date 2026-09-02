@@ -1,0 +1,3428 @@
+{
+  "config": {
+    "url": "https://cutoff-webmcp-qp6gtt0gu-ruttansh-bhatelias-projects.vercel.app/stock",
+    "evalsFile": "evals/cases.stock.json",
+    "backend": "vercel",
+    "model": "openai:anthropic/claude-sonnet-5",
+    "runs": 1,
+    "outputDir": "evals/reports/browser-gateway-sonnet-5-stage1-stock-final",
+    "reporter": [
+      "console",
+      "json"
+    ],
+    "chromeChannel": "chrome"
+  },
+  "results": {
+    "results": [
+      {
+        "test": {
+          "name": "Read current stock status",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Show me what is on the shelf and what we have wasted this week."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_stock_status",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_stock_status",
+          "args": {},
+          "result": {
+            "items": [
+              {
+                "id": "chicken",
+                "name": "Chicken thighs",
+                "unit": "kg",
+                "onHand": 42,
+                "expiring": 6,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 40.8
+              },
+              {
+                "id": "patties",
+                "name": "Beef patties 150g",
+                "unit": "ea",
+                "onHand": 190,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 7.2
+              },
+              {
+                "id": "buns",
+                "name": "Brioche buns",
+                "unit": "ea",
+                "onHand": 180,
+                "expiring": 24,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 24,
+                "wasteWeekCost": 9.5
+              },
+              {
+                "id": "fries",
+                "name": "Fries 2.5kg bags",
+                "unit": "kg",
+                "onHand": 40,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 5,
+                "wasteWeekCost": 8.4
+              },
+              {
+                "id": "lettuce",
+                "name": "Iceberg lettuce",
+                "unit": "head",
+                "onHand": 9,
+                "expiring": 4,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 4,
+                "wasteWeekCost": 4.67
+              },
+              {
+                "id": "tomatoes",
+                "name": "Tomatoes",
+                "unit": "kg",
+                "onHand": 7,
+                "expiring": 3,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 2,
+                "wasteWeekCost": 4.4
+              },
+              {
+                "id": "cheese",
+                "name": "Cheddar slices",
+                "unit": "ea",
+                "onHand": 320,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "cola",
+                "name": "Cola syrup BIB",
+                "unit": "L",
+                "onHand": 30,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "oil",
+                "name": "Fryer oil",
+                "unit": "L",
+                "onHand": 25,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "boxes",
+                "name": "Fry boxes",
+                "unit": "ea",
+                "onHand": 600,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              }
+            ],
+            "totals": {
+              "wasteWeekCost": 74.97,
+              "byReason": {
+                "expired": 44.6,
+                "overproduction": 15.6,
+                "prep": 13.6,
+                "dropped": 1.17
+              },
+              "topReason": "expired"
+            },
+            "orderPreviewStale": false,
+            "revision": 0
+          }
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_017jSPHnegyZdG5CY4PZ2j6Y",
+                "toolName": "get_stock_status",
+                "input": {}
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_017jSPHnegyZdG5CY4PZ2j6Y",
+                "toolName": "get_stock_status",
+                "input": {},
+                "output": {
+                  "items": [
+                    {
+                      "id": "chicken",
+                      "name": "Chicken thighs",
+                      "unit": "kg",
+                      "onHand": 42,
+                      "expiring": 6,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 40.8
+                    },
+                    {
+                      "id": "patties",
+                      "name": "Beef patties 150g",
+                      "unit": "ea",
+                      "onHand": 190,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 7.2
+                    },
+                    {
+                      "id": "buns",
+                      "name": "Brioche buns",
+                      "unit": "ea",
+                      "onHand": 180,
+                      "expiring": 24,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 24,
+                      "wasteWeekCost": 9.5
+                    },
+                    {
+                      "id": "fries",
+                      "name": "Fries 2.5kg bags",
+                      "unit": "kg",
+                      "onHand": 40,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 5,
+                      "wasteWeekCost": 8.4
+                    },
+                    {
+                      "id": "lettuce",
+                      "name": "Iceberg lettuce",
+                      "unit": "head",
+                      "onHand": 9,
+                      "expiring": 4,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 4,
+                      "wasteWeekCost": 4.67
+                    },
+                    {
+                      "id": "tomatoes",
+                      "name": "Tomatoes",
+                      "unit": "kg",
+                      "onHand": 7,
+                      "expiring": 3,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 2,
+                      "wasteWeekCost": 4.4
+                    },
+                    {
+                      "id": "cheese",
+                      "name": "Cheddar slices",
+                      "unit": "ea",
+                      "onHand": 320,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "cola",
+                      "name": "Cola syrup BIB",
+                      "unit": "L",
+                      "onHand": 30,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "oil",
+                      "name": "Fryer oil",
+                      "unit": "L",
+                      "onHand": 25,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "boxes",
+                      "name": "Fry boxes",
+                      "unit": "ea",
+                      "onHand": 600,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    }
+                  ],
+                  "totals": {
+                    "wasteWeekCost": 74.97,
+                    "byReason": {
+                      "expired": 44.6,
+                      "overproduction": 15.6,
+                      "prep": 13.6,
+                      "dropped": 1.17
+                    },
+                    "topReason": "expired"
+                  },
+                  "orderPreviewStale": false,
+                  "revision": 0
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "Here's the current shelf status and this week's waste summary:\n\n## On-Shelf Inventory (last counted 9/4/26)\n\n| Item | On Hand | Expiring Soon |\n|---|---|---|\n| Chicken thighs | 42 kg | 6 kg |\n| Beef patties (150g) | 190 ea | 0 |\n| Brioche buns | 180 ea | 24 ea |\n| Fries (2.5kg bags) | 40 kg | 0 |\n| Iceberg lettuce | 9 heads | 4 heads |\n| Tomatoes | 7 kg | 3 kg |\n| Cheddar slices | 320 ea | 0 |\n| Cola syrup (BIB) | 30 L | 0 |\n| Fryer oil | 25 L | 0 |\n| Fry boxes | 600 ea | 0 |\n\n⚠️ **Watch items:** Lettuce and tomatoes are low on-hand *and* have a chunk expiring — worth using soon or reordering.\n\n## This Week's Waste — Total: **$74.97**\n\n| Item | Qty Wasted | Cost |\n|---|---|---|\n| Chicken thighs | 6 kg | $40.80 |\n| Brioche buns | 24 ea | $9.50 |\n| Fries | 5 kg | $8.40 |\n| Beef patties | 6 ea | $7.20 |\n| Lettuce | 4 heads | $4.67 |\n| Tomatoes | 2 kg | $4.40 |\n| Cheese/Cola/Oil/Boxes | 0 | $0.00 |\n\n**By reason:**\n- Expired: $44.60 (top reason — mostly chicken)\n- Overproduction: $15.60\n- Prep waste: $13.60\n- Dropped: $1.17\n\nChicken thighs are the biggest waste driver, almost entirely from expiration — that's a good candidate to investigate (rotation, order quantity, or par level). Want me to log a new waste entry, record a fresh count, or dig into a specific item?",
+            "toolCalls": [],
+            "toolResults": [],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Record chicken count",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Chicken is actually 30 kilos and six of it goes off tomorrow. Record that count."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_stock_status",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_stock_status",
+          "args": {},
+          "result": {
+            "items": [
+              {
+                "id": "chicken",
+                "name": "Chicken thighs",
+                "unit": "kg",
+                "onHand": 42,
+                "expiring": 6,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 40.8
+              },
+              {
+                "id": "patties",
+                "name": "Beef patties 150g",
+                "unit": "ea",
+                "onHand": 190,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 7.2
+              },
+              {
+                "id": "buns",
+                "name": "Brioche buns",
+                "unit": "ea",
+                "onHand": 180,
+                "expiring": 24,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 24,
+                "wasteWeekCost": 9.5
+              },
+              {
+                "id": "fries",
+                "name": "Fries 2.5kg bags",
+                "unit": "kg",
+                "onHand": 40,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 5,
+                "wasteWeekCost": 8.4
+              },
+              {
+                "id": "lettuce",
+                "name": "Iceberg lettuce",
+                "unit": "head",
+                "onHand": 9,
+                "expiring": 4,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 4,
+                "wasteWeekCost": 4.67
+              },
+              {
+                "id": "tomatoes",
+                "name": "Tomatoes",
+                "unit": "kg",
+                "onHand": 7,
+                "expiring": 3,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 2,
+                "wasteWeekCost": 4.4
+              },
+              {
+                "id": "cheese",
+                "name": "Cheddar slices",
+                "unit": "ea",
+                "onHand": 320,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "cola",
+                "name": "Cola syrup BIB",
+                "unit": "L",
+                "onHand": 30,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "oil",
+                "name": "Fryer oil",
+                "unit": "L",
+                "onHand": 25,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "boxes",
+                "name": "Fry boxes",
+                "unit": "ea",
+                "onHand": 600,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              }
+            ],
+            "totals": {
+              "wasteWeekCost": 74.97,
+              "byReason": {
+                "expired": 44.6,
+                "overproduction": 15.6,
+                "prep": 13.6,
+                "dropped": 1.17
+              },
+              "topReason": "expired"
+            },
+            "orderPreviewStale": false,
+            "revision": 0
+          }
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01875xXiaxV52hKoYH4fAjUC",
+                "toolName": "get_stock_status",
+                "input": {}
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01875xXiaxV52hKoYH4fAjUC",
+                "toolName": "get_stock_status",
+                "input": {},
+                "output": {
+                  "items": [
+                    {
+                      "id": "chicken",
+                      "name": "Chicken thighs",
+                      "unit": "kg",
+                      "onHand": 42,
+                      "expiring": 6,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 40.8
+                    },
+                    {
+                      "id": "patties",
+                      "name": "Beef patties 150g",
+                      "unit": "ea",
+                      "onHand": 190,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 7.2
+                    },
+                    {
+                      "id": "buns",
+                      "name": "Brioche buns",
+                      "unit": "ea",
+                      "onHand": 180,
+                      "expiring": 24,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 24,
+                      "wasteWeekCost": 9.5
+                    },
+                    {
+                      "id": "fries",
+                      "name": "Fries 2.5kg bags",
+                      "unit": "kg",
+                      "onHand": 40,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 5,
+                      "wasteWeekCost": 8.4
+                    },
+                    {
+                      "id": "lettuce",
+                      "name": "Iceberg lettuce",
+                      "unit": "head",
+                      "onHand": 9,
+                      "expiring": 4,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 4,
+                      "wasteWeekCost": 4.67
+                    },
+                    {
+                      "id": "tomatoes",
+                      "name": "Tomatoes",
+                      "unit": "kg",
+                      "onHand": 7,
+                      "expiring": 3,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 2,
+                      "wasteWeekCost": 4.4
+                    },
+                    {
+                      "id": "cheese",
+                      "name": "Cheddar slices",
+                      "unit": "ea",
+                      "onHand": 320,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "cola",
+                      "name": "Cola syrup BIB",
+                      "unit": "L",
+                      "onHand": 30,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "oil",
+                      "name": "Fryer oil",
+                      "unit": "L",
+                      "onHand": 25,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "boxes",
+                      "name": "Fry boxes",
+                      "unit": "ea",
+                      "onHand": 600,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    }
+                  ],
+                  "totals": {
+                    "wasteWeekCost": 74.97,
+                    "byReason": {
+                      "expired": 44.6,
+                      "overproduction": 15.6,
+                      "prep": 13.6,
+                      "dropped": 1.17
+                    },
+                    "topReason": "expired"
+                  },
+                  "orderPreviewStale": false,
+                  "revision": 0
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_018ofhg6eFQxJzJn1srBkneS",
+                "toolName": "record_stock_count",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "chicken",
+                  "onHand": 30,
+                  "expiring": 6
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_018ofhg6eFQxJzJn1srBkneS",
+                "toolName": "record_stock_count",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "chicken",
+                  "onHand": 30,
+                  "expiring": 6
+                },
+                "output": {
+                  "skuId": "chicken",
+                  "previous": {
+                    "onHand": 42,
+                    "expiring": 6,
+                    "lastCountedAt": "2026-09-04T15:00:00.000Z"
+                  },
+                  "current": {
+                    "onHand": 30,
+                    "expiring": 6,
+                    "lastCountedAt": "2026-09-02T20:46:34.823Z"
+                  },
+                  "revision": 1,
+                  "orderPreviewInvalidated": false
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "Done — chicken updated to 30 kg on hand, with 6 kg expiring tomorrow. Revision is now 1.",
+            "toolCalls": [],
+            "toolResults": [],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Record chicken count",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Chicken is actually 30 kilos and six of it goes off tomorrow. Record that count."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "record_stock_count",
+              "arguments": {
+                "skuId": "chicken",
+                "onHand": 30,
+                "expiring": 6
+              }
+            }
+          ]
+        },
+        "response": {
+          "functionName": "record_stock_count",
+          "args": {
+            "expectedRevision": 0,
+            "skuId": "chicken",
+            "onHand": 30,
+            "expiring": 6
+          },
+          "result": {
+            "skuId": "chicken",
+            "previous": {
+              "onHand": 42,
+              "expiring": 6,
+              "lastCountedAt": "2026-09-04T15:00:00.000Z"
+            },
+            "current": {
+              "onHand": 30,
+              "expiring": 6,
+              "lastCountedAt": "2026-09-02T20:46:34.823Z"
+            },
+            "revision": 1,
+            "orderPreviewInvalidated": false
+          }
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01875xXiaxV52hKoYH4fAjUC",
+                "toolName": "get_stock_status",
+                "input": {}
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01875xXiaxV52hKoYH4fAjUC",
+                "toolName": "get_stock_status",
+                "input": {},
+                "output": {
+                  "items": [
+                    {
+                      "id": "chicken",
+                      "name": "Chicken thighs",
+                      "unit": "kg",
+                      "onHand": 42,
+                      "expiring": 6,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 40.8
+                    },
+                    {
+                      "id": "patties",
+                      "name": "Beef patties 150g",
+                      "unit": "ea",
+                      "onHand": 190,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 7.2
+                    },
+                    {
+                      "id": "buns",
+                      "name": "Brioche buns",
+                      "unit": "ea",
+                      "onHand": 180,
+                      "expiring": 24,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 24,
+                      "wasteWeekCost": 9.5
+                    },
+                    {
+                      "id": "fries",
+                      "name": "Fries 2.5kg bags",
+                      "unit": "kg",
+                      "onHand": 40,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 5,
+                      "wasteWeekCost": 8.4
+                    },
+                    {
+                      "id": "lettuce",
+                      "name": "Iceberg lettuce",
+                      "unit": "head",
+                      "onHand": 9,
+                      "expiring": 4,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 4,
+                      "wasteWeekCost": 4.67
+                    },
+                    {
+                      "id": "tomatoes",
+                      "name": "Tomatoes",
+                      "unit": "kg",
+                      "onHand": 7,
+                      "expiring": 3,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 2,
+                      "wasteWeekCost": 4.4
+                    },
+                    {
+                      "id": "cheese",
+                      "name": "Cheddar slices",
+                      "unit": "ea",
+                      "onHand": 320,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "cola",
+                      "name": "Cola syrup BIB",
+                      "unit": "L",
+                      "onHand": 30,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "oil",
+                      "name": "Fryer oil",
+                      "unit": "L",
+                      "onHand": 25,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "boxes",
+                      "name": "Fry boxes",
+                      "unit": "ea",
+                      "onHand": 600,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    }
+                  ],
+                  "totals": {
+                    "wasteWeekCost": 74.97,
+                    "byReason": {
+                      "expired": 44.6,
+                      "overproduction": 15.6,
+                      "prep": 13.6,
+                      "dropped": 1.17
+                    },
+                    "topReason": "expired"
+                  },
+                  "orderPreviewStale": false,
+                  "revision": 0
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_018ofhg6eFQxJzJn1srBkneS",
+                "toolName": "record_stock_count",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "chicken",
+                  "onHand": 30,
+                  "expiring": 6
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_018ofhg6eFQxJzJn1srBkneS",
+                "toolName": "record_stock_count",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "chicken",
+                  "onHand": 30,
+                  "expiring": 6
+                },
+                "output": {
+                  "skuId": "chicken",
+                  "previous": {
+                    "onHand": 42,
+                    "expiring": 6,
+                    "lastCountedAt": "2026-09-04T15:00:00.000Z"
+                  },
+                  "current": {
+                    "onHand": 30,
+                    "expiring": 6,
+                    "lastCountedAt": "2026-09-02T20:46:34.823Z"
+                  },
+                  "revision": 1,
+                  "orderPreviewInvalidated": false
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "Done — chicken updated to 30 kg on hand, with 6 kg expiring tomorrow. Revision is now 1.",
+            "toolCalls": [],
+            "toolResults": [],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 2
+      },
+      {
+        "test": {
+          "name": "Log expired lettuce",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Log two heads of expired lettuce as waste."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_stock_status",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_stock_status",
+          "args": {},
+          "result": {
+            "items": [
+              {
+                "id": "chicken",
+                "name": "Chicken thighs",
+                "unit": "kg",
+                "onHand": 42,
+                "expiring": 6,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 40.8
+              },
+              {
+                "id": "patties",
+                "name": "Beef patties 150g",
+                "unit": "ea",
+                "onHand": 190,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 6,
+                "wasteWeekCost": 7.2
+              },
+              {
+                "id": "buns",
+                "name": "Brioche buns",
+                "unit": "ea",
+                "onHand": 180,
+                "expiring": 24,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 24,
+                "wasteWeekCost": 9.5
+              },
+              {
+                "id": "fries",
+                "name": "Fries 2.5kg bags",
+                "unit": "kg",
+                "onHand": 40,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 5,
+                "wasteWeekCost": 8.4
+              },
+              {
+                "id": "lettuce",
+                "name": "Iceberg lettuce",
+                "unit": "head",
+                "onHand": 9,
+                "expiring": 4,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 4,
+                "wasteWeekCost": 4.67
+              },
+              {
+                "id": "tomatoes",
+                "name": "Tomatoes",
+                "unit": "kg",
+                "onHand": 7,
+                "expiring": 3,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 2,
+                "wasteWeekCost": 4.4
+              },
+              {
+                "id": "cheese",
+                "name": "Cheddar slices",
+                "unit": "ea",
+                "onHand": 320,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "cola",
+                "name": "Cola syrup BIB",
+                "unit": "L",
+                "onHand": 30,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "oil",
+                "name": "Fryer oil",
+                "unit": "L",
+                "onHand": 25,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              },
+              {
+                "id": "boxes",
+                "name": "Fry boxes",
+                "unit": "ea",
+                "onHand": 600,
+                "expiring": 0,
+                "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                "wasteWeekQty": 0,
+                "wasteWeekCost": 0
+              }
+            ],
+            "totals": {
+              "wasteWeekCost": 74.97,
+              "byReason": {
+                "expired": 44.6,
+                "overproduction": 15.6,
+                "prep": 13.6,
+                "dropped": 1.17
+              },
+              "topReason": "expired"
+            },
+            "orderPreviewStale": false,
+            "revision": 0
+          }
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_018e8qAYjAaRxCz8SCF36x4b",
+                "toolName": "get_stock_status",
+                "input": {}
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_018e8qAYjAaRxCz8SCF36x4b",
+                "toolName": "get_stock_status",
+                "input": {},
+                "output": {
+                  "items": [
+                    {
+                      "id": "chicken",
+                      "name": "Chicken thighs",
+                      "unit": "kg",
+                      "onHand": 42,
+                      "expiring": 6,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 40.8
+                    },
+                    {
+                      "id": "patties",
+                      "name": "Beef patties 150g",
+                      "unit": "ea",
+                      "onHand": 190,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 7.2
+                    },
+                    {
+                      "id": "buns",
+                      "name": "Brioche buns",
+                      "unit": "ea",
+                      "onHand": 180,
+                      "expiring": 24,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 24,
+                      "wasteWeekCost": 9.5
+                    },
+                    {
+                      "id": "fries",
+                      "name": "Fries 2.5kg bags",
+                      "unit": "kg",
+                      "onHand": 40,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 5,
+                      "wasteWeekCost": 8.4
+                    },
+                    {
+                      "id": "lettuce",
+                      "name": "Iceberg lettuce",
+                      "unit": "head",
+                      "onHand": 9,
+                      "expiring": 4,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 4,
+                      "wasteWeekCost": 4.67
+                    },
+                    {
+                      "id": "tomatoes",
+                      "name": "Tomatoes",
+                      "unit": "kg",
+                      "onHand": 7,
+                      "expiring": 3,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 2,
+                      "wasteWeekCost": 4.4
+                    },
+                    {
+                      "id": "cheese",
+                      "name": "Cheddar slices",
+                      "unit": "ea",
+                      "onHand": 320,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "cola",
+                      "name": "Cola syrup BIB",
+                      "unit": "L",
+                      "onHand": 30,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "oil",
+                      "name": "Fryer oil",
+                      "unit": "L",
+                      "onHand": 25,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "boxes",
+                      "name": "Fry boxes",
+                      "unit": "ea",
+                      "onHand": 600,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    }
+                  ],
+                  "totals": {
+                    "wasteWeekCost": 74.97,
+                    "byReason": {
+                      "expired": 44.6,
+                      "overproduction": 15.6,
+                      "prep": 13.6,
+                      "dropped": 1.17
+                    },
+                    "topReason": "expired"
+                  },
+                  "orderPreviewStale": false,
+                  "revision": 0
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01Yc3AWyUc92gVJjV8rRdzNu",
+                "toolName": "log_waste",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "lettuce",
+                  "quantity": 2,
+                  "reason": "expired",
+                  "note": "2 heads expired"
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01Yc3AWyUc92gVJjV8rRdzNu",
+                "toolName": "log_waste",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "lettuce",
+                  "quantity": 2,
+                  "reason": "expired",
+                  "note": "2 heads expired"
+                },
+                "output": {
+                  "entryId": "waste-115aae35-0fc7-4c9f-a80e-c4bb2553939e",
+                  "cost": 2.33,
+                  "newOnHand": 7,
+                  "newExpiring": 2,
+                  "weekTotal": 77.3,
+                  "revision": 1,
+                  "orderPreviewInvalidated": false
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "Logged 2 heads of expired lettuce as waste (cost: $2.33). Iceberg lettuce on-hand is now 7 heads (2 still marked expiring). Weekly waste total updated to $77.30.",
+            "toolCalls": [],
+            "toolResults": [],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Log expired lettuce",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Log two heads of expired lettuce as waste."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "log_waste",
+              "arguments": {
+                "skuId": "lettuce",
+                "quantity": 2,
+                "reason": "expired"
+              }
+            }
+          ]
+        },
+        "response": {
+          "functionName": "log_waste",
+          "args": {
+            "expectedRevision": 0,
+            "skuId": "lettuce",
+            "quantity": 2,
+            "reason": "expired",
+            "note": "2 heads expired"
+          },
+          "result": {
+            "entryId": "waste-115aae35-0fc7-4c9f-a80e-c4bb2553939e",
+            "cost": 2.33,
+            "newOnHand": 7,
+            "newExpiring": 2,
+            "weekTotal": 77.3,
+            "revision": 1,
+            "orderPreviewInvalidated": false
+          }
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_018e8qAYjAaRxCz8SCF36x4b",
+                "toolName": "get_stock_status",
+                "input": {}
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_018e8qAYjAaRxCz8SCF36x4b",
+                "toolName": "get_stock_status",
+                "input": {},
+                "output": {
+                  "items": [
+                    {
+                      "id": "chicken",
+                      "name": "Chicken thighs",
+                      "unit": "kg",
+                      "onHand": 42,
+                      "expiring": 6,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 40.8
+                    },
+                    {
+                      "id": "patties",
+                      "name": "Beef patties 150g",
+                      "unit": "ea",
+                      "onHand": 190,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 6,
+                      "wasteWeekCost": 7.2
+                    },
+                    {
+                      "id": "buns",
+                      "name": "Brioche buns",
+                      "unit": "ea",
+                      "onHand": 180,
+                      "expiring": 24,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 24,
+                      "wasteWeekCost": 9.5
+                    },
+                    {
+                      "id": "fries",
+                      "name": "Fries 2.5kg bags",
+                      "unit": "kg",
+                      "onHand": 40,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 5,
+                      "wasteWeekCost": 8.4
+                    },
+                    {
+                      "id": "lettuce",
+                      "name": "Iceberg lettuce",
+                      "unit": "head",
+                      "onHand": 9,
+                      "expiring": 4,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 4,
+                      "wasteWeekCost": 4.67
+                    },
+                    {
+                      "id": "tomatoes",
+                      "name": "Tomatoes",
+                      "unit": "kg",
+                      "onHand": 7,
+                      "expiring": 3,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 2,
+                      "wasteWeekCost": 4.4
+                    },
+                    {
+                      "id": "cheese",
+                      "name": "Cheddar slices",
+                      "unit": "ea",
+                      "onHand": 320,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "cola",
+                      "name": "Cola syrup BIB",
+                      "unit": "L",
+                      "onHand": 30,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "oil",
+                      "name": "Fryer oil",
+                      "unit": "L",
+                      "onHand": 25,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    },
+                    {
+                      "id": "boxes",
+                      "name": "Fry boxes",
+                      "unit": "ea",
+                      "onHand": 600,
+                      "expiring": 0,
+                      "lastCountedAt": "2026-09-04T15:00:00.000Z",
+                      "wasteWeekQty": 0,
+                      "wasteWeekCost": 0
+                    }
+                  ],
+                  "totals": {
+                    "wasteWeekCost": 74.97,
+                    "byReason": {
+                      "expired": 44.6,
+                      "overproduction": 15.6,
+                      "prep": 13.6,
+                      "dropped": 1.17
+                    },
+                    "topReason": "expired"
+                  },
+                  "orderPreviewStale": false,
+                  "revision": 0
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01Yc3AWyUc92gVJjV8rRdzNu",
+                "toolName": "log_waste",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "lettuce",
+                  "quantity": 2,
+                  "reason": "expired",
+                  "note": "2 heads expired"
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01Yc3AWyUc92gVJjV8rRdzNu",
+                "toolName": "log_waste",
+                "input": {
+                  "expectedRevision": 0,
+                  "skuId": "lettuce",
+                  "quantity": 2,
+                  "reason": "expired",
+                  "note": "2 heads expired"
+                },
+                "output": {
+                  "entryId": "waste-115aae35-0fc7-4c9f-a80e-c4bb2553939e",
+                  "cost": 2.33,
+                  "newOnHand": 7,
+                  "newExpiring": 2,
+                  "weekTotal": 77.3,
+                  "revision": 1,
+                  "orderPreviewInvalidated": false
+                },
+                "dynamic": false
+              }
+            ],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          },
+          {
+            "text": "Logged 2 heads of expired lettuce as waste (cost: $2.33). Iceberg lettuce on-hand is now 7 heads (2 still marked expiring). Weekly waste total updated to $77.30.",
+            "toolCalls": [],
+            "toolResults": [],
+            "availableTools": [
+              {
+                "description": "Reads current counts and the weekly waste ledger for the Stock section. Returns items with onHand, expiring, lastCountedAt, wasteWeekQty, and wasteWeekCost; totals with wasteWeekCost, byReason, and topReason; orderPreviewStale; and revision.",
+                "functionName": "get_stock_status",
+                "parameters": {
+                  "type": "object",
+                  "properties": {},
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Records on-hand and expiring stock for one item in revisioned local state and invalidates an older order preview. Returns skuId, previous and current counts, revision, and orderPreviewInvalidated.",
+                "functionName": "record_stock_count",
+                "parameters": {
+                  "type": "object",
+                  "description": "A shelf count tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "onHand": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Physical on-hand quantity in the item's unit."
+                    },
+                    "expiring": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100000,
+                      "description": "Quantity within onHand that expires before service."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "onHand"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Adds one local waste entry, reduces the item's on-hand stock, and invalidates an older order preview. Returns entryId, cost, newOnHand, newExpiring, weekTotal, revision, and orderPreviewInvalidated.",
+                "functionName": "log_waste",
+                "parameters": {
+                  "type": "object",
+                  "description": "A waste record tied to a specific shared revision.",
+                  "properties": {
+                    "expectedRevision": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Required shared revision from get_stock_status or the previous mutation result."
+                    },
+                    "skuId": {
+                      "type": "string",
+                      "enum": [
+                        "chicken",
+                        "patties",
+                        "buns",
+                        "fries",
+                        "lettuce",
+                        "tomatoes",
+                        "cheese",
+                        "cola",
+                        "oil",
+                        "boxes"
+                      ],
+                      "description": "Stable SKU identifier from get_stock_status."
+                    },
+                    "quantity": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 100000,
+                      "description": "Wasted quantity in the item's unit."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "expired",
+                        "prep",
+                        "dropped",
+                        "overproduction"
+                      ],
+                      "description": "Operational reason for the waste entry."
+                    },
+                    "note": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Human-authored detail stored with the waste entry."
+                    }
+                  },
+                  "required": [
+                    "expectedRevision",
+                    "skuId",
+                    "quantity",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "description": "Moves the page the manager is looking at to the order, stock, labor, or shift-log section while preserving the store and revision. Returns section, toolNames registered on the destination, and revision.",
+                "functionName": "open_section",
+                "parameters": {
+                  "type": "object",
+                  "description": "A destination in the shared shift operations desk.",
+                  "properties": {
+                    "section": {
+                      "type": "string",
+                      "enum": [
+                        "order",
+                        "stock",
+                        "labor",
+                        "log"
+                      ],
+                      "description": "Destination section in the shift operations desk."
+                    }
+                  },
+                  "required": [
+                    "section"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 2
+      }
+    ],
+    "testCount": 3,
+    "passCount": 5,
+    "failCount": 0,
+    "errorCount": 0
+  }
+}

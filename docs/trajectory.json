@@ -134,6 +134,90 @@
       "actor": "builder",
       "summary": "Applied the final legibility, accessibility, tool-contract, and trust review, then cross-checked production with current model families and two public auditors.",
       "outcome": "All 47 tests passed. Direct tool calls and browser-driven page actions now carry truthful interaction channels. Four models passed the first-call suite, three models exercised live browser chains, and Ora scored Shared Experience, Tool Quality, and Trust at 100."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "expansion",
+      "actor": "human",
+      "summary": "Approved the staged expansion from one order review into a four-section shift operations desk, with a review after each stage.",
+      "outcome": "Stage 0 was limited to the shared shell, navigation, route-scoped tools, and the identified order-page interaction fixes. Decision pages remain gated behind later reviews."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Built the Stage 0 shell and wrote failing behavior and registration tests before changing runtime code.",
+      "outcome": "One revisioned store now spans four routes. Human inputs refresh active previews or surface pending work, line math separates calculation from a pin, and route changes replace the registered tool set. The accessibility pass closed its concrete keyboard and validation findings. All 55 tests and the production build pass locally."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Published the authorized Stage 0 build to a non-production Vercel Preview and repeated route, interaction, and registration checks on the deployed artifact.",
+      "outcome": "All five public routes returned 200 with preview indexing disabled. Chrome preserved the shared revision through navigation with no console errors, while the in-app browser exposed six tools on Order and only open_section on Stock. The production deployment was not changed."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Built the Stock count sheet and waste ledger as the first shared decision page after Order.",
+      "outcome": "Live counts and waste now feed the order engine through one revisioned store. The locked waste totals, count effects, lettuce waste result, and stale-preview behavior pass deterministic tests. Stock exposes three focused tools plus section navigation."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Self-reviewed Stage 1 across deterministic tests, both page widths, route-scoped tools, cross-page invalidation, accessibility, and model-backed evals.",
+      "outcome": "All 68 tests pass. The Stock browser suite passed five of five steps, the first-call suite passed thirteen of thirteen cases, and the final non-production preview is live. Production was not changed."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "builder",
+      "summary": "Stopped after the Stage 1 self-review because the next stages depend on product decisions that are not present in the expansion materials.",
+      "outcome": "The Stage 2 roster and deterministic suggestion outcomes, and the Stage 3 rainy-Tuesday numbers, are assigned to separate addenda in the brief. No values were invented."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Resumed with the approved Labor addendum and built roster planning as the third decision page.",
+      "outcome": "Labor now reads the adopted order, records absences and extra shifts, proposes deterministic releases and on-call cover, and keeps adoption reversible. The corrected 830-cover split is 25 lunch, 34 dinner, and 11 prep."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Self-reviewed Labor across exact engine assertions, shared-state invalidation, responsive UI, accessibility, route tools, and model selection.",
+      "outcome": "All 83 tests passed at the Stage 2 boundary. The final Labor browser chain passed eight of eight steps, and safe prerequisite reads remained visible in the multi-model first-call record."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Completed the four-section desk with Shift log, service-day presets, and local exports.",
+      "outcome": "Shift log reuses the shared activity and receipts, accepts bounded notes, and downloads filtered JSON. Order downloads the working plan as CSV. Saturday and rainy Tuesday share the same engines but have independent deterministic seeds."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Ran the Stage 3 deterministic suite and current-model first-call cross-check before the final browser and release gates.",
+      "outcome": "All 102 tests and the production build passed. Three model families scored nineteen of nineteen first calls; Sonnet made the correct Labor read plus one extra safe read, recorded as eighteen of nineteen. The CSV total follows the authoritative rows, which sum to 78 rather than the addendum's inconsistent 71."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Closed the final accessibility and security review, then repeated the full local browser ladder through Portless HTTPS.",
+      "outcome": "Visible controls and tool adapters now share the same bounds, read-only tools preserve state, Tuesday receipts restore to Tuesday, order controls announce completion, and Vercel has basic response hardening. Chrome completed both service-day flows at desktop and mobile widths. A final browser finding kept open_section registered across asynchronous route cleanup, and both browsers then reported exact tool sets without a registration warning."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Stress-tested the corrected route-registration lifecycle on the final non-production preview before release.",
+      "outcome": "Fifty rapid transitions produced exact route tool sets in every immediate and next-task observation. The shared navigation tool was never absent, registration errors stayed at zero, the full Saturday and Tuesday flow passed, and the in-app browser independently reported the expected tool sets."
     }
   ]
 }

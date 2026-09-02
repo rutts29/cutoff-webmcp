@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Read current stock status",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Show me what is on the shelf and what we have wasted this week."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_stock_status",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Record chicken count",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Chicken is actually 30 kilos and six of it goes off tomorrow. Record that count."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_stock_status",
+            "arguments": {}
+          },
+          {
+            "functionName": "record_stock_count",
+            "arguments": {
+              "skuId": "chicken",
+              "onHand": 30,
+              "expiring": 6
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Log expired lettuce",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Log two heads of expired lettuce as waste."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_stock_status",
+            "arguments": {}
+          },
+          {
+            "functionName": "log_waste",
+            "arguments": {
+              "skuId": "lettuce",
+              "quantity": 2,
+              "reason": "expired"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

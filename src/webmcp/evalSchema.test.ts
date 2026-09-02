@@ -14,6 +14,6 @@ describe("WebMCP eval schema", () => {
     );
 
     expect(evalSchema).toStrictEqual({ tools: expectedTools });
-    expect(evalSchema.tools).toHaveLength(5);
+    expect(evalSchema.tools).toHaveLength(Object.keys(toolCatalog).length);
   });
 });

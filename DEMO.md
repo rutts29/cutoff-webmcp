@@ -1,116 +1,101 @@
 # Cutoff demo plan
 
-Target length: 2 minutes 55 seconds.
+Target length: 2 minutes 35 seconds.
 
-Use a clean browser profile with WebMCP enabled. Crop the recording to the product and the WebMCP tool list. Do not show third-party logos, browser bookmarks, account details, environment files, or API keys.
+Use the Saturday preset in a clean browser profile with WebMCP enabled. Crop the recording to Cutoff and the browser's tool surface. Do not show bookmarks, account details, environment files, or API keys.
 
 ## Before recording
 
-1. Reset the demo.
+1. Select **Sat 5 Sep · derby weekend**, then reset the demo.
 2. In the in-app browser, click the cursor icon in the URL bar and expand **Available site tools**. In Chrome, open **DevTools > Application > WebMCP**.
-3. Confirm that the panel lists four tools.
-4. Keep `/trajectory` ready in a second tab.
-5. Use the fixed service date shown in the product.
+3. Confirm six tools on Order, four on Stock, four on Labor, and three on Shift log when no preview is active.
+4. Keep `/trajectory` in a second tab only if the recording needs a closing evidence shot.
 
 ## Recording script
 
-### 0:00 to 0:15, establish the problem
+### 0:00–0:18 — one shared desk
 
-Click the cursor icon in the URL bar, expand **Available site tools**, and show the four registered tools. In the Chrome version, use **DevTools > Application > WebMCP**. Then show the saved order sheet.
+Show the four tabs, Saturday preset, and saved Order totals: 1,140 covers, 95 labor hours, 3,629 units.
 
-Narration: "This restaurant expects 1,140 covers because a nearby derby adds 310. The supplier cutoff is Fri 4 Sep at 22:00. The manager has new local information that the forecast cannot see."
+Narration: “Cutoff is a shift operations desk for facts the forecast cannot see. Order, stock, labor, and the shift record share one local revision.”
 
-### 0:15 to 0:35, add the human fact
+### 0:18–0:48 — replan the order
 
-Add a booking signal by hand:
+Add **Private booking**, label **Private booking, 80 guests**, covers **80**. Then ask:
 
 ```text
-Private booking, 80 guests, 18:30
+The derby has been cancelled. Add that to the order review and replan, but keep my booking.
 ```
 
-Show that the booking is pinned.
+Show `get_order_context`, `add_local_signal`, and `create_order_preview`. Hold on 1,140 → 910 covers, 95 → 76 hours, and 3,629 → 2,767 units. Show the changed cells and the dynamic seventh tool, `adopt_order_preview`.
 
-Narration: "The manager records an 80-person booking directly on the sheet. That booking remains pinned across every recalculation."
+Narration: “The agent reads the current revision and runs Cutoff's deterministic engine. The proposal is visible before it can be adopted.”
 
-### 0:35 to 0:58, let the agent read live state
+### 0:48–1:02 — adopt locally
 
 Ask:
 
 ```text
-Look at the Sat 5 Sep order. Why is it this big, and what would change it?
+Adopt the current order preview. Do not send anything outside this page.
 ```
 
-Show `get_order_context` in the activity panel and the explanation of the derby uplift.
+Show the working order, Undo, and the tool count returning to six.
 
-Narration: "The agent reads the page's live state, including unsaved pins and the current revision. It does not infer the table from a screenshot."
+Narration: “Adoption updates only the browser's working order. Nothing is sent to a supplier.”
 
-### 0:58 to 1:25, add the cancellation and preview
+### 1:02–1:35 — reconcile labor
 
-Ask:
+Open Labor and ask:
 
 ```text
-The derby has been cancelled. Add that and replan, but keep my booking.
+Rosa cannot make prep. Record her absence, preview the roster changes, and leave the proposal for me to review.
 ```
 
-Show `add_local_signal`, then `create_order_preview`. Hold on the totals:
+Show the 76-hour requirement, releases for Tom and Jonas, and Nadia's prep cover. Adopt the labor preview from the visible control.
 
-- Covers: 1,140 to 910
-- Labor: 95 to 76 hours
-- Cost: 3,629 to 2,767 units
+Narration: “Labor reads the adopted 910-cover order, not an unapproved preview. The same shared revision protects the roster change.”
 
-Expand **Available site tools** again. Show that the panel now lists five tools because `adopt_order_preview` is available. In Chrome, use **DevTools > Application > WebMCP**.
+### 1:35–1:55 — count stock
 
-Narration: "The page runs its own deterministic engine. Each line shows the old quantity, the preview, the delta, and one reason. The current preview exposes a fifth tool for adoption."
-
-### 1:25 to 1:48, show human correction
-
-Open the lettuce row, pin 4 cases, and ask for a new preview.
-
-Show `MANUAL_OVERRIDE_KEPT` and the new cost of 2,795 units.
-
-Narration: "The manager can inspect the real formula and override a line. The agent reads that live pin and recomputes without replacing human judgment."
-
-### 1:48 to 2:08, adopt without sending
-
-Ask:
+Open Stock and ask:
 
 ```text
-Adopt this order preview as the working order. Don't send anything.
+Chicken is actually 30 kilos on hand and six kilos expire before service. Record that count.
 ```
 
-Show the adoption activity, the enabled Undo control, and the tools panel returning to four tools.
+Show the updated chicken row, count time, and activity entry.
 
-Narration: "Adoption changes only the working order. Nothing is sent to a supplier, and the manager can undo it."
+Narration: “A shelf count updates the same stock the order engine uses. If an order preview were open, this would mark it stale.”
 
-### 2:08 to 2:35, save the handoff
+### 1:55–2:14 — hand off
 
-Ask:
+Return to Order. In **Handoff summary**, write:
 
 ```text
-Save a handoff note for the morning manager saying the derby was cancelled, the booking was kept, the working order was updated, and nothing was sent.
+Derby cancellation and private booking are in the working order. Labor was adjusted for Rosa's absence. Recheck the new chicken count before cutoff.
 ```
 
-Show the saved receipt and its download control.
+Select **Save handoff receipt** and show the local confirmation.
 
-Narration: "The handoff receipt records the signals, pins, final lines, reasons, and manager summary in local storage. The manager can also create the same receipt from the visible controls."
+Narration: “The manager leaves one bounded receipt in the browser. The page action and tool use the same store path.”
 
-### 2:35 to 2:50, show the trajectory
+### 2:14–2:31 — shift log and download
 
-Open `/trajectory` and scroll once.
+Open Shift log. Show the newest-first entries and filter once. Select **Download shift log (JSON)**.
 
-Narration: "The project record shows the decisions, tests, independent browser runs, and failed infrastructure checks. Failed eval attempts remain visible rather than being removed."
+Narration: “The shift log is built from the same activity, not a second audit system. It records the route, interaction channel, and summary for whoever opens tomorrow.”
 
-### 2:50 to 2:55, close
+### 2:31–2:35 — close
 
-Return to the receipt status.
+Return to the four tabs.
 
-Narration: "Cutoff gives the manager and their agent one shared, inspectable decision before the deadline. The manager stays in control."
+Narration: “One restaurant, four decisions, one shared revision, and no external action.”
 
 ## Recording checks
 
-- Total runtime stays below 3 minutes.
-- Narration is audible.
-- The tool list shows four tools before preview, five during preview, and four after adoption.
-- The fixed totals and line reasons are readable.
-- No third-party trademark, logo, screenshot, account detail, or secret appears.
-- The final receipt says that nothing was sent outside the page.
+- Runtime is under 2 minutes 40 seconds.
+- The six-to-seven-to-six Order tool lifecycle is visible.
+- The 910-cover, 76-hour, 2,767-unit order result is readable.
+- Labor actions show two releases and one on-call cover.
+- Stock count, receipt, and Shift log download are visible.
+- No secret, provider branding, account detail, or real restaurant data appears.
