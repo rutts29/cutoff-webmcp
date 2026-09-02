@@ -20,7 +20,7 @@ import {
 export const RECEIPT_STORAGE_KEY = "cutoff:last-receipt";
 
 export type ActivityEffect = "read" | "draft" | "save";
-export type ActivityActor = "human" | "agent";
+export type ActivityActor = "page" | "tool";
 
 export type ActivityEntry = Readonly<{
   id: string;
@@ -258,7 +258,7 @@ function readStoredSignal(value: unknown): LocalSignal | null {
     !isObject(value) ||
     !isBoundedString(value.id, 1, 100) ||
     !isBoundedString(value.label, 1, 160) ||
-    (value.source !== "human" && value.source !== "agent") ||
+    (value.source !== "page" && value.source !== "tool") ||
     !isBoundedString(value.addedAt, 1, 80)
   ) {
     return null;
@@ -903,7 +903,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       const entry = activityEntry(
         createId,
         now,
-        "agent",
+        "tool",
         inputSummary,
         resultSummary,
         "read",

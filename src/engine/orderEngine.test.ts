@@ -15,7 +15,7 @@ type BookingSignal = {
   kind: 'booking';
   label: string;
   covers: number;
-  source: 'human';
+  source: 'page';
   addedAt: string;
 };
 
@@ -23,7 +23,7 @@ type CancellationSignal = {
   id: string;
   kind: 'event_cancelled';
   label: string;
-  source: 'agent';
+  source: 'tool';
   addedAt: string;
 };
 
@@ -32,7 +32,7 @@ const bookingSignal: BookingSignal = {
   kind: 'booking',
   label: 'Private booking, 80 guests, 18:30',
   covers: 80,
-  source: 'human',
+  source: 'page',
   addedAt: '2026-09-02T12:00:00.000Z',
 };
 
@@ -40,7 +40,7 @@ const cancellationSignal: CancellationSignal = {
   id: 'cancel-1',
   kind: 'event_cancelled',
   label: 'Derby match cancelled',
-  source: 'agent',
+  source: 'tool',
   addedAt: '2026-09-02T12:01:00.000Z',
 };
 

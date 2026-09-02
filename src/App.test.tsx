@@ -175,7 +175,7 @@ describe("order review UI", () => {
     store.saveHandoffReceipt(
       "Morning manager: check the revised draft before cutoff.",
       store.getState().revision,
-      "human",
+      "page",
     );
     render(<App store={store} modelContext={undefined} />);
 
@@ -208,7 +208,7 @@ describe("order review UI", () => {
     );
     const activity = store.getState().activity.at(-1);
     expect(activity).toMatchObject({
-      actor: "human",
+      actor: "page",
       effect: "save",
     });
     expect(activity).not.toHaveProperty("tool");
@@ -242,7 +242,7 @@ describe("order review UI", () => {
     store.saveHandoffReceipt(
       "Check the draft before cutoff.",
       store.getState().revision,
-      "human",
+      "page",
     );
     const writeText = vi.fn().mockResolvedValue(undefined);
     const createObjectURL = vi.fn(() => "blob:receipt");
@@ -270,7 +270,7 @@ describe("order review UI", () => {
     firstStore.saveHandoffReceipt(
       "Morning manager: check the revised draft before cutoff.",
       firstStore.getState().revision,
-      "human",
+      "page",
     );
     const reloadedStore = makeStore(storage);
     render(<App store={reloadedStore} modelContext={undefined} />);

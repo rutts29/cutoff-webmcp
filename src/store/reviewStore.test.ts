@@ -34,7 +34,7 @@ function addBooking(store: ReviewStore) {
       covers: 80,
     },
     store.getState().revision,
-    "human",
+    "page",
   );
 }
 
@@ -45,7 +45,7 @@ function addCancellation(store: ReviewStore) {
       label: "Derby match cancelled",
     },
     store.getState().revision,
-    "agent",
+    "tool",
     "add_local_signal",
   );
 }
@@ -75,7 +75,7 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       "Replan after the local signals.",
       store.getState().revision,
-      "agent",
+      "tool",
       "create_order_preview",
     );
     expectSuccess(preview);
@@ -91,7 +91,7 @@ describe("review store", () => {
     const result = store.addLocalSignal(
       { kind: "event_cancelled", label: "Derby match cancelled" },
       0,
-      "agent",
+      "tool",
       "add_local_signal",
     );
 
@@ -109,7 +109,7 @@ describe("review store", () => {
     const firstPreview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(firstPreview);
 
@@ -126,14 +126,14 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(preview);
 
     const removed = store.removeBookingPin(
       booking.signal.id,
       store.getState().revision,
-      "human",
+      "page",
     );
 
     expectSuccess(removed);
@@ -147,7 +147,7 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(preview);
 
@@ -155,7 +155,7 @@ describe("review store", () => {
       "preview-old",
       store.getState().revision,
       undefined,
-      "agent",
+      "tool",
       "adopt_order_preview",
     );
 
@@ -172,13 +172,13 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "agent",
+      "tool",
       "create_order_preview",
     );
     expectSuccess(preview);
     const previewRevision = store.getState().revision;
 
-    const focused = store.focusSku("lettuce", previewRevision, "human");
+    const focused = store.focusSku("lettuce", previewRevision, "page");
     expectSuccess(focused);
     expect(focused.revision).toBe(previewRevision);
     expect(store.getState().revision).toBe(previewRevision);
@@ -196,7 +196,7 @@ describe("review store", () => {
       preview.preview.id,
       previewRevision,
       undefined,
-      "agent",
+      "tool",
       "adopt_order_preview",
     );
     expectSuccess(adopted);
@@ -210,7 +210,7 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "agent",
+      "tool",
       "create_order_preview",
     );
     expectSuccess(preview);
@@ -219,7 +219,7 @@ describe("review store", () => {
       preview.preview.id,
       store.getState().revision,
       "Keep this as the working draft.",
-      "agent",
+      "tool",
       "adopt_order_preview",
     );
     expectSuccess(adopted);
@@ -230,7 +230,7 @@ describe("review store", () => {
 
     const undone = store.undoAdoption(
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(undone);
     expect(store.getState().draft.plan.covers).toBe(1_140);
@@ -244,7 +244,7 @@ describe("review store", () => {
     const receipt = store.saveHandoffReceipt(
       "Morning manager: check the revised draft before cutoff.",
       store.getState().revision,
-      "agent",
+      "tool",
       "save_handoff_receipt",
     );
     expectSuccess(receipt);
@@ -273,7 +273,7 @@ describe("review store", () => {
     const saved = store.saveHandoffReceipt(
       "Check the working draft before cutoff.",
       store.getState().revision,
-      "agent",
+      "tool",
       "save_handoff_receipt",
     );
 
@@ -282,7 +282,7 @@ describe("review store", () => {
       error: "storage_unavailable",
       hint: "Allow local storage, then retry save_handoff_receipt.",
     });
-    expect(() => store.resetDemo("human")).not.toThrow();
+    expect(() => store.resetDemo("page")).not.toThrow();
     expect(store.getState().savedPlan.covers).toBe(1_140);
   });
 
@@ -292,7 +292,7 @@ describe("review store", () => {
     const saved = store.saveHandoffReceipt(
       "Check the working draft before cutoff.",
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(saved);
     const raw = storage.getItem(RECEIPT_STORAGE_KEY);
@@ -313,7 +313,7 @@ describe("review store", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "human",
+      "page",
     );
     expectSuccess(preview);
     expectSuccess(
@@ -321,19 +321,19 @@ describe("review store", () => {
         preview.preview.id,
         store.getState().revision,
         undefined,
-        "human",
+        "page",
       ),
     );
     expectSuccess(
       store.saveHandoffReceipt(
         "Check the revised draft before cutoff.",
         store.getState().revision,
-        "human",
+        "page",
       ),
     );
     const revisionBeforeReset = store.getState().revision;
 
-    store.resetDemo("human");
+    store.resetDemo("page");
 
     const state = store.getState();
     expect(state.revision).toBe(revisionBeforeReset + 1);
@@ -357,13 +357,13 @@ describe("review store", () => {
     };
 
     expectSuccess(
-      manual.addLocalSignal(input, manual.getState().revision, "human"),
+      manual.addLocalSignal(input, manual.getState().revision, "page"),
     );
     expectSuccess(
       tool.addLocalSignal(
         input,
         tool.getState().revision,
-        "agent",
+        "tool",
         "add_local_signal",
       ),
     );
@@ -377,6 +377,33 @@ describe("review store", () => {
     expect(manual.getState().revision).toBe(tool.getState().revision);
   });
 
+  it("records the interaction channel without guessing human or agent identity", () => {
+    const page = makeStore();
+    const tool = makeStore();
+    const input = {
+      kind: "booking" as const,
+      label: "Private booking, 80 guests, 18:30",
+      covers: 80,
+    };
+
+    expectSuccess(
+      page.addLocalSignal(input, page.getState().revision, "page"),
+    );
+    expectSuccess(
+      tool.addLocalSignal(
+        input,
+        tool.getState().revision,
+        "tool",
+        "add_local_signal",
+      ),
+    );
+
+    expect(page.getState().signals[0]?.source).toBe("page");
+    expect(page.getState().activity[0]?.actor).toBe("page");
+    expect(tool.getState().signals[0]?.source).toBe("tool");
+    expect(tool.getState().activity[0]?.actor).toBe("tool");
+  });
+
   it("builds the same handoff receipt for a manual action and tool action", () => {
     const manual = makeStore();
     const tool = makeStore();
@@ -386,12 +413,12 @@ describe("review store", () => {
     const manualResult = manual.saveHandoffReceipt(
       managerSummary,
       manual.getState().revision,
-      "human",
+      "page",
     );
     const toolResult = tool.saveHandoffReceipt(
       managerSummary,
       tool.getState().revision,
-      "agent",
+      "tool",
       "save_handoff_receipt",
     );
 

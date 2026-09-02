@@ -8,10 +8,10 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 - Reworked the visible hierarchy around the restaurant outcome, synthetic-data notice, supplier-order totals, stock-line math, and local handoff. Fixed the signal form's desktop alignment and preserved the single-column mobile layout.
 - Added a copyable demo prompt, project links, a visible preview status, and a short changed-value highlight that respects reduced-motion preferences.
-- Replaced visible human-versus-agent guesses with exact WebMCP tool names or `page action`. Direct tool calls remain attributable; browser-driven clicks are not assigned to a person or agent without evidence.
+- Replaced human-versus-agent guesses with interaction channels. Direct calls use exact WebMCP tool names and serialize `source: tool`; browser-driven controls appear as `page action` and serialize `source: page`.
 - Rewrote all five tool contracts as neutral capability descriptions with compact result shapes. `expectedRevision` remains required and is the first property on every mutation schema.
 - Declared behavior hints explicitly: `get_order_context` is read-only; all four mutating definitions set `readOnlyHint: false`. Human-authored signals, notes, and handoffs carry `untrustedContentHint` where they can be returned.
-- Passed all 46 tests and a clean production build. The generated eval schema still matches the runtime catalog.
+- Passed all 47 tests and a clean production build. The generated eval schema still matches the runtime catalog.
 - Ran the final first-call suite through Vercel AI Gateway. Claude Sonnet 5, Gemini 3.8 Flash, OpenAI GPT-5.6 Sol, and DeepSeek V4 Pro each passed 8 of 8 cases.
 - Ran full production browser chains with three current model families. Sonnet passed 17 of 17 steps. Gemini 3.8 Flash and DeepSeek V4 Pro each recorded 17 passes and one safe extra preview call; neither adopted or transmitted anything.
 - Re-audited production through Ora's dedicated WebMCP audit. Shared Experience, Tool Quality, and Trust scored 100; the tool map correctly showed one read and three writes. Ora's 47 Task Completion score used document-editor intents and its custom live run offered only the read tool despite capturing all four, so no unrelated editor or sharing tool was added.
@@ -145,7 +145,7 @@ Short dated entries, newest first. One entry per working session. Also holds the
 | 2026-09-02 | System Chrome / production | Booking, cancellation, preview, adoption, and console | Pass | WebMCP moved 4 to 5 to 4 tools; preview totals were 910 covers, 76 hours, and 2,767 units; adoption succeeded; 0 console errors. |
 | 2026-09-02 | `webmcp-evals` 0.0.4 / Claude Sonnet 5 / production | Original eight browser chains | Fixture failed | 16 of 17 steps. Sonnet correctly refused to save a handoff that claimed state absent from the fresh page. Raw report retained. |
 | 2026-09-02 | `webmcp-evals` 0.0.4 / Claude Sonnet 5 / production | Truthful eight browser chains | Pass | 17 of 17 steps after correcting only the inconsistent handoff prompt; tool descriptions and revision safeguards were unchanged. |
-| 2026-09-02 | Vitest / Node 24.18 | Round 4 UI, store, tool-contract, and schema regression suite | Pass | 46 of 46 tests. Tool annotations, activity provenance, result-shape descriptions, revision requirements, and UI changes are covered. |
+| 2026-09-02 | Vitest / Node 24.18 | Round 4 UI, store, tool-contract, and schema regression suite | Pass | 47 of 47 tests. Tool annotations, interaction channels, result-shape descriptions, revision requirements, and UI changes are covered. |
 | 2026-09-02 | Vercel AI Gateway / four current model families | Final eight-case first-call suite | Pass | Sonnet 5, Gemini 3.8 Flash, GPT-5.6 Sol, and DeepSeek V4 Pro each passed 8 of 8 cases against the final schema. |
 | 2026-09-02 | `webmcp-evals` / production / Sonnet 5 | Final eight browser chains | Pass | 17 of 17 steps against the final production tools. |
 | 2026-09-02 | `webmcp-evals` / production / Gemini 3.8 Flash | Final eight browser chains | Safe over-completion | 17 passes and one failure. The model added a reversible preview after the 80-person booking where the fixture expected it to stop after storing the signal. |

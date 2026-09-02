@@ -414,7 +414,7 @@ function addSignalTool(store: ReviewStore): WebMCP.ModelContextTool {
       const result = store.addLocalSignal(
         signal,
         expectedRevision,
-        "agent",
+        "tool",
         TOOL_NAMES.ADD_SIGNAL,
       );
       if (!result.ok) {
@@ -446,7 +446,7 @@ function previewTool(store: ReviewStore): WebMCP.ModelContextTool {
       const result = store.previewOrderPlan(
         parsed.value.text,
         parsed.value.expectedRevision,
-        "agent",
+        "tool",
         TOOL_NAMES.PREVIEW,
       );
       if (!result.ok) {
@@ -487,7 +487,7 @@ function adoptTool(store: ReviewStore): WebMCP.ModelContextTool {
         parsed.value.previewId,
         parsed.value.expectedRevision,
         parsed.value.note,
-        "agent",
+        "tool",
         TOOL_NAMES.ADOPT,
       );
       if (!result.ok) {
@@ -519,7 +519,7 @@ function saveReceiptTool(store: ReviewStore): WebMCP.ModelContextTool {
       const result = store.saveHandoffReceipt(
         parsed.value.managerSummary,
         parsed.value.expectedRevision,
-        "agent",
+        "tool",
         TOOL_NAMES.SAVE_RECEIPT,
       );
       if (!result.ok) {

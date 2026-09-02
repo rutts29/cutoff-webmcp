@@ -33,7 +33,7 @@ export type EventUplift = Readonly<{
 type SignalBase = Readonly<{
   id: string;
   label: string;
-  source: "agent" | "human";
+  source: "tool" | "page";
   addedAt: string;
   occurredAt?: string;
   note?: string;

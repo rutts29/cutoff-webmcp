@@ -179,18 +179,18 @@ describe("WebMCP tool adapters", () => {
         covers: 80,
       },
       0,
-      "human",
+      "page",
     );
     store.addLocalSignal(
       { kind: "event_cancelled", label: "Derby match cancelled" },
       1,
-      "agent",
+      "tool",
       TOOL_NAMES.ADD_SIGNAL,
     );
     store.previewOrderPlan(
       "Replan after the match cancellation.",
       2,
-      "agent",
+      "tool",
       TOOL_NAMES.PREVIEW,
     );
     const tool = findTool(
@@ -239,7 +239,7 @@ describe("WebMCP tool adapters", () => {
     store.addLocalSignal(
       { kind: "operator_note", label: "Check the walk-in count." },
       0,
-      "human",
+      "page",
     );
     const tool = findTool(
       createToolDefinitions(store).base,
@@ -415,7 +415,7 @@ describe("WebMCP registration lifecycle", () => {
     const preview = store.previewOrderPlan(
       undefined,
       store.getState().revision,
-      "human",
+      "page",
     );
     expect(preview.ok).toBe(true);
     await Promise.resolve();

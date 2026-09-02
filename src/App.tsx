@@ -115,7 +115,7 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
     if (!Number.isInteger(parsed) || parsed < 0) {
       return;
     }
-    store.pinLineQuantity(item.id, parsed, state.revision, "human");
+    store.pinLineQuantity(item.id, parsed, state.revision, "page");
   };
 
   return (
@@ -149,7 +149,7 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
           />
           <button type="button" onClick={pinQuantity}>Pin quantity</button>
         </div>
-        {pin !== undefined ? <button className="text-button" type="button" onClick={() => store.removeLinePin(item.id, state.revision, "human")}>Remove pin</button> : null}
+        {pin !== undefined ? <button className="text-button" type="button" onClick={() => store.removeLinePin(item.id, state.revision, "page")}>Remove pin</button> : null}
       </div>
     </aside>
   );
@@ -158,7 +158,7 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
 function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: ReviewStore }>) {
   const selectLine = (skuId: string) => {
     if (state.focusedSkuId !== skuId) {
-      store.focusSku(skuId, state.revision, "human");
+      store.focusSku(skuId, state.revision, "page");
     }
   };
   return (
@@ -255,9 +255,9 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
       if (!Number.isInteger(parsedCovers) || parsedCovers < 1) {
         return;
       }
-      store.addLocalSignal({ kind, label: cleanLabel, covers: parsedCovers }, state.revision, "human");
+      store.addLocalSignal({ kind, label: cleanLabel, covers: parsedCovers }, state.revision, "page");
     } else {
-      store.addLocalSignal({ kind, label: cleanLabel }, state.revision, "human");
+      store.addLocalSignal({ kind, label: cleanLabel }, state.revision, "page");
     }
     setLabel("");
     setLabelError("");
@@ -322,7 +322,7 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
               className="text-button"
               type="button"
               aria-label={`Remove booking pin: ${signal.label}`}
-              onClick={() => store.removeBookingPin(signal.id, state.revision, "human")}
+              onClick={() => store.removeBookingPin(signal.id, state.revision, "page")}
             >
               Remove
             </button>
@@ -335,7 +335,7 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
               className="text-button"
               type="button"
               aria-label={`Remove quantity pin: ${skuId}`}
-              onClick={() => store.removeLinePin(skuId, state.revision, "human")}
+              onClick={() => store.removeLinePin(skuId, state.revision, "page")}
             >
               Remove
             </button>
@@ -450,7 +450,7 @@ export function App({ store: providedStore, modelContext }: AppProps) {
   const hasPreview = state.preview !== null;
   const canAdopt =
     state.preview !== null && state.preview.baseRevision === state.revision;
-  const preview = () => store.previewOrderPlan("Manual preview from the order sheet.", state.revision, "human");
+  const preview = () => store.previewOrderPlan("Manual preview from the order sheet.", state.revision, "page");
   const copyDemoPrompt = async () => {
     setPromptNotice("");
     if (!navigator.clipboard?.writeText) {
@@ -474,7 +474,7 @@ export function App({ store: providedStore, modelContext }: AppProps) {
     const result = store.saveHandoffReceipt(
       cleanSummary,
       state.revision,
-      "human",
+      "page",
     );
     if (!result.ok) {
       setHandoffError(
@@ -507,7 +507,7 @@ export function App({ store: providedStore, modelContext }: AppProps) {
             <p className="header-subtitle">Northgate · service Sat 5 Sep · delivery 06:30</p>
           </div>
           <div className="header-actions">
-            <button className="text-button reset-button" type="button" onClick={() => store.resetDemo("human")}>Reset demo</button>
+            <button className="text-button reset-button" type="button" onClick={() => store.resetDemo("page")}>Reset demo</button>
           </div>
         </header>
 
@@ -528,9 +528,9 @@ export function App({ store: providedStore, modelContext }: AppProps) {
             <p className="eyebrow">Order plan</p>
             <div className="control-buttons">
               <button type="button" onClick={preview}>Preview replan</button>
-              <button type="button" disabled={!canAdopt} onClick={() => state.preview && store.adoptOrderDraft(state.preview.id, state.revision, undefined, "human")}>Adopt order plan</button>
-              <button type="button" disabled={!state.undoAvailable} onClick={() => store.undoAdoption(state.revision, "human")}>Undo adoption</button>
-              <button type="button" disabled={!hasPreview} className="text-button" onClick={() => store.discardPreview(state.revision, "human")}>Discard preview</button>
+              <button type="button" disabled={!canAdopt} onClick={() => state.preview && store.adoptOrderDraft(state.preview.id, state.revision, undefined, "page")}>Adopt order plan</button>
+              <button type="button" disabled={!state.undoAvailable} onClick={() => store.undoAdoption(state.revision, "page")}>Undo adoption</button>
+              <button type="button" disabled={!hasPreview} className="text-button" onClick={() => store.discardPreview(state.revision, "page")}>Discard preview</button>
             </div>
             {state.preview ? (
               <p className="preview-status" role="status" aria-live="polite">

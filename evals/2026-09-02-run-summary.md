@@ -54,6 +54,8 @@ The final first-call suite used the production tool descriptions and schemas thr
 
 The final live browser suites used the canonical production page and its revisioned state. Sonnet passed all 17 expected steps. Gemini 3.8 Flash and DeepSeek V4 Pro each recorded 17 passes and one failure because they continued from `add_local_signal` to the safe, reversible `create_order_preview` call for the 80-person booking case. The fixture expected that case to stop after storing the signal. Neither model adopted the preview or performed an external action. The raw failures remain unchanged.
 
+The final UI review then renamed serialized interaction provenance from inferred person labels to `page` and `tool`. This did not change a tool name, description, schema, revision rule, or engine result. The deterministic suite and a production 4-to-5-to-4 tool run cover that final boundary; the model reports were not rerun for a non-selection change.
+
 ## Neutral browser trials
 
 A clean Sol worker used the live WebMCP tools for context, previews, cancellation, adoption, verification, and the receipt. It used visible controls only for the booking and lettuce pins. The final preview matched 910 covers, 76 labor hours, and cost 2,795. Row focus kept adoption available. Pinning invalidated the old preview, and a new preview restored adoption.
