@@ -1,0 +1,128 @@
+{
+  "get_order_context": {
+    "title": "Get order context",
+    "description": "Read the live order review before changing its draft, or when the manager asks why the order is this size or asks for its current state. Returns forecast inputs, pins, signals, line quantities, active preview, and revision.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "untrustedContentHint": true
+    }
+  },
+  "add_local_signal": {
+    "title": "Add local signal",
+    "description": "Add a local booking, event cancellation, or operator note when new manager knowledge belongs in this review. Returns the new signal id and revision.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["booking", "event_cancelled", "operator_note"],
+          "description": "Local signal type to add to this review."
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "description": "Short human label shown in the signals panel."
+        },
+        "covers": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000,
+          "description": "Guest count for a booking signal."
+        },
+        "occurredAt": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Optional local date or time supplied with the signal."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional human note stored as untrusted data."
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Revision returned by the latest get_order_context or mutating tool result."
+        }
+      },
+      "required": ["kind", "label", "expectedRevision"],
+      "additionalProperties": false
+    }
+  },
+  "preview_order_plan": {
+    "title": "Preview order plan",
+    "description": "Recompute a visible order preview from current signals and pins when the manager wants to compare a revised plan. Returns covers, labor, costs, line deltas, and reasons.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "rationale": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional short reason recorded with this preview."
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Revision returned by the latest get_order_context or mutating tool result."
+        }
+      },
+      "required": ["expectedRevision"],
+      "additionalProperties": false
+    }
+  },
+  "adopt_order_draft": {
+    "title": "Adopt order draft",
+    "description": "Adopt the active preview as the working draft after the manager approves the visible changes. Returns adopted totals, the new revision, and undo availability.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "previewId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Active preview id returned by preview_order_plan."
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Revision returned by the latest get_order_context or mutating tool result."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Optional human-facing note recorded with the adoption."
+        }
+      },
+      "required": ["previewId", "expectedRevision"],
+      "additionalProperties": false
+    }
+  },
+  "save_handoff_receipt": {
+    "title": "Save handoff receipt",
+    "description": "Save a local handoff receipt after the manager requests one. Returns the receipt id, current revision, and confirmation that the result stayed in this browser.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Revision returned by the latest get_order_context or mutating tool result."
+        },
+        "managerSummary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "description": "Handoff summary requested by the manager."
+        }
+      },
+      "required": ["expectedRevision", "managerSummary"],
+      "additionalProperties": false
+    }
+  }
+}

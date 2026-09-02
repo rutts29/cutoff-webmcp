@@ -1,0 +1,537 @@
+{
+  "config": {
+    "toolSchemaFile": "evals/schema.json",
+    "evalsFile": "evals/cases.local.json",
+    "backend": "vercel",
+    "model": "anthropic:claude-sonnet-5",
+    "runs": 1,
+    "maxSteps": 1,
+    "outputDir": "evals/reports/local-sonnet-first-call",
+    "reporter": [
+      "console",
+      "json",
+      "html"
+    ],
+    "chromeChannel": "chrome-canary"
+  },
+  "results": {
+    "results": [
+      {
+        "test": {
+          "name": "Start cancellation from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Add a signal that the derby is cancelled."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01By2HbzdLsLREYa3AfuiXR4",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01By2HbzdLsLREYa3AfuiXR4",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Read current order",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Why is tomorrow's order this big?"
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_014GfdHBujpoNwUuQx6jncKB",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_014GfdHBujpoNwUuQx6jncKB",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start cancellation and replan from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "The match is off, sort tomorrow's order out."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01Gxf3faG8eMvdNMYsR8Ct7A",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01Gxf3faG8eMvdNMYsR8Ct7A",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start booking update from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "We have 80 people booked at half six, factor that in."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01UjyBYpBsqu14awUhdH7cJB",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01UjyBYpBsqu14awUhdH7cJB",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start restrained preview from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Show me what would change, don't commit anything."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01Q6Fvf6cnZHptE3KMXBj5SQ",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01Q6Fvf6cnZHptE3KMXBj5SQ",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start handoff from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Save a note for the morning manager saying the derby was cancelled, the booking was kept, the draft was updated, and nothing was sent."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01YRbyc2Pg9GXA5HBuPu4sVD",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01YRbyc2Pg9GXA5HBuPu4sVD",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start preview and adopt from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Preview the current order, then adopt that preview as the working draft."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01VQ7muTqvszewo8hKCHJNam",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01VQ7muTqvszewo8hKCHJNam",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Start pin-aware preview from current state",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Recalculate the order and leave the draft uncommitted. Keep lettuce at four cases if it is already pinned."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": {
+          "functionName": "get_order_context",
+          "args": {},
+          "result": {}
+        },
+        "outcome": "pass",
+        "trajectory": [
+          {
+            "text": "",
+            "reasoningText": "",
+            "toolCalls": [
+              {
+                "type": "tool-call",
+                "toolCallId": "toolu_01RAMYzFBcXxdSaFN3vBPuAB",
+                "toolName": "get_order_context",
+                "input": {},
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ],
+            "toolResults": [
+              {
+                "type": "tool-result",
+                "toolCallId": "toolu_01RAMYzFBcXxdSaFN3vBPuAB",
+                "toolName": "get_order_context",
+                "input": {},
+                "output": {},
+                "dynamic": false,
+                "providerMetadata": {
+                  "anthropic": {
+                    "caller": {
+                      "type": "direct"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "runIndex": 1,
+        "stepIndex": 1
+      }
+    ],
+    "testCount": 8,
+    "passCount": 8,
+    "failCount": 0,
+    "errorCount": 0
+  }
+}

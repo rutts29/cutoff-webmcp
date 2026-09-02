@@ -1,0 +1,227 @@
+{
+  "config": {
+    "toolSchemaFile": "evals/schema.json",
+    "evalsFile": "evals/cases.json",
+    "backend": "vercel",
+    "model": "openai:gpt-4.1-mini",
+    "runs": 1,
+    "outputDir": "evals/reports/local",
+    "reporter": [
+      "console",
+      "json",
+      "html"
+    ],
+    "chromeChannel": "chrome-canary"
+  },
+  "results": {
+    "results": [
+      {
+        "test": {
+          "name": "Add event cancellation",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Add a signal that the derby is cancelled."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "add_local_signal",
+              "arguments": {
+                "kind": "event_cancelled"
+              }
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Explain current order",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Why is tomorrow's order this big?"
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "get_order_context",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Cancel event and replan",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "The match is off, sort tomorrow's order out."
+            }
+          ],
+          "expectedCall": [
+            {
+              "ordered": [
+                {
+                  "functionName": "add_local_signal",
+                  "arguments": {
+                    "kind": "event_cancelled"
+                  }
+                },
+                {
+                  "functionName": "preview_order_plan",
+                  "arguments": {}
+                }
+              ]
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Add private booking",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "We have 80 people booked at half six, factor that in."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "add_local_signal",
+              "arguments": {
+                "kind": "booking",
+                "covers": 80
+              }
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Preview without adopting",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Show me what would change, don't commit anything."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "preview_order_plan",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Save manager handoff",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Save a note for the morning manager."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "save_handoff_receipt",
+              "arguments": {
+                "managerSummary": {
+                  "$type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Preview then adopt",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "Preview the current order, then adopt that preview as the working draft."
+            }
+          ],
+          "expectedCall": [
+            {
+              "ordered": [
+                {
+                  "functionName": "preview_order_plan",
+                  "arguments": {}
+                },
+                {
+                  "functionName": "adopt_order_draft",
+                  "arguments": {}
+                }
+              ]
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      },
+      {
+        "test": {
+          "name": "Replan with lettuce pin",
+          "messages": [
+            {
+              "role": "user",
+              "type": "message",
+              "content": "I pinned lettuce at four cases. Recalculate and leave the draft uncommitted."
+            }
+          ],
+          "expectedCall": [
+            {
+              "functionName": "preview_order_plan",
+              "arguments": {}
+            }
+          ]
+        },
+        "response": null,
+        "outcome": "error",
+        "runIndex": 1,
+        "stepIndex": 1
+      }
+    ],
+    "testCount": 8,
+    "passCount": 0,
+    "failCount": 0,
+    "errorCount": 8
+  }
+}

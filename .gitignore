@@ -1,0 +1,17 @@
+# planning reference material, never part of the submission
+_reference/
+BUILD_BRIEF.md
+REVIEW_CHECKLIST.md
+
+node_modules/
+dist/
+coverage/
+output/
+.playwright-cli/
+evals/reports/**/*.html
+.vercel/
+.DS_Store
+*.log
+.env
+.env.*
+.vercel

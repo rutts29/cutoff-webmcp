@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/trajectory",
+      "destination": "/index.html"
+    }
+  ]
+}

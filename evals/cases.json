@@ -1,0 +1,205 @@
+[
+  {
+    "name": "Add event cancellation",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Add a signal that the derby is cancelled."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "add_local_signal",
+            "arguments": {
+              "kind": "event_cancelled"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Explain current order",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Why is tomorrow's order this big?"
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "get_order_context",
+        "arguments": {}
+      }
+    ]
+  },
+  {
+    "name": "Cancel event and replan",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "The match is off, sort tomorrow's order out."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "add_local_signal",
+            "arguments": {
+              "kind": "event_cancelled"
+            }
+          },
+          {
+            "functionName": "preview_order_plan",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Add private booking",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "We have 80 people booked at half six, factor that in."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "add_local_signal",
+            "arguments": {
+              "kind": "booking",
+              "covers": 80
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Preview without adopting",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Show me what would change, don't commit anything."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "preview_order_plan",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Save manager handoff",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Save a note for the morning manager saying the derby was cancelled, the booking was kept, the draft was updated, and nothing was sent."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "save_handoff_receipt",
+            "arguments": {
+              "managerSummary": {
+                "$type": "string"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Preview then adopt",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Preview the current order, then adopt that preview as the working draft."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "preview_order_plan",
+            "arguments": {}
+          },
+          {
+            "functionName": "adopt_order_draft",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Replan with lettuce pin",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Recalculate the order and leave the draft uncommitted. Keep lettuce at four cases if it is already pinned."
+      }
+    ],
+    "expectedCall": [
+      {
+        "ordered": [
+          {
+            "functionName": "get_order_context",
+            "arguments": {}
+          },
+          {
+            "functionName": "preview_order_plan",
+            "arguments": {}
+          }
+        ]
+      }
+    ]
+  }
+]

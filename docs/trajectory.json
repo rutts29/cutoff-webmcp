@@ -1,0 +1,118 @@
+{
+  "title": "How this project was driven",
+  "note": "Human-directed, agent-built. Dates are UTC. No verbatim prompts, no personal data. Actors: human (project owner), planner (reviewing agent), builder (build lead agent), subagent (delegated task agent).",
+  "entries": [
+    {
+      "at": "2026-08-29",
+      "phase": "research",
+      "actor": "human",
+      "summary": "Asked for a neutral study of the WebMCP specification, Chrome documentation, ChatGPT site tools, the showcase, and the challenge rules before choosing a product.",
+      "outcome": "The research established the API contract, browser differences, secure-context needs, and submission constraints."
+    },
+    {
+      "at": "2026-08-30",
+      "phase": "ideation",
+      "actor": "human",
+      "summary": "Proposed a live meeting architecture whiteboard and asked for a critical assessment.",
+      "outcome": "The idea was rejected because it overlapped existing whiteboards and did not need WebMCP. The pointing and shared-selection insight was kept."
+    },
+    {
+      "at": "2026-08-30",
+      "phase": "ideation",
+      "actor": "planner",
+      "summary": "Ran an adversarial comparison of about fifteen candidates against the official judging criteria.",
+      "outcome": "Generic dashboards and cross-site workflows were removed. The chosen product had to depend on live unsaved page state and page-owned deterministic actions."
+    },
+    {
+      "at": "2026-08-31",
+      "phase": "validation",
+      "actor": "planner",
+      "summary": "Checked a manufacturing containment review against practitioner needs and existing products.",
+      "outcome": "The concept was narrowed and kept only as a fallback because its three-minute story was harder to explain."
+    },
+    {
+      "at": "2026-09-01",
+      "phase": "pivot",
+      "actor": "human",
+      "summary": "Chose a restaurant ordering exception workflow for a clearer demo and a broader audience.",
+      "outcome": "The live-state pattern moved to a supplier order sheet where signals, pins, preview, adoption, and receipt are visible together."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "lock",
+      "actor": "planner",
+      "summary": "Re-read the rules and WebMCP documentation, computed the deterministic data, and wrote the build brief and review checklist.",
+      "outcome": "Cutoff, its five tools, the ten-line data set, the expected totals, and the three review checkpoints were locked."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Wrote failing tests first, then implemented the seed data, pure order engine, revisioned store, and thin WebMCP adapters.",
+      "outcome": "The engine reproduced the exact table. Stale writes, preview invalidation, adoption, undo, receipt storage, and registration lifecycle passed deterministic tests."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "direction",
+      "actor": "human",
+      "summary": "Clarified that checkpoint times define order rather than deadlines and added official model-backed evals to the preview stage.",
+      "outcome": "Quality gates stayed intact. Static evals measure the required first read, while browser evals measure full ordered chains against live state."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Ran Review 1 tests and the locked flow over local HTTPS in system Chrome and the in-app browser.",
+      "outcome": "The exact 910-cover, 76-hour, 2,767-unit preview passed. Tool registration changed from four tools to five during preview and returned to four after adoption."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Passed Review 1 and found one state-lifecycle defect plus small annotation, date-copy, and artifact-hygiene issues.",
+      "outcome": "Row focus became view-only, tool annotations now match their outputs, fixed dates are explicit, and generated browser artifacts are ignored."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Completed the styled order sheet, all eight panels, keyboard controls, receipt actions, activity log, trajectory route, and storage hardening.",
+      "outcome": "The security review found no high-severity issue. Storage bounds and exception handling gained regression coverage."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Ran the preview flow, independent agent trials, the official eval suites, and the available audit command.",
+      "outcome": "Sonnet passed 8 of 8 first calls and 17 of 17 browser steps. Gemini 3.7 Flash passed 8 of 8 first calls. A clean Sol run completed the full tool flow. Failed zero-score attempts remain recorded. Ora stopped before scoring because its current CLI and service use different capture versions."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Repeated the deployed flow by hand and passed Review 2 for the builder-owned work. The review found two small product gaps.",
+      "outcome": "The signal form now explains an empty label. Managers can create the same local handoff receipt through visible controls or the agent tool."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "submission prep",
+      "actor": "builder",
+      "summary": "Prepared the local Review 3 package and verified the two Review 2 fixes before updating the preview.",
+      "outcome": "All 43 tests and the production build passed. The README, timed demo plan, Devpost draft, changelog, trajectory, and MIT license are ready for the final external checks."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Traced a human Chrome inspector failure after successful adoption to immediate dynamic-tool unregistration.",
+      "outcome": "The adapter now returns the adoption result before unregistering the tool. A regression test covers the ordering, all 43 tests pass, and the corrected preview is live."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Accepted the external Gemini outage after reviewing the combined Chrome, in-app browser, Sonnet, gateway Gemini, and inspector evidence.",
+      "outcome": "Review 2 closed without more manual retries. Review 3 moved to the public repository and submission-package checks."
+    }
+  ]
+}

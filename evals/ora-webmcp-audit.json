@@ -1,0 +1,12 @@
+{
+  "status": "blocked",
+  "rawPayloadProduced": false,
+  "urlType": "local-portless",
+  "cliPackage": "ax",
+  "cliVersion": "0.7.0",
+  "npmLatestVersion": "0.7.0",
+  "exitCode": 3,
+  "score": null,
+  "message": "Ora refused the capture because ax 0.7.0 emitted shim version 1 while the scoring service requires version 2.",
+  "action": "Wait for an ax release whose capture shim matches the Ora scoring service."
+}
