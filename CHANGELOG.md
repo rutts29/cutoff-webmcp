@@ -16,6 +16,8 @@ Short dated entries, newest first. One entry per working session. Also holds the
 - Ran full production browser chains with three current model families. Sonnet passed 17 of 17 steps. Gemini 3.8 Flash and DeepSeek V4 Pro each recorded 17 passes and one safe extra preview call; neither adopted or transmitted anything.
 - Re-audited production through Ora's dedicated WebMCP audit. Shared Experience, Tool Quality, and Trust scored 100; the tool map correctly showed one read and three writes. Ora's 47 Task Completion score used document-editor intents and its custom live run offered only the read tool despite capturing all four, so no unrelated editor or sharing tool was added.
 - Checked webmcp.com's public lookup API. The production host is not listed. Its listing request requires a contact email and human review, so no public directory request was made.
+- Deployed commit `b25dde9` as Vercel production deployment `dpl_E9Mx5CoPswubdNLZsTFPJVoZieJk`. The canonical site serves the same JavaScript asset as the local production build; both SHA-256 hashes are `57148a5712248611c5ed579ed278a9a54d402322e70e6c2421f5081a70661fbb`.
+- Repeated the final production lifecycle after the interaction-channel correction. Direct calls serialized `source: tool`; the exact 910-cover, 76-hour, 2,767-unit preview adopted at revision 4; and the conditional adoption tool was no longer available afterward.
 
 ### 2026-09-02, GO LIVE (Codex, build lead)
 
@@ -152,6 +154,7 @@ Short dated entries, newest first. One entry per working session. Also holds the
 | 2026-09-02 | `webmcp-evals` / production / DeepSeek V4 Pro | Final eight browser chains | Safe over-completion | 17 passes and one failure for the same extra preview; no adoption or external action occurred. |
 | 2026-09-02 | Ora public WebMCP audit / production | Four-pillar audit and custom live goal | Mixed, recorded | 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 100, Trust 100. Task intents were for a document editor; the custom live agent was offered only the read tool despite a four-tool capture. |
 | 2026-09-02 | webmcp.com public lookup API | Production directory status | Not listed | The read-only API returned `supported: false`. A listing request needs a contact email and human review, so none was submitted. |
+| 2026-09-02 | Codex in-app browser / production / commit `b25dde9` | Final provenance and dynamic tool lifecycle | Pass | Direct calls serialized `source: tool`; WebMCP moved from four tools to five for the exact 910-cover, 76-hour, 2,767-unit preview, adopted at revision 4, then removed `adopt_order_preview`. |
 
 ## Open before submission
 
