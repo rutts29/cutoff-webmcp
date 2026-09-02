@@ -218,6 +218,27 @@
       "actor": "builder",
       "summary": "Stress-tested the corrected route-registration lifecycle on the final non-production preview before release.",
       "outcome": "Fifty rapid transitions produced exact route tool sets in every immediate and next-task observation. The shared navigation tool was never absent, registration errors stayed at zero, the full Saturday and Tuesday flow passed, and the in-app browser independently reported the expected tool sets."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "release",
+      "actor": "builder",
+      "summary": "Deployed the four-section desk to the canonical production URL and ran the expanded live browser suite once.",
+      "outcome": "All routes returned 200 with the expected response headers. Chrome completed the full Saturday and Tuesday flow and 50 rapid route transitions without a registration gap. The model completed all 21 eval tasks; two of 48 strict matcher steps recorded an extra safe Stock read."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "audit",
+      "actor": "builder",
+      "summary": "Ran one fresh production scan through Ora's dedicated WebMCP audit with a natural restaurant-shift goal.",
+      "outcome": "Ora captured all six Order tools and scored Shared Experience 100, Task Completion 47, Tool Quality 99, and Trust 100. Its generic task grader still used document-editor intents, and its live agent received only the two read tools. The result is recorded without changing the product to satisfy those mismatched checks."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "release",
+      "actor": "builder",
+      "summary": "Reduced the public evaluation package to the evidence a reviewer needs.",
+      "outcome": "Generated browser-eval reports now stay in the ignored local workspace. Public files retain the fixtures, exact scores, model names, failure analysis, and auditor results without repetitive raw trajectories."
     }
   ]
 }

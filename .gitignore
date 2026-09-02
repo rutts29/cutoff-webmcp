@@ -8,7 +8,7 @@ dist/
 coverage/
 output/
 .playwright-cli/
-evals/reports/**/*.html
+evals/reports/
 .vercel/
 .DS_Store
 *.log

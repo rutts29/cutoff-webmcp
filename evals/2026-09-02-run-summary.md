@@ -20,7 +20,7 @@ Stock adds `get_stock_status`, `record_stock_count`, and `log_waste`. The first-
 
 The first cross-route browser run exposed a product timing defect: `open_section` returned before its timer replaced the registered tool set. After the route lifecycle fix, direct Chrome changed the URL and tool set before the result completed. The full evaluator improved from 25 of 35 to 27 of 32 steps. Its remaining cross-route misses show the runner offering an unavailable Order schema for one step, then recovering to the Stock tool. Expectations were not relaxed. The page-context Stock suite passed 5 of 5 steps.
 
-Two earlier Stage 1 browser invocations scored no cases because the runner was pointed at the wrong provider mapping. Their raw reports remain under `reports/browser-gateway-sonnet-5-stage1-preview/` and `reports/browser-gateway-sonnet-5-stage1-preview-corrected/`. Neither reached a model or tool, so neither is reported as product evidence.
+Two earlier Stage 1 browser invocations scored no cases because the runner was pointed at the wrong provider mapping. Their ignored local reports remain under `reports/browser-gateway-sonnet-5-stage1-preview/` and `reports/browser-gateway-sonnet-5-stage1-preview-corrected/`. Neither reached a model or tool, so neither is reported as product evidence.
 
 ## Stage 2 fixture delta
 
@@ -48,6 +48,7 @@ The first full Stage 3 preview run passed 44 of 49 matcher steps. Three apparent
 | Stage 3 gateway, ambiguous pre-correction fixture | DeepSeek V4 Pro | 16 of 19 cases | `gateway-deepseek-v4-pro-first-call-stage3.json` |
 | Stage 3 preview browser, before final route sequencing | Claude Sonnet 5 | 44 of 49 steps | `reports/browser-gateway-sonnet-5-stage3-preview-final/report-1788391560734.json` |
 | Stage 3 preview browser, focused route verification | Claude Sonnet 5 | 6 of 8 matcher steps; all 3 tasks completed | `reports/browser-gateway-sonnet-5-stage3-preview-targeted/report-1788391864378.json` |
+| Stage 3 production browser, final route lifecycle | Claude Sonnet 5 | 46 of 48 matcher steps; all 21 tasks completed | `reports/browser-gateway-sonnet-5-stage3-production/report-1788392849128.json` |
 | Stage 2 final `/labor` browser | Claude Sonnet 5 | 8 of 8 steps | `reports/browser-gateway-sonnet-5-stage2-labor-post-contract/report-1788387668128.json` |
 | Stage 2 gateway, first-call fixture | Claude Sonnet 5 | 16 of 17 cases | `gateway-claude-sonnet-5-first-call-stage2.json` |
 | Stage 2 gateway, first-call fixture | Gemini 3.8 Flash | 17 of 17 cases | `gateway-gemini-3.8-flash-first-call-stage2.json` |
@@ -89,7 +90,7 @@ The first successful browser run used system Chrome against `https://cutoff-webm
 - `get_order_context` then `create_order_preview` then `adopt_order_preview`
 - `get_order_context` then `create_order_preview`
 
-The first production run used the canonical URL and scored 16 of 17 steps. Its handoff fixture asked the model to record a cancelled derby and updated draft on a fresh page where neither fact existed. Sonnet read the page and refused to save an inaccurate receipt. The fixture now asks for a truthful current-order reminder while preserving the required `get_order_context` then `save_handoff_receipt` chain. The single corrected production rerun passed 17 of 17 steps. Both reports remain in the repository.
+The first production run used the canonical URL and scored 16 of 17 steps. Its handoff fixture asked the model to record a cancelled derby and updated draft on a fresh page where neither fact existed. Sonnet read the page and refused to save an inaccurate receipt. The fixture now asks for a truthful current-order reminder while preserving the required `get_order_context` then `save_handoff_receipt` chain. The single corrected production rerun passed 17 of 17 steps. Both raw reports remain local and ignored; this summary preserves their scores and interpretation publicly.
 
 ## Final current-model cross-check
 
@@ -105,6 +106,8 @@ Stage 2 ran the 17-case first-call fixture through the same gateway harness. Gem
 
 Stage 3 ran the clarified 19-case fixture through four current model families. GPT-5.6 Sol, Gemini 3.8 Flash, and DeepSeek V4 Pro passed 19 of 19. Sonnet passed 18 of 19: it made the correct `get_labor_plan` call and one additional parallel `get_order_context` read. The harness requires exactly one call for a first-call case, so that safe over-read remains a failure rather than being normalized away.
 
+The final production browser suite used the live route-scoped registry and completed all 21 tasks without a tool or execution error. It scored 46 of 48 matcher steps. For the chicken-count task, Sonnet called `open_section`, made the conservative `get_stock_status` read, and then recorded the exact count. The fixture permits the shorter `open_section` then `record_stock_count` chain because section navigation already returns the current revision, so the extra safe read shifted two strict step matches. The raw result remains 46 of 48; it is not normalized to a perfect score.
+
 The two pre-correction Shift-log results also remain. Gemini scored 18 of 19 and DeepSeek 16 of 19 when “save a note” could truthfully mean either a handoff receipt or a shift note. The final fixture names the requested record. No tool description was tuned to a model response.
 
 ## Neutral browser trials
@@ -117,8 +120,8 @@ A clean Terra worker reproduced the same business totals and completed the final
 
 `npx ax webmcp-audit https://cutoff.localhost --json` ran once with `ax` 0.7.0 and its own unmodified Chrome. Ora rejected the capture before scoring because the CLI emitted capture shim version 1 while the scoring service requires version 2. `ora-webmcp-audit.json` records the blocked result. No preview URL was sent to Ora, and no retry was used.
 
-The production URL was then audited through Ora's dedicated WebMCP audit. The final captured tool set scored 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 100, and Trust 100. Ora classified all four base tools correctly as one read and three writes. The earlier trust findings are resolved: mutations explicitly declare `readOnlyHint: false`, human-authored content is marked untrusted where it can be returned, and tool descriptions state capabilities and result shapes without steering the caller.
+The production URL was then audited through Ora's dedicated WebMCP audit. The Sep 3 post-expansion rescan scored 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 99, and Trust 100. Ora captured all six Order tools as two reads and four writes. The earlier trust findings are resolved: mutations explicitly declare `readOnlyHint: false`, human-authored content is marked untrusted where it can be returned, and tool descriptions state capabilities and result shapes without steering the caller.
 
-Ora's task score is not a Cutoff task score. Its canonical intents were to open a document, add a summary paragraph, and save a share link, and the report classified the page as an editor. A forced run with a restaurant supplier-order goal still gave the live agent only `get_order_context`, even though the same report captured all four base tools. No document editor, sharing tool, sixth product tool, or weaker revision contract was added to improve that number. The exact public result and limitation are recorded in `ora-webmcp-audit.json`.
+Ora's task score is not a Cutoff task score. Its canonical intents remained opening a document, adding a summary paragraph, and saving a share link. The custom restaurant-shift run still gave the live agent only the two read tools, even though the same report captured all six Order tools. Its one tool-quality warning says `open_section` does not start with a verb; "open" is the verb. No document editor, sharing capability, replacement name, or weaker revision contract was added to improve the score. The exact public result and limitation are recorded in `ora-webmcp-audit.json`.
 
 webmcp.com's public lookup API currently returns `supported: false` for the production host. A directory listing request requires a contact email and human review, so no listing claim or request is included in this package.

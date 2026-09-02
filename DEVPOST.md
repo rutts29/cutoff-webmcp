@@ -20,7 +20,7 @@ No tool can transmit an order or update an external rota. Order and labor previe
 
 Cutoff is a static React and TypeScript application. Each decision page has a small pure engine, while thin WebMCP adapters validate input, enforce revision rules, call one shared store, and return compact structured results. Human controls call the same store methods.
 
-The page uses the imperative `document.modelContext.registerTool` API. Route changes abort the old registration set and expose only the tools relevant to the page the manager is viewing. Order and Labor add their adoption tool only while a current preview exists.
+The page uses the imperative `document.modelContext.registerTool` API. Route changes keep `open_section` available while replacing only the old route-specific registrations, then expose the tools relevant to the page the manager is viewing. Order and Labor add their adoption tool only while a current preview exists.
 
 This page-owned design matters because the agent needs state it cannot scrape reliably: unsaved signals, stock counts, quantity pins, roster absences, preview objects, and the shared revision. Hand-built tools carry that state directly instead of wrapping visible controls or a server API.
 
@@ -36,7 +36,7 @@ The tool surface follows page state rather than advertising every capability eve
 
 The difficult part was not exposing functions. It was keeping preview, adoption, cross-page invalidation, undo, navigation, and tool registration truthful under one revision. A stock count must stale an order preview but not a labor preview. Order adoption must invalidate labor demand. Row focus must remain view-only. A route change must replace tools before the navigation result resolves.
 
-We also kept the evaluation record honest. Static harnesses can measure the required first read but cannot supply live revision state; browser suites measure the ordered chains. Safe extra reads, infrastructure failures, and corrected fixtures remain in the raw reports.
+We also kept the evaluation record honest. Static harnesses can measure the required first read but cannot supply live revision state; browser suites measure the ordered chains. Safe extra reads, infrastructure failures, and corrected fixtures remain in the public summary and ignored local raw reports.
 
 ## Accomplishments
 
@@ -44,7 +44,8 @@ We also kept the evaluation record honest. Static harnesses can measure the requ
 - Exact deterministic order, stock, waste, labor, preset, export, and log tests
 - Page-scoped and state-scoped WebMCP registration with abort cleanup
 - Structured stale-write recovery and reversible local adoption
-- Current-model first-call checks through a separate eval harness
+- Current-model first-call checks across four model families: three scored 19 of 19, while Sonnet scored 18 of 19 after one extra safe read
+- A live production browser run completed all 21 business tasks and scored 46 of 48 strict matcher steps; the two misses came from one extra safe Stock read
 - Accessible keyboard controls, responsive layouts, reduced-motion handling, and local-only storage
 
 ## What we learned
