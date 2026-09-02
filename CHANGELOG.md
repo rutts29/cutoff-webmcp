@@ -27,6 +27,7 @@ Short dated entries, newest first. One entry per working session. Also holds the
 - Started the corrected-preview Chrome inspector rerun. The extension found all four base tools and completed `get_order_context` at revision 1, then its Gemini request returned `503 UNAVAILABLE` for temporary high demand. An earlier attempt returned `Failed to fetch`. The extension accepts only a direct Gemini key, so the existing Vercel gateway cannot replace its model connection. No app change or retry loop was added.
 - The human accepted the Gemini outage as an external exception and closed Review 2 on the combined evidence. Chrome and the in-app browser exercised the live tools, Sonnet passed the full browser chains, Gemini Flash passed through the gateway, and the inspector captured the dynamic tool lifecycle and committed adoption.
 - The human approved Review 3 and public repository creation. The public package excludes private transcripts, environment files, browser-extension captures, internal planning documents, and generated HTML eval viewers.
+- Published `https://github.com/rutts29/cutoff-webmcp` on the `main` branch. GitHub reports public visibility and recognizes the root license as MIT. Local and remote commit ids matched after the first push.
 
 ### 2026-09-02, P0-b implementation and review fixes (Codex, build lead)
 
@@ -117,10 +118,10 @@ Short dated entries, newest first. One entry per working session. Also holds the
 | 2026-09-02 | Vercel corrected preview | Adapter ordering fix, routes, headers, and production isolation | Pass | Root and `/trajectory` return 200 with the new bundle. HTTPS, HSTS, and `noindex` are present; the production alias remains 404. |
 | 2026-09-02 | Human Chrome inspector / corrected Vercel preview | Corrected adoption-result verification | Blocked | Four base tools registered and `get_order_context` completed. Gemini then returned `503 UNAVAILABLE` for high demand before preview or adoption; one earlier request failed to fetch. |
 | 2026-09-02 | Human Review 2 exception review | Combined browser and model evidence | Accepted | The recorded Chrome, in-app browser, Sonnet, gateway Gemini, and inspector evidence is sufficient. No more manual retry is required for the external Gemini outage. |
+| 2026-09-02 | GitHub public repository | Visibility, default branch, MIT detection, public root, and commit parity | Pass | Repository is public, default branch is `main`, GitHub recognizes MIT, private files are absent, and remote `main` matched the local commit. |
 
 ## Open before GO LIVE and submission
 
-- Create the approved public repository and confirm that GitHub recognizes the root MIT license.
 - Explicit GO LIVE approval for the production deployment.
 - Production rerun in both browsers, the browser eval against that URL, and the public Ora audit.
 - Public video under 3 minutes, final Devpost links, and explicit submission approval.
