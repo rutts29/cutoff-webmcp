@@ -6,8 +6,8 @@ import toolCatalog from "./toolCatalog.json";
 export const TOOL_NAMES = {
   GET_CONTEXT: "get_order_context",
   ADD_SIGNAL: "add_local_signal",
-  PREVIEW: "preview_order_plan",
-  ADOPT: "adopt_order_draft",
+  PREVIEW: "create_order_preview",
+  ADOPT: "adopt_order_preview",
   SAVE_RECEIPT: "save_handoff_receipt",
 } as const;
 
@@ -322,6 +322,8 @@ function contextOutput(store: ReviewStore) {
     0,
   );
   return {
+    guide:
+      "Mutating tools need expectedRevision from this result or the last mutation. A preview never changes the saved plan. Ask the manager before adopting or saving.",
     store: state.store,
     serviceDate: state.serviceDate,
     cutoffAt: state.cutoffAt,
@@ -420,6 +422,8 @@ function addSignalTool(store: ReviewStore): WebMCP.ModelContextTool {
       }
       return {
         signalId: result.signal.id,
+        kind: result.signal.kind,
+        label: result.signal.label,
         revision: result.revision,
         previewBecameStale: result.previewBecameStale,
       };

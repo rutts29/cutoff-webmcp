@@ -1,0 +1,127 @@
+{
+  "createdAt": "2026-09-02T17:26:13Z",
+  "transport": "curl",
+  "api": "openai-chat-completions",
+  "model": "anthropic/claude-sonnet-5",
+  "endpoint": "https://ai-gateway.vercel.sh/v1/chat/completions",
+  "status": "complete",
+  "totalCases": 8,
+  "attemptedCases": 8,
+  "scoredCases": 8,
+  "passedCases": 8,
+  "failedCases": 0,
+  "results": [
+    {
+      "name": "Start cancellation from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1919,
+        "completionTokens": 69,
+        "totalTokens": 1988
+      }
+    },
+    {
+      "name": "Read current order",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1917,
+        "completionTokens": 66,
+        "totalTokens": 1983
+      }
+    },
+    {
+      "name": "Start cancellation and replan from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1920,
+        "completionTokens": 72,
+        "totalTokens": 1992
+      }
+    },
+    {
+      "name": "Start booking update from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1921,
+        "completionTokens": 128,
+        "totalTokens": 2049
+      }
+    },
+    {
+      "name": "Start restrained preview from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1918,
+        "completionTokens": 28,
+        "totalTokens": 1946
+      }
+    },
+    {
+      "name": "Start handoff from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1925,
+        "completionTokens": 256,
+        "totalTokens": 2181
+      }
+    },
+    {
+      "name": "Start preview and adopt from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1923,
+        "completionTokens": 101,
+        "totalTokens": 2024
+      }
+    },
+    {
+      "name": "Start pin-aware preview from current state",
+      "expectedFirstCall": "get_order_context",
+      "actualCalls": [
+        "get_order_context"
+      ],
+      "outcome": "pass",
+      "finishReason": "tool_calls",
+      "usage": {
+        "promptTokens": 1941,
+        "completionTokens": 183,
+        "totalTokens": 2124
+      }
+    }
+  ]
+}

@@ -70,21 +70,24 @@ function findTool(
 }
 
 describe("WebMCP tool adapters", () => {
-  it("publishes the locked names, narrow schemas, and required annotations", () => {
+  it("publishes five precise contracts with standard annotations", () => {
     const tools = createToolDefinitions(makeStore());
 
     expect(tools.base.map((tool) => tool.name)).toStrictEqual([
-      TOOL_NAMES.GET_CONTEXT,
-      TOOL_NAMES.ADD_SIGNAL,
-      TOOL_NAMES.PREVIEW,
-      TOOL_NAMES.SAVE_RECEIPT,
+      "get_order_context",
+      "add_local_signal",
+      "create_order_preview",
+      "save_handoff_receipt",
     ]);
-    expect(tools.adopt.name).toBe(TOOL_NAMES.ADOPT);
+    expect(tools.adopt.name).toBe("adopt_order_preview");
 
     for (const tool of [...tools.base, tools.adopt]) {
       expect(tool.name.length).toBeLessThan(30);
       expect(tool.description.length).toBeLessThan(500);
-      expect(tool.description).not.toMatch(/\b(?:do not|don't|never)\b/i);
+      expect(tool.description).toMatch(/Returns /);
+      expect(tool.description).not.toMatch(
+        /\b(?:use|when|ask|asks|only|must|do not|don't|never)\b/i,
+      );
       expect(tool.inputSchema).toMatchObject({
         type: "object",
         additionalProperties: false,
@@ -96,6 +99,9 @@ describe("WebMCP tool adapters", () => {
       for (const property of Object.values(schema.properties ?? {})) {
         expect(property.description?.length ?? 0).toBeGreaterThan(0);
         expect(property.description?.length ?? 0).toBeLessThan(150);
+        expect(property.description).not.toMatch(
+          /\b(?:use|when|ask|asks|do not|don't|never)\b/i,
+        );
       }
     }
 
@@ -104,14 +110,64 @@ describe("WebMCP tool adapters", () => {
     ).toMatchObject({ readOnlyHint: true, untrustedContentHint: true });
     expect(
       findTool(tools.base, TOOL_NAMES.ADD_SIGNAL).annotations,
-    ).toBeUndefined();
+    ).toMatchObject({ readOnlyHint: false, untrustedContentHint: true });
+    const addSignalSchema = findTool(
+      tools.base,
+      TOOL_NAMES.ADD_SIGNAL,
+    ).inputSchema as {
+      properties: Record<string, { description?: string }>;
+    };
+    expect(
+      findTool(tools.base, TOOL_NAMES.ADD_SIGNAL).description,
+    ).toMatch(/revisioned local state/i);
+    expect(
+      findTool(tools.base, TOOL_NAMES.ADD_SIGNAL).description,
+    ).toMatch(/without calculating or previewing/i);
+    expect(addSignalSchema.properties.kind.description).toMatch(/operational facts/i);
+    expect(addSignalSchema.properties.expectedRevision.description).toMatch(
+      /get_order_context/i,
+    );
     expect(
       findTool(tools.base, TOOL_NAMES.PREVIEW).annotations?.readOnlyHint,
-    ).not.toBe(true);
+    ).toBe(false);
+    expect(
+      findTool(tools.base, TOOL_NAMES.PREVIEW).description,
+    ).toMatch(/saved order and adoption status remain unchanged/i);
     expect(
       findTool(tools.base, TOOL_NAMES.SAVE_RECEIPT).annotations?.readOnlyHint,
-    ).not.toBe(true);
-    expect(tools.adopt.annotations?.readOnlyHint).not.toBe(true);
+    ).toBe(false);
+    expect(
+      findTool(tools.base, TOOL_NAMES.SAVE_RECEIPT).annotations,
+    ).toMatchObject({ untrustedContentHint: true });
+    expect(findTool(tools.base, TOOL_NAMES.SAVE_RECEIPT).description).toMatch(
+      /local browser receipt/i,
+    );
+    expect(tools.adopt.annotations?.readOnlyHint).toBe(false);
+    expect(tools.adopt.description).toMatch(/active order preview/i);
+    expect(tools.adopt.description).toMatch(
+      /registered while a current preview is adoptable/i,
+    );
+
+    for (const tool of [
+      findTool(tools.base, TOOL_NAMES.ADD_SIGNAL),
+      findTool(tools.base, TOOL_NAMES.PREVIEW),
+      findTool(tools.base, TOOL_NAMES.SAVE_RECEIPT),
+      tools.adopt,
+    ]) {
+      const schema = tool.inputSchema as {
+        required?: readonly string[];
+        properties?: Record<string, Record<string, unknown>>;
+      };
+      expect(schema.required).toContain("expectedRevision");
+      expect(Object.keys(schema.properties ?? {})[0]).toBe("expectedRevision");
+      expect(schema.properties?.expectedRevision).toMatchObject({
+        type: "integer",
+        minimum: 0,
+      });
+      expect(schema.properties?.expectedRevision).not.toHaveProperty("default");
+      expect(schema.properties?.expectedRevision).not.toHaveProperty("const");
+      expect(schema.properties?.expectedRevision).not.toHaveProperty("examples");
+    }
   });
 
   it("keeps the full order context under the hard output budget", async () => {
@@ -145,12 +201,14 @@ describe("WebMCP tool adapters", () => {
 
     expect(JSON.stringify(output).length).toBeLessThanOrEqual(3_000);
     expect(output).toMatchObject({
+      guide: expect.stringContaining("Mutating tools need expectedRevision"),
       store: "Northgate",
       forecast: { base: 830, eventCovers: 310, saved: 1_140 },
       draft: { covers: 1_140, laborHours: 95, cost: 3_629 },
       previewId: "preview-5",
       revision: 3,
     });
+    expect((output as { guide: string }).guide.length).toBeLessThan(300);
   });
 
   it("validates unknown input and returns actionable errors", async () => {
@@ -208,14 +266,24 @@ describe("WebMCP tool adapters", () => {
         covers: 80,
         expectedRevision: 0,
       }),
-    ).resolves.toMatchObject({ revision: 1, previewBecameStale: false });
+    ).resolves.toMatchObject({
+      kind: "booking",
+      label: "Private booking, 80 guests, 18:30",
+      revision: 1,
+      previewBecameStale: false,
+    });
     await expect(
       execute(add, {
         kind: "event_cancelled",
         label: "Derby match cancelled",
         expectedRevision: 1,
       }),
-    ).resolves.toMatchObject({ revision: 2, previewBecameStale: false });
+    ).resolves.toMatchObject({
+      kind: "event_cancelled",
+      label: "Derby match cancelled",
+      revision: 2,
+      previewBecameStale: false,
+    });
     const previewOutput = await execute(preview, { expectedRevision: 2 });
     expect(previewOutput).toMatchObject({
       revision: 3,

@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-if [[ -z "${AI_GATEWAY_API_KEY:-}" ]]; then
-  echo "AI_GATEWAY_API_KEY is required." >&2
+gateway_api_key="${AI_GATEWAY_API_KEY:-${VERCEL_GATEWAY:-}}"
+if [[ -z "$gateway_api_key" ]]; then
+  echo "AI_GATEWAY_API_KEY or VERCEL_GATEWAY is required." >&2
   exit 2
 fi
 
@@ -11,8 +12,9 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_dir="$(cd "$script_dir/.." && pwd)"
 schema_file="$project_dir/evals/schema.json"
 cases_file="$project_dir/evals/cases.local.json"
-output_file="${1:-$project_dir/evals/gateway-gemini-3.7-first-call.json}"
-model="google/gemini-3.7-flash"
+model="${GATEWAY_MODEL:-google/gemini-3.8-flash}"
+model_slug="${model//\//-}"
+output_file="${1:-$project_dir/evals/gateway-$model_slug-first-call.json}"
 endpoint="https://ai-gateway.vercel.sh/v1/chat/completions"
 system_prompt="You are an agent helping a user navigate a page via the tools made available to you. Use the provided tools to query page content when needed. Do not use tools other than the available ones. Never use more tool calls than necessary. Today's date is Wed Sep 2 2026."
 
@@ -60,7 +62,7 @@ while IFS= read -r case_json; do
       --output "$response_file" \
       --write-out '%{http_code}' \
       --request POST "$endpoint" \
-      --header "Authorization: Bearer $AI_GATEWAY_API_KEY" \
+      --header "Authorization: Bearer $gateway_api_key" \
       --header "Content-Type: application/json" \
       --data-binary "@$request_file"
   )"
@@ -166,11 +168,11 @@ jq -n \
 echo "Report: $output_file"
 
 if [[ "$blocked" == "true" ]]; then
-  echo "Gemini first-call eval blocked after $attempted_cases request. No model result was scored."
+  echo "$model first-call eval blocked after $attempted_cases request. No model result was scored."
   exit 3
 fi
 
-echo "Gemini first-call eval: $passed_cases/$total_cases passed."
+echo "$model first-call eval: $passed_cases/$total_cases passed."
 
 if [[ "$failed_cases" != "0" || "$scored_cases" != "$total_cases" ]]; then
   exit 1

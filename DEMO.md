@@ -7,7 +7,7 @@ Use a clean browser profile with WebMCP enabled. Crop the recording to the produ
 ## Before recording
 
 1. Reset the demo.
-2. Open the order sheet and the WebMCP tools panel.
+2. In the in-app browser, click the cursor icon in the URL bar and expand **Available site tools**. In Chrome, open **DevTools > Application > WebMCP**.
 3. Confirm that the panel lists four tools.
 4. Keep `/trajectory` ready in a second tab.
 5. Use the fixed service date shown in the product.
@@ -16,7 +16,7 @@ Use a clean browser profile with WebMCP enabled. Crop the recording to the produ
 
 ### 0:00 to 0:15, establish the problem
 
-Show the four registered tools, then the saved order sheet.
+Click the cursor icon in the URL bar, expand **Available site tools**, and show the four registered tools. In the Chrome version, use **DevTools > Application > WebMCP**. Then show the saved order sheet.
 
 Narration: "This restaurant expects 1,140 covers because a nearby derby adds 310. The supplier cutoff is Fri 4 Sep at 22:00. The manager has new local information that the forecast cannot see."
 
@@ -52,13 +52,13 @@ Ask:
 The derby has been cancelled. Add that and replan, but keep my booking.
 ```
 
-Show `add_local_signal`, then `preview_order_plan`. Hold on the totals:
+Show `add_local_signal`, then `create_order_preview`. Hold on the totals:
 
 - Covers: 1,140 to 910
 - Labor: 95 to 76 hours
 - Cost: 3,629 to 2,767 units
 
-Show that the tools panel now lists five tools because `adopt_order_draft` is available.
+Expand **Available site tools** again. Show that the panel now lists five tools because `adopt_order_preview` is available. In Chrome, use **DevTools > Application > WebMCP**.
 
 Narration: "The page runs its own deterministic engine. Each line shows the old quantity, the preview, the delta, and one reason. The current preview exposes a fifth tool for adoption."
 
@@ -75,19 +75,19 @@ Narration: "The manager can inspect the real formula and override a line. The ag
 Ask:
 
 ```text
-Adopt this as the draft. Don't send anything.
+Adopt this order preview as the working order. Don't send anything.
 ```
 
 Show the adoption activity, the enabled Undo control, and the tools panel returning to four tools.
 
-Narration: "Adoption changes only the working draft. Nothing is sent to a supplier, and the manager can undo it."
+Narration: "Adoption changes only the working order. Nothing is sent to a supplier, and the manager can undo it."
 
 ### 2:08 to 2:35, save the handoff
 
 Ask:
 
 ```text
-Save a handoff note for the morning manager saying the derby was cancelled, the booking was kept, the draft was updated, and nothing was sent.
+Save a handoff note for the morning manager saying the derby was cancelled, the booking was kept, the working order was updated, and nothing was sent.
 ```
 
 Show the saved receipt and its download control.

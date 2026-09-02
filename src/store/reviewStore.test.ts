@@ -76,7 +76,7 @@ describe("review store", () => {
       "Replan after the local signals.",
       store.getState().revision,
       "agent",
-      "preview_order_plan",
+      "create_order_preview",
     );
     expectSuccess(preview);
     expect(preview.preview.covers.after).toBe(910);
@@ -156,14 +156,14 @@ describe("review store", () => {
       store.getState().revision,
       undefined,
       "agent",
-      "adopt_order_draft",
+      "adopt_order_preview",
     );
 
     expect(result).toStrictEqual({
       ok: false,
       error: "stale_preview",
       currentPreviewId: preview.preview.id,
-      hint: "Call preview_order_plan again, then adopt the new preview id.",
+      hint: "Call create_order_preview again, then adopt the new preview id.",
     });
   });
 
@@ -173,7 +173,7 @@ describe("review store", () => {
       undefined,
       store.getState().revision,
       "agent",
-      "preview_order_plan",
+      "create_order_preview",
     );
     expectSuccess(preview);
     const previewRevision = store.getState().revision;
@@ -197,7 +197,7 @@ describe("review store", () => {
       previewRevision,
       undefined,
       "agent",
-      "adopt_order_draft",
+      "adopt_order_preview",
     );
     expectSuccess(adopted);
     expect(store.getState().preview).toBeNull();
@@ -211,7 +211,7 @@ describe("review store", () => {
       undefined,
       store.getState().revision,
       "agent",
-      "preview_order_plan",
+      "create_order_preview",
     );
     expectSuccess(preview);
 
@@ -220,7 +220,7 @@ describe("review store", () => {
       store.getState().revision,
       "Keep this as the working draft.",
       "agent",
-      "adopt_order_draft",
+      "adopt_order_preview",
     );
     expectSuccess(adopted);
     expect(adopted.undoAvailable).toBe(true);

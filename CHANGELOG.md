@@ -4,6 +4,27 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-02, Round 4 audit hardening (Codex, build lead)
+
+- Reworked the visible hierarchy around the restaurant outcome, synthetic-data notice, supplier-order totals, stock-line math, and local handoff. Fixed the signal form's desktop alignment and preserved the single-column mobile layout.
+- Added a copyable demo prompt, project links, a visible preview status, and a short changed-value highlight that respects reduced-motion preferences.
+- Replaced visible human-versus-agent guesses with exact WebMCP tool names or `page action`. Direct tool calls remain attributable; browser-driven clicks are not assigned to a person or agent without evidence.
+- Rewrote all five tool contracts as neutral capability descriptions with compact result shapes. `expectedRevision` remains required and is the first property on every mutation schema.
+- Declared behavior hints explicitly: `get_order_context` is read-only; all four mutating definitions set `readOnlyHint: false`. Human-authored signals, notes, and handoffs carry `untrustedContentHint` where they can be returned.
+- Passed all 46 tests and a clean production build. The generated eval schema still matches the runtime catalog.
+- Ran the final first-call suite through Vercel AI Gateway. Claude Sonnet 5, Gemini 3.8 Flash, OpenAI GPT-5.6 Sol, and DeepSeek V4 Pro each passed 8 of 8 cases.
+- Ran full production browser chains with three current model families. Sonnet passed 17 of 17 steps. Gemini 3.8 Flash and DeepSeek V4 Pro each recorded 17 passes and one safe extra preview call; neither adopted or transmitted anything.
+- Re-audited production through Ora's dedicated WebMCP audit. Shared Experience, Tool Quality, and Trust scored 100; the tool map correctly showed one read and three writes. Ora's 47 Task Completion score used document-editor intents and its custom live run offered only the read tool despite capturing all four, so no unrelated editor or sharing tool was added.
+- Checked webmcp.com's public lookup API. The production host is not listed. Its listing request requires a contact email and human review, so no public directory request was made.
+
+### 2026-09-02, GO LIVE (Codex, build lead)
+
+- Deployed the approved production build to `https://cutoff-webmcp.vercel.app/`. The canonical root and `/trajectory` return 200 over HTTPS with HSTS, no preview wrapper, and no `Origin-Agent-Cluster: ?0` header.
+- Matched the live JavaScript asset to the local production bundle by SHA-256. Both hashes are `3ea14d853c3b829734948093c4389dcd2ca868c1d7d63490ca90367d9e296bd9`.
+- Verified the canonical site in the Codex in-app browser. It exposed four base tools, the exact 1,140-cover seed, and the current project record.
+- Repeated the locked flow in system Chrome with WebMCP enabled. The page moved from four tools to five for the exact 910-cover, 76-hour, 2,767-unit preview, then returned to four after adoption. Chrome reported no console errors.
+- Preserved a 16-of-17 production eval where Sonnet refused to save a handoff containing facts absent from the fresh page. Corrected only that inconsistent fixture to request a truthful current-order reminder; the production rerun passed 17 of 17 steps.
+
 ### 2026-09-02, Review 2 closeout and P1 package (Codex, build lead)
 
 - Recorded the human Review 2 pass against `https://cutoff-webmcp-h1fr49smy-ruttansh-bhatelias-projects.vercel.app`. The reviewer repeated the full flow, confirmed the row-focus fix, inspected the line formula, and checked the eval evidence.
@@ -119,11 +140,21 @@ Short dated entries, newest first. One entry per working session. Also holds the
 | 2026-09-02 | Human Chrome inspector / corrected Vercel preview | Corrected adoption-result verification | Blocked | Four base tools registered and `get_order_context` completed. Gemini then returned `503 UNAVAILABLE` for high demand before preview or adoption; one earlier request failed to fetch. |
 | 2026-09-02 | Human Review 2 exception review | Combined browser and model evidence | Accepted | The recorded Chrome, in-app browser, Sonnet, gateway Gemini, and inspector evidence is sufficient. No more manual retry is required for the external Gemini outage. |
 | 2026-09-02 | GitHub public repository | Visibility, default branch, MIT detection, public root, and commit parity | Pass | Repository is public, default branch is `main`, GitHub recognizes MIT, private files are absent, and remote `main` matched the local commit. |
+| 2026-09-02 | Vercel production / canonical URL | Root, `/trajectory`, headers, host wrapper, and bundle parity | Pass | Both routes return 200 over HTTPS with HSTS. No preview iframe or feedback script is injected. The live and local JavaScript hashes match. |
+| 2026-09-02 | Codex in-app browser / production | Registration, seed, and trajectory | Pass | Four base tools registered at `https://cutoff-webmcp.vercel.app/`; the exact seed totals and current project record rendered. |
+| 2026-09-02 | System Chrome / production | Booking, cancellation, preview, adoption, and console | Pass | WebMCP moved 4 to 5 to 4 tools; preview totals were 910 covers, 76 hours, and 2,767 units; adoption succeeded; 0 console errors. |
+| 2026-09-02 | `webmcp-evals` 0.0.4 / Claude Sonnet 5 / production | Original eight browser chains | Fixture failed | 16 of 17 steps. Sonnet correctly refused to save a handoff that claimed state absent from the fresh page. Raw report retained. |
+| 2026-09-02 | `webmcp-evals` 0.0.4 / Claude Sonnet 5 / production | Truthful eight browser chains | Pass | 17 of 17 steps after correcting only the inconsistent handoff prompt; tool descriptions and revision safeguards were unchanged. |
+| 2026-09-02 | Vitest / Node 24.18 | Round 4 UI, store, tool-contract, and schema regression suite | Pass | 46 of 46 tests. Tool annotations, activity provenance, result-shape descriptions, revision requirements, and UI changes are covered. |
+| 2026-09-02 | Vercel AI Gateway / four current model families | Final eight-case first-call suite | Pass | Sonnet 5, Gemini 3.8 Flash, GPT-5.6 Sol, and DeepSeek V4 Pro each passed 8 of 8 cases against the final schema. |
+| 2026-09-02 | `webmcp-evals` / production / Sonnet 5 | Final eight browser chains | Pass | 17 of 17 steps against the final production tools. |
+| 2026-09-02 | `webmcp-evals` / production / Gemini 3.8 Flash | Final eight browser chains | Safe over-completion | 17 passes and one failure. The model added a reversible preview after the 80-person booking where the fixture expected it to stop after storing the signal. |
+| 2026-09-02 | `webmcp-evals` / production / DeepSeek V4 Pro | Final eight browser chains | Safe over-completion | 17 passes and one failure for the same extra preview; no adoption or external action occurred. |
+| 2026-09-02 | Ora public WebMCP audit / production | Four-pillar audit and custom live goal | Mixed, recorded | 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 100, Trust 100. Task intents were for a document editor; the custom live agent was offered only the read tool despite a four-tool capture. |
+| 2026-09-02 | webmcp.com public lookup API | Production directory status | Not listed | The read-only API returned `supported: false`. A listing request needs a contact email and human review, so none was submitted. |
 
-## Open before GO LIVE and submission
+## Open before submission
 
-- Explicit GO LIVE approval for the production deployment.
-- Production rerun in both browsers, the browser eval against that URL, and the public Ora audit.
 - Public video under 3 minutes, final Devpost links, and explicit submission approval.
 
 ## Later

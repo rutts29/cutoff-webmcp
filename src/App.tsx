@@ -30,6 +30,9 @@ const defaultStatus: WebMCPStatus = {
   error: null,
 };
 
+const DEMO_PROMPT =
+  "The derby has been cancelled. Add that to the order review and replan, but keep my booking.";
+
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
 }
@@ -70,6 +73,10 @@ function activityTime(value: string): string {
   return /^\d{2}:\d{2}$/.test(time) ? time : "time unavailable";
 }
 
+function activityEffectLabel(effect: ReviewState["activity"][number]["effect"]): string {
+  return effect === "draft" ? "change" : effect;
+}
+
 function useReviewState(store: ReviewStore): ReviewState {
   return useSyncExternalStore(store.subscribe, store.getState, store.getState);
 }
@@ -88,8 +95,8 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
 
   if (!item) {
     return (
-      <aside className="detail-panel empty-detail" aria-label="Line detail">
-        <p className="eyebrow">Line detail</p>
+      <aside id="numbers" className="detail-panel empty-detail" aria-label="Stock line math">
+        <p className="eyebrow">Stock line math</p>
         <p>Select a line to inspect its order math and pin a quantity.</p>
       </aside>
     );
@@ -112,10 +119,10 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
   };
 
   return (
-    <aside className="detail-panel" aria-label={`${item.name} detail`}>
+    <aside id="numbers" className="detail-panel" aria-label={`${item.name} stock line math`}>
       <div className="detail-heading">
         <div>
-          <p className="eyebrow">Line detail</p>
+          <p className="eyebrow">Stock line math</p>
           <h2>{item.name}</h2>
           <p className="mono item-id">{item.id} / {item.unit} / case {item.caseSize}</p>
         </div>
@@ -158,8 +165,8 @@ function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: Revi
     <section className="sheet-panel" aria-labelledby="sheet-heading">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Order sheet</p>
-          <h2 id="sheet-heading">Supplier order for Sat 5 Sep</h2>
+          <p className="eyebrow">Supplier order sheet</p>
+          <h2 id="sheet-heading">Stock lines for Sat 5 Sep</h2>
         </div>
         <p className="mono section-note">10 lines · revision {state.revision}</p>
       </div>
@@ -172,7 +179,7 @@ function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: Revi
               <th scope="col">Inbound</th>
               <th scope="col">Expiring</th>
               <th scope="col">Saved</th>
-              <th scope="col">Preview / draft</th>
+              <th scope="col">Preview / working order</th>
               <th scope="col">Delta</th>
               <th scope="col">Reason</th>
             </tr>
@@ -210,7 +217,14 @@ function OrderSheet({ state, store }: Readonly<{ state: ReviewState; store: Revi
                   <td className="mono">{item.inTransit}</td>
                   <td className="mono">{item.expiring}</td>
                   <td className="mono">{saved}</td>
-                  <td className="mono current-value">{current}</td>
+                  <td className="mono current-value">
+                    <span
+                      key={`${state.preview?.id ?? `working-${state.revision}`}-${current}`}
+                      className={delta === 0 ? undefined : "changed-cell"}
+                    >
+                      {current}
+                    </span>
+                  </td>
                   <td className={`mono delta ${delta === 0 ? "flat" : ""}`}>{formatDelta(delta)}</td>
                   <td><span className="reason-chip">{reasonLabel(reason)}</span></td>
                 </tr>
@@ -267,7 +281,7 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
         </label>
         <label>Signal label
           <input
-            aria-describedby="signal-label-error"
+            aria-describedby={labelError ? "signal-label-error" : undefined}
             aria-invalid={labelError ? "true" : undefined}
             aria-label="Signal label"
             value={label}
@@ -280,7 +294,11 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
             maxLength={160}
             required
           />
-          <span id="signal-label-error" className="field-error" role={labelError ? "alert" : undefined}>{labelError}</span>
+          {labelError ? (
+            <span id="signal-label-error" className="field-error" role="alert">
+              {labelError}
+            </span>
+          ) : null}
         </label>
         {kind === "booking" ? <label>Booking covers
           <input aria-label="Booking covers" type="number" min="1" value={covers} onChange={(event) => setCovers(event.target.value)} />
@@ -291,7 +309,6 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
         {state.signals.length === 0 ? <li className="empty-state">No local signals recorded.</li> : state.signals.map((signal) => (
           <li key={signal.id}>
             <span>{signalSummary(signal)}</span>
-            <span className="source-badge">{signal.source}</span>
           </li>
         ))}
       </ul>
@@ -329,21 +346,24 @@ function SignalForm({ state, store }: Readonly<{ state: ReviewState; store: Revi
   );
 }
 
-function ActivityPanel({ state }: Readonly<{ state: ReviewState }>) {
+function ActivityPanel({
+  state,
+  status,
+}: Readonly<{ state: ReviewState; status: WebMCPStatus }>) {
   return (
     <section className="activity-panel" aria-labelledby="activity-heading">
       <div className="section-heading">
         <div>
           <p className="eyebrow">Activity</p>
-          <h2 id="activity-heading">Your agent and manager actions</h2>
+          <h2 id="activity-heading">Order review activity</h2>
         </div>
       </div>
       <ol className="activity-list">
         {state.activity.length === 0 ? <li className="empty-state">No activity yet.</li> : state.activity.map((entry) => (
           <li key={entry.id}>
             <div>
-              <span className="effect-tag">{entry.effect}</span>
-              <span className="mono">{entry.tool ?? entry.actor}</span>
+              <span className="effect-tag">{activityEffectLabel(entry.effect)}</span>
+              <span className="mono">{entry.tool ?? "page action"}</span>
               <time className="mono activity-time" dateTime={entry.at}>{activityTime(entry.at)}</time>
             </div>
             <p>{entry.inputSummary}</p>
@@ -351,6 +371,12 @@ function ActivityPanel({ state }: Readonly<{ state: ReviewState }>) {
           </li>
         ))}
       </ol>
+      {status.supported ? (
+        <p className="agent-tools-status" role="status" aria-live="polite">
+          {status.toolCount} agent tools available on this page
+        </p>
+      ) : null}
+      {status.error ? <p className="alert" role="alert">{status.error}</p> : null}
     </section>
   );
 }
@@ -360,6 +386,7 @@ function HandoffReceiptPanel({ receipt }: Readonly<{ receipt: HandoffReceipt }>)
   const receiptJson = useMemo(() => JSON.stringify(receipt, null, 2), [receipt]);
 
   const copyJson = async () => {
+    setCopyNotice("");
     if (!navigator.clipboard?.writeText) {
       setCopyNotice("Copy is unavailable in this browser.");
       return;
@@ -410,6 +437,7 @@ export function App({ store: providedStore, modelContext }: AppProps) {
   const [status, setStatus] = useState<WebMCPStatus>(defaultStatus);
   const [handoffSummary, setHandoffSummary] = useState("");
   const [handoffError, setHandoffError] = useState("");
+  const [promptNotice, setPromptNotice] = useState("");
 
   useEffect(() => {
     const mount = mountWebMCPTools({ store, modelContext, onStatus: setStatus });
@@ -423,6 +451,19 @@ export function App({ store: providedStore, modelContext }: AppProps) {
   const canAdopt =
     state.preview !== null && state.preview.baseRevision === state.revision;
   const preview = () => store.previewOrderPlan("Manual preview from the order sheet.", state.revision, "human");
+  const copyDemoPrompt = async () => {
+    setPromptNotice("");
+    if (!navigator.clipboard?.writeText) {
+      setPromptNotice("Copy is unavailable in this browser.");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(DEMO_PROMPT);
+      setPromptNotice("Demo prompt copied.");
+    } catch {
+      setPromptNotice("Copy failed. Select the prompt and copy it manually.");
+    }
+  };
   const saveHandoff = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const cleanSummary = handoffSummary.trim();
@@ -457,21 +498,25 @@ export function App({ store: providedStore, modelContext }: AppProps) {
       <div className="paper">
         <header className="app-header">
           <div>
-            <p className="eyebrow">Synthetic order review</p>
+            <div className="header-kicker">
+              <p className="eyebrow">Restaurant supplier order · synthetic data</p>
+              <span className="synthetic-tag">Synthetic</span>
+            </div>
             <h1>Cutoff</h1>
+            <p className="hero-copy">Revise the supplier order when the forecast is wrong. Covers, labor hours, and stock cases for one location before cutoff.</p>
             <p className="header-subtitle">Northgate · service Sat 5 Sep · delivery 06:30</p>
           </div>
           <div className="header-actions">
-            <p className={`status ${status.supported ? "detected" : ""}`}>WebMCP {status.supported ? `detected / ${status.toolCount} tools` : "not detected"}</p>
-            {status.error ? <p className="alert" role="alert">{status.error}</p> : null}
             <button className="text-button reset-button" type="button" onClick={() => store.resetDemo("human")}>Reset demo</button>
           </div>
         </header>
 
+        <p className="demo-banner">Synthetic demo data. One fictional restaurant, ten stock items. No supplier is connected.</p>
+
         <section className="forecast-strip" aria-label="Forecast and order summary">
-          <div><p className="eyebrow">Forecast</p><strong className="big-number">{formatNumber(state.savedPlan.covers)} <span>→</span> {formatNumber(forecastAfter)}</strong><small>covers</small></div>
-          <div><p className="eyebrow">Labor</p><strong className="big-number">{state.savedPlan.laborHours} <span>→</span> {laborAfter}</strong><small>hours</small></div>
-          <div><p className="eyebrow">Order cost</p><strong className="big-number">{formatNumber(state.savedPlan.totalCost)} <span>→</span> {formatNumber(costAfter)}</strong><small>units</small></div>
+          <div><p className="eyebrow">Forecast covers</p><strong className="big-number">{formatNumber(state.savedPlan.covers)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${forecastAfter}`} className={forecastAfter === state.savedPlan.covers ? "metric-current" : "metric-current changed-cell"}>{formatNumber(forecastAfter)}</span></strong><small>covers</small></div>
+          <div><p className="eyebrow">Labor hours</p><strong className="big-number">{state.savedPlan.laborHours} <span className="metric-arrow">→</span> <span key={`${state.revision}-${laborAfter}`} className={laborAfter === state.savedPlan.laborHours ? "metric-current" : "metric-current changed-cell"}>{laborAfter}</span></strong><small>hours</small></div>
+          <div><p className="eyebrow">Supplier order cost</p><strong className="big-number">{formatNumber(state.savedPlan.totalCost)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${costAfter}`} className={costAfter === state.savedPlan.totalCost ? "metric-current" : "metric-current changed-cell"}>{formatNumber(costAfter)}</span></strong><small>units</small></div>
           <div className="forecast-notes"><p>Base 830</p><p>Derby uplift +310</p><p>Pinned bookings +{state.preview?.covers.pinnedBookings ?? 0}</p></div>
         </section>
 
@@ -479,14 +524,19 @@ export function App({ store: providedStore, modelContext }: AppProps) {
           <OrderSheet state={state} store={store} />
           <DetailPanel state={state} store={store} />
           <SignalForm state={state} store={store} />
-          <section className="controls-panel" aria-label="Draft controls">
-            <p className="eyebrow">Draft controls</p>
+          <section className="controls-panel" aria-label="Order plan">
+            <p className="eyebrow">Order plan</p>
             <div className="control-buttons">
-              <button type="button" onClick={preview}>Preview draft</button>
-              <button type="button" disabled={!canAdopt} onClick={() => state.preview && store.adoptOrderDraft(state.preview.id, state.revision, undefined, "human")}>Adopt draft</button>
+              <button type="button" onClick={preview}>Preview replan</button>
+              <button type="button" disabled={!canAdopt} onClick={() => state.preview && store.adoptOrderDraft(state.preview.id, state.revision, undefined, "human")}>Adopt order plan</button>
               <button type="button" disabled={!state.undoAvailable} onClick={() => store.undoAdoption(state.revision, "human")}>Undo adoption</button>
               <button type="button" disabled={!hasPreview} className="text-button" onClick={() => store.discardPreview(state.revision, "human")}>Discard preview</button>
             </div>
+            {state.preview ? (
+              <p className="preview-status" role="status" aria-live="polite">
+                Preview ready: {formatNumber(state.preview.covers.after)} covers, {state.preview.laborHours.after} labor hours, {formatNumber(state.preview.totals.afterCost)} units.
+              </p>
+            ) : null}
             <p>Nothing is sent to a supplier from this page.</p>
             <form className="handoff-form" onSubmit={saveHandoff} noValidate>
               <label htmlFor="handoff-summary">Handoff summary</label>
@@ -501,7 +551,7 @@ export function App({ store: providedStore, modelContext }: AppProps) {
                     setHandoffError("");
                   }
                 }}
-                placeholder="Morning manager: check the revised draft before cutoff."
+                placeholder="Morning manager: check the working order before cutoff."
                 required
                 rows={3}
                 value={handoffSummary}
@@ -510,9 +560,19 @@ export function App({ store: providedStore, modelContext }: AppProps) {
               <p id="handoff-error" className="field-error" role={handoffError ? "alert" : undefined}>{handoffError}</p>
             </form>
           </section>
-          <ActivityPanel state={state} />
+          <ActivityPanel state={state} status={status} />
           {state.lastReceipt ? <HandoffReceiptPanel receipt={state.lastReceipt} /> : null}
         </div>
+
+        <footer className="app-footer">
+          <nav aria-label="Project links">
+            <a href="/trajectory">How this was built</a>
+            <a href="https://github.com/rutts29/cutoff-webmcp" rel="noreferrer">GitHub repository</a>
+            <a href="#numbers">How the numbers work</a>
+            <button className="text-button" type="button" onClick={() => void copyDemoPrompt()}>Copy demo prompt</button>
+          </nav>
+          <p className="copy-notice" aria-live="polite">{promptNotice}</p>
+        </footer>
       </div>
     </main>
   );

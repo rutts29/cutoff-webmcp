@@ -120,6 +120,20 @@
       "actor": "builder",
       "summary": "Published the audited package to the approved public repository and checked the live GitHub record.",
       "outcome": "The default branch is main, GitHub recognizes the MIT license, local and remote commits match, and private build references are absent."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "release",
+      "actor": "builder",
+      "summary": "Deployed the approved production build and repeated the locked flow on the canonical URL in both required browsers.",
+      "outcome": "The live bundle matches the verified local build. WebMCP moved from four tools to five and back to four around the exact preview and adoption. After correcting one factually inconsistent handoff fixture, the production browser eval passed 17 of 17 steps."
+    },
+    {
+      "at": "2026-09-02",
+      "phase": "audit",
+      "actor": "builder",
+      "summary": "Applied the final legibility, accessibility, tool-contract, and trust review, then cross-checked production with current model families and two public auditors.",
+      "outcome": "All 46 tests passed. Four models passed the first-call suite, three models exercised live browser chains, and Ora scored Shared Experience, Tool Quality, and Trust at 100. A document-editor category mismatch was recorded without adding unrelated tools."
     }
   ]
 }

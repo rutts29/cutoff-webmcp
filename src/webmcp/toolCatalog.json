@@ -1,7 +1,7 @@
 {
   "get_order_context": {
     "title": "Get order context",
-    "description": "Read the live order review before changing its draft, or when the manager asks why the order is this size or asks for its current state. Returns forecast inputs, pins, signals, line quantities, active preview, and revision.",
+    "description": "Reads the current restaurant supplier-order review. Returns guide, store, serviceDate, cutoffAt, deliveryAt, forecast, draft, lines, focusedSkuId, pins, signals, previewId, and revision.",
     "inputSchema": {
       "type": "object",
       "properties": {},
@@ -14,20 +14,26 @@
   },
   "add_local_signal": {
     "title": "Add local signal",
-    "description": "Add a local booking, event cancellation, or operator note when new manager knowledge belongs in this review. Returns the new signal id and revision.",
+    "description": "Stores one local booking, event cancellation, or operator note in revisioned local state without calculating or previewing the order. Handoff receipts are a separate record. Returns signalId, kind, label, revision, and previewBecameStale.",
     "inputSchema": {
       "type": "object",
+      "description": "A local signal write tied to a specific review revision.",
       "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required review revision from get_order_context or the previous mutation result."
+        },
         "kind": {
           "type": "string",
           "enum": ["booking", "event_cancelled", "operator_note"],
-          "description": "Local signal type to add to this review."
+          "description": "Signal kind. Operator notes are operational facts in the order review."
         },
         "label": {
           "type": "string",
           "minLength": 1,
           "maxLength": 160,
-          "description": "Short human label shown in the signals panel."
+          "description": "Short human-authored label stored in the signals panel."
         },
         "covers": {
           "type": "integer",
@@ -38,91 +44,103 @@
         "occurredAt": {
           "type": "string",
           "maxLength": 80,
-          "description": "Optional local date or time supplied with the signal."
+          "description": "Local date or time associated with the signal."
         },
         "note": {
           "type": "string",
           "maxLength": 500,
-          "description": "Optional human note stored as untrusted data."
-        },
+          "description": "Human-authored detail stored with the signal."
+        }
+      },
+      "required": ["expectedRevision", "kind", "label"],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": true
+    }
+  },
+  "create_order_preview": {
+    "title": "Create order preview",
+    "description": "Creates and renders a revisioned supplier-order preview from current signals and pins. The saved order and adoption status remain unchanged. Returns previewId, revision, covers and laborHours before and after, each line's before, after, delta, and reason, cost before and after, and warnings.",
+    "inputSchema": {
+      "type": "object",
+      "description": "A supplier-order preview tied to a specific review revision.",
+      "properties": {
         "expectedRevision": {
           "type": "integer",
           "minimum": 0,
-          "description": "Revision returned by the latest get_order_context or mutating tool result."
-        }
-      },
-      "required": ["kind", "label", "expectedRevision"],
-      "additionalProperties": false
-    }
-  },
-  "preview_order_plan": {
-    "title": "Preview order plan",
-    "description": "Recompute a visible order preview from current signals and pins when the manager wants to compare a revised plan. Returns covers, labor, costs, line deltas, and reasons.",
-    "inputSchema": {
-      "type": "object",
-      "properties": {
+          "description": "Required review revision from get_order_context or the previous mutation result."
+        },
         "rationale": {
           "type": "string",
           "maxLength": 500,
-          "description": "Optional short reason recorded with this preview."
-        },
-        "expectedRevision": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Revision returned by the latest get_order_context or mutating tool result."
+          "description": "Short reason stored with the preview."
         }
       },
       "required": ["expectedRevision"],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false
     }
   },
-  "adopt_order_draft": {
-    "title": "Adopt order draft",
-    "description": "Adopt the active preview as the working draft after the manager approves the visible changes. Returns adopted totals, the new revision, and undo availability.",
+  "adopt_order_preview": {
+    "title": "Adopt order preview",
+    "description": "Changes the working order to the active order preview after manager approval. This action is registered while a current preview is adoptable. The previewId and expectedRevision identify that state. Returns revision, adopted covers, laborHours, and cost, undoAvailable, and noExternalAction.",
     "inputSchema": {
       "type": "object",
+      "description": "An adoption tied to the active preview and its review revision.",
       "properties": {
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Required review revision from get_order_context or the previous mutation result."
+        },
         "previewId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 100,
-          "description": "Active preview id returned by preview_order_plan."
-        },
-        "expectedRevision": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Revision returned by the latest get_order_context or mutating tool result."
+          "description": "Active preview id from create_order_preview."
         },
         "note": {
           "type": "string",
           "maxLength": 500,
-          "description": "Optional human-facing note recorded with the adoption."
+          "description": "Human-facing note stored with the adoption."
         }
       },
-      "required": ["previewId", "expectedRevision"],
+      "required": ["expectedRevision", "previewId"],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false
     }
   },
   "save_handoff_receipt": {
     "title": "Save handoff receipt",
-    "description": "Save a local handoff receipt after the manager requests one. Returns the receipt id, current revision, and confirmation that the result stayed in this browser.",
+    "description": "Stores a manager handoff summary as a local browser receipt. Operator notes are operational facts in the order review; handoff receipts are shift records. Returns receiptId, revision, and confirmation that the result stayed in this browser.",
     "inputSchema": {
       "type": "object",
+      "description": "A local handoff receipt tied to a specific review revision.",
       "properties": {
         "expectedRevision": {
           "type": "integer",
           "minimum": 0,
-          "description": "Revision returned by the latest get_order_context or mutating tool result."
+          "description": "Required review revision from get_order_context or the previous mutation result."
         },
         "managerSummary": {
           "type": "string",
           "minLength": 1,
           "maxLength": 1000,
-          "description": "Handoff summary requested by the manager."
+          "description": "Human-authored handoff summary stored in the local receipt."
         }
       },
       "required": ["expectedRevision", "managerSummary"],
       "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "untrustedContentHint": true
     }
   }
 }

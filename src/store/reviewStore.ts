@@ -111,7 +111,7 @@ export type StalePreviewError = Readonly<{
   ok: false;
   error: "stale_preview";
   currentPreviewId: string | null;
-  hint: "Call preview_order_plan again, then adopt the new preview id.";
+  hint: "Call create_order_preview again, then adopt the new preview id.";
 }>;
 
 type NoUndoError = Readonly<{
@@ -620,7 +620,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         createId,
         now,
         actor,
-        rationale?.trim() || "Recompute the order draft.",
+        rationale?.trim() || "Recompute the working order.",
         `Preview ${preview.id} created for ${preview.covers.after} covers.`,
         "draft",
         tool,
@@ -647,7 +647,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
           ok: false,
           error: "stale_preview",
           currentPreviewId: state.preview?.id ?? null,
-          hint: "Call preview_order_plan again, then adopt the new preview id.",
+          hint: "Call create_order_preview again, then adopt the new preview id.",
         };
       }
 
@@ -676,7 +676,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         now,
         actor,
         note?.trim() || `Adopt preview ${previewId}.`,
-        `Draft adopted at revision ${nextRevision}. Nothing was sent to a supplier.`,
+        `Order preview adopted at revision ${nextRevision}. Nothing was sent to a supplier.`,
         "draft",
         tool,
       );
@@ -709,8 +709,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         createId,
         now,
         actor,
-        "Undo the last adopted draft.",
-        `Previous draft restored at revision ${nextRevision}.`,
+        "Undo the last adopted order preview.",
+        `Previous working order restored at revision ${nextRevision}.`,
         "draft",
         tool,
       );

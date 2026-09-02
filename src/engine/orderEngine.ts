@@ -80,7 +80,7 @@ function getReason({
   if (hasOverride && afterCases !== automaticCases) {
     return {
       code: REASON_CODES.MANUAL_OVERRIDE_KEPT,
-      explanation: "The pinned case override stays in the draft.",
+      explanation: "The pinned case override stays in the working order.",
     };
   }
 

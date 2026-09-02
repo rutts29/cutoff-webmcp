@@ -1,12 +1,56 @@
 {
-  "status": "blocked",
-  "rawPayloadProduced": false,
-  "urlType": "local-portless",
-  "cliPackage": "ax",
-  "cliVersion": "0.7.0",
-  "npmLatestVersion": "0.7.0",
-  "exitCode": 3,
-  "score": null,
-  "message": "Ora refused the capture because ax 0.7.0 emitted shim version 1 while the scoring service requires version 2.",
-  "action": "Wait for an ax release whose capture shim matches the Ora scoring service."
+  "capturedAt": "2026-09-02",
+  "productionUrl": "https://cutoff-webmcp.vercel.app/",
+  "privateCliRun": {
+    "status": "blocked",
+    "rawPayloadProduced": false,
+    "urlType": "local-portless",
+    "cliPackage": "ax",
+    "cliVersion": "0.7.0",
+    "npmLatestVersionAtRun": "0.7.0",
+    "exitCode": 3,
+    "score": null,
+    "message": "Ora refused the capture because ax 0.7.0 emitted shim version 1 while the scoring service required version 2."
+  },
+  "publicAudit": {
+    "url": "https://webmcp.ora.ai/cutoff-webmcp.vercel.app",
+    "score": 87,
+    "pillars": {
+      "sharedExperience": 100,
+      "taskCompletion": 47,
+      "toolQuality": 100,
+      "trust": 100
+    },
+    "tools": {
+      "registeredAtRest": 4,
+      "read": 1,
+      "write": 3,
+      "undeclared": 0
+    },
+    "verifiedImprovements": [
+      "Every mutation declares readOnlyHint false.",
+      "Human-authored content is marked with untrustedContentHint where it can be returned.",
+      "Tool metadata describes capabilities and result shapes without steering the caller."
+    ],
+    "taskCompletionFinding": {
+      "siteCategoryAssignedByOra": "editor",
+      "intents": [
+        "Open the document I was working on most recently.",
+        "Add a short summary paragraph at the top.",
+        "Save it and give me a link I can share."
+      ],
+      "assessment": "The intents do not match a restaurant supplier-order review. Cutoff does not add document editing or public sharing tools to satisfy this category mismatch."
+    },
+    "customLiveAudit": {
+      "goal": "Review and revise this restaurant supplier order using local booking or event signals, preview changes before adopting them, and save a manager handoff without sending anything to a supplier.",
+      "capturedTools": 4,
+      "toolsOfferedToLiveAgent": [
+        "get_order_context"
+      ],
+      "agentToolCalls": [
+        "get_order_context"
+      ],
+      "assessment": "The report map captured all four base tools, but the live agent stated that only the read tool was available. This is recorded as a harness limitation, not repaired with extra product tools."
+    }
+  }
 }

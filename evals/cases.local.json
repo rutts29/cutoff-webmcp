@@ -85,7 +85,7 @@
       {
         "role": "user",
         "type": "message",
-        "content": "Save a note for the morning manager saying the derby was cancelled, the booking was kept, the draft was updated, and nothing was sent."
+        "content": "Save a note for the morning manager to review the current order before cutoff."
       }
     ],
     "expectedCall": [
@@ -101,7 +101,7 @@
       {
         "role": "user",
         "type": "message",
-        "content": "Preview the current order, then adopt that preview as the working draft."
+        "content": "Preview the current order, then adopt that preview as the working order."
       }
     ],
     "expectedCall": [
@@ -117,7 +117,7 @@
       {
         "role": "user",
         "type": "message",
-        "content": "Recalculate the order and leave the draft uncommitted. Keep lettuce at four cases if it is already pinned."
+        "content": "Recalculate the order and leave the working order unchanged. Keep lettuce at four cases if it is already pinned."
       }
     ],
     "expectedCall": [
