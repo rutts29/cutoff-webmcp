@@ -24,9 +24,11 @@ import { StockPage } from "./StockPage";
 import { LaborPage } from "./LaborPage";
 import { ShiftLogPage } from "./ShiftLogPage";
 import { ServiceBand } from "./ServiceBand";
+import { AgentChanges } from "./AgentChanges";
 import { AgentGlyph, BrandMark, StockItemThumbnail } from "./VisualIdentity";
 import {
   createReviewStore,
+  type ActivityEntry,
   type HandoffReceipt,
   type ReviewState,
   type ReviewStore,
@@ -268,6 +270,7 @@ function OrderSheet({
               const selected = state.focusedSkuId === item.id;
               return (
                 <tr
+                  id={`line-${item.id}`}
                   key={item.id}
                   className={selected ? "selected" : undefined}
                   onClick={() => selectLine(item.id)}
@@ -507,7 +510,7 @@ function HandoffReceiptPanel({ receipt }: Readonly<{ receipt: HandoffReceipt }>)
   };
 
   return (
-    <section className="receipt-panel" aria-label="Saved handoff receipt">
+    <section id="handoff-receipt" className="receipt-panel" aria-label="Saved handoff receipt">
       <div className="section-heading">
         <div>
           <p className="eyebrow">Handoff receipt</p>
@@ -542,6 +545,10 @@ export function App({
   const [promptNotice, setPromptNotice] = useState("");
   const [orderControlError, setOrderControlError] = useState("");
   const [orderControlNotice, setOrderControlNotice] = useState("");
+  const [pendingAgentTarget, setPendingAgentTarget] = useState<Readonly<{
+    section: Section;
+    anchor: string;
+  }> | null>(null);
   const sectionDefinition = SECTION_DEFINITIONS.find(
     (candidate) => candidate.id === section,
   ) ?? SECTION_DEFINITIONS[0];
@@ -551,6 +558,8 @@ export function App({
   const previousSection = useRef(section);
   const previewSummaryRef = useRef<HTMLElement>(null);
   const focusPreviewSummary = useRef(false);
+  const highlightedAgentTarget = useRef<HTMLElement | null>(null);
+  const highlightTimeout = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     const mount = mountWebMCPTools({
@@ -576,6 +585,54 @@ export function App({
       focusPreviewSummary.current = false;
     }
   }, [state.preview]);
+
+  useEffect(() => {
+    if (!pendingAgentTarget || pendingAgentTarget.section !== section) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      const exactTarget = document.getElementById(pendingAgentTarget.anchor);
+      const fallbackTarget = document.getElementById(
+        pendingAgentTarget.section === "order" ? "service-band" : "page-title",
+      );
+      const scrollTarget = exactTarget ?? fallbackTarget;
+
+      if (scrollTarget && typeof scrollTarget.scrollIntoView === "function") {
+        scrollTarget.scrollIntoView({
+          block: "center",
+          behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+            ? "auto"
+            : "smooth",
+        });
+      }
+
+      if (exactTarget) {
+        highlightedAgentTarget.current?.classList.remove("agent-highlight");
+        exactTarget.classList.add("agent-highlight");
+        highlightedAgentTarget.current = exactTarget;
+        if (highlightTimeout.current !== null) {
+          window.clearTimeout(highlightTimeout.current);
+        }
+        highlightTimeout.current = window.setTimeout(() => {
+          exactTarget.classList.remove("agent-highlight");
+          if (highlightedAgentTarget.current === exactTarget) {
+            highlightedAgentTarget.current = null;
+          }
+          highlightTimeout.current = null;
+        }, 2_000);
+      }
+
+      setPendingAgentTarget(null);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [pendingAgentTarget, section]);
+
+  useEffect(() => () => {
+    if (highlightTimeout.current !== null) {
+      window.clearTimeout(highlightTimeout.current);
+    }
+    highlightedAgentTarget.current?.classList.remove("agent-highlight");
+  }, []);
 
   const hasPreview = state.preview !== null;
   const canAdopt =
@@ -614,6 +671,18 @@ export function App({
     }
     store.recordSectionOpen(nextSection, "page");
     navigate?.(nextSection);
+  };
+  const revealAgentChange = (
+    entry: ActivityEntry & { target: NonNullable<ActivityEntry["target"]> },
+  ) => {
+    const targetSection = entry.target.section ?? entry.section;
+    setPendingAgentTarget({
+      section: targetSection,
+      anchor: entry.target.anchor,
+    });
+    if (targetSection !== section) {
+      navigate?.(targetSection);
+    }
   };
   const resetDemo = () => {
     store.resetDemo("page");
@@ -797,6 +866,7 @@ export function App({
         ) : null}
         {state.preview ? (
           <section
+            id="order-preview"
             className="preview-summary"
             ref={previewSummaryRef}
             role="status"
@@ -923,6 +993,7 @@ export function App({
             </details>
           </div>
         </footer>
+        <AgentChanges activity={state.activity} onReveal={revealAgentChange} />
       </div>
     </main>
   );

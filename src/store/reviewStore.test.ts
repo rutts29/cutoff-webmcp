@@ -852,6 +852,13 @@ describe("review store", () => {
       tool: "add_shift_note",
     });
     expect(log.entries[0]?.summary).toContain("Check the walk-in before lunch.");
+    expect(store.getState().activity.at(-1)).toHaveProperty("target", {
+      anchor: "shift-notes",
+      label: "Shift note",
+      section: "log",
+    });
+    expect(log.entries[0]).not.toHaveProperty("target");
+    expect(JSON.stringify(log)).not.toContain('"target"');
   });
 
   it("uses staff names and omits preview identifiers in shift-log summaries", () => {
@@ -923,6 +930,12 @@ describe("review store", () => {
       "save_handoff_receipt",
     );
     expectSuccess(receipt);
+
+    const liveReceiptEntries = store.getShiftLog("order").entries.filter(
+      (entry) => entry.summary.includes("Check the working order before cutoff."),
+    );
+    expect(liveReceiptEntries).toHaveLength(1);
+    expect(liveReceiptEntries[0]).not.toHaveProperty("target");
 
     const restored = makeStore(storage);
     expect(restored.getShiftLog("order").entries[0]).toMatchObject({

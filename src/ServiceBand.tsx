@@ -216,7 +216,7 @@ export function ServiceBand({ state, navigate }: ServiceBandProps) {
   const topWasteReason = waste.topReason;
 
   return (
-    <section className="service-band" aria-label="Tonight's service">
+    <section id="service-band" className="service-band" aria-label="Tonight's service">
       <article className="service-tile">
         <p className="service-label">Covers</p>
         <DeltaNumber value={covers}>{formatNumber(covers)}</DeltaNumber>

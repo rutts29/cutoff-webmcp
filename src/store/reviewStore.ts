@@ -49,6 +49,12 @@ export const RECEIPT_STORAGE_KEY = "cutoff:last-receipt";
 export type ActivityEffect = "read" | "draft" | "save";
 export type ActivityActor = "page" | "tool";
 
+export type ActivityTarget = Readonly<{
+  anchor: string;
+  label: string;
+  section?: Section;
+}>;
+
 export type ActivityEntry = Readonly<{
   id: string;
   at: string;
@@ -58,6 +64,7 @@ export type ActivityEntry = Readonly<{
   resultSummary: string;
   effect: ActivityEffect;
   section: Section;
+  target?: ActivityTarget;
 }>;
 
 export type DraftPlan = Readonly<{
@@ -689,6 +696,7 @@ function activityEntry(
   effect: ActivityEffect,
   tool?: string,
   section: Section = "order",
+  target?: ActivityTarget,
 ): ActivityEntry {
   return {
     id: createId("activity"),
@@ -699,7 +707,16 @@ function activityEntry(
     resultSummary,
     effect,
     section,
+    ...(target ? { target } : {}),
   };
+}
+
+function stockItemName(stock: StockEngineState, skuId: string): string {
+  return stock.items.find((item) => item.id === skuId)?.name ?? skuId;
+}
+
+function stockItemUnit(stock: StockEngineState, skuId: string): string {
+  return stock.items.find((item) => item.id === skuId)?.unit ?? "units";
 }
 
 function laborStaffName(labor: LaborEngineState, staffId: string): string {
@@ -822,6 +839,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
           : `Signal added at revision ${nextRevision}.`,
         "draft",
         tool,
+        "order",
+        { anchor: "service-band", label: signal.label },
       );
 
       setState({
@@ -854,6 +873,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         `Order preview created for ${preview.covers.after} covers.`,
         "draft",
         tool,
+        "order",
+        { anchor: "order-preview", label: "Order preview" },
       );
       setState({
         ...state,
@@ -912,6 +933,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         `Order preview adopted at revision ${nextRevision}. Nothing was sent to a supplier.`,
         "draft",
         tool,
+        "order",
+        { anchor: "service-band", label: "Working order" },
       );
       setState({
         ...state,
@@ -956,6 +979,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         `Previous working order restored at revision ${nextRevision}.`,
         "draft",
         tool,
+        "order",
+        { anchor: "service-band", label: "Working order" },
       );
       setState({
         ...state,
@@ -990,6 +1015,9 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "Discard the active preview.",
         `Preview cleared at revision ${nextRevision}.`,
         "draft",
+        undefined,
+        "order",
+        { anchor: "order-preview", label: "Order preview" },
       );
       setState({
         ...state,
@@ -1036,6 +1064,9 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
           ? `Quantity pinned at revision ${nextRevision}; preview refreshed.`
           : `Quantity pinned at revision ${nextRevision}.`,
         "draft",
+        undefined,
+        "order",
+        { anchor: `line-${skuId}`, label: stockItemName(state.stock, skuId) },
       );
       setState({
         ...state,
@@ -1080,6 +1111,9 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
           ? `Pin removed at revision ${nextRevision}; preview refreshed.`
           : `Pin removed at revision ${nextRevision}.`,
         "draft",
+        undefined,
+        "order",
+        { anchor: `line-${skuId}`, label: stockItemName(state.stock, skuId) },
       );
       setState({
         ...state,
@@ -1125,6 +1159,14 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
           ? `Booking pin removed at revision ${nextRevision}; preview refreshed.`
           : `Booking pin removed at revision ${nextRevision}.`,
         "draft",
+        undefined,
+        "order",
+        {
+          anchor: "service-band",
+          label:
+            state.signals.find((signal) => signal.id === signalId)?.label ??
+            "Booking",
+        },
       );
       setState({
         ...state,
@@ -1177,17 +1219,17 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       const staleReason = result.orderPreviewInvalidated
         ? "Stock counts changed since this preview. Preview again."
         : null;
+      const unit = stockItemUnit(state.stock, skuId);
       const entry = activityEntry(
         createId,
         now,
         actor,
         `Record ${skuId}: ${onHand} on hand, ${expiring} expiring.`,
-        result.orderPreviewInvalidated
-          ? `Count recorded at revision ${result.revision}; order preview is stale.`
-          : `Count recorded at revision ${result.revision}.`,
+        `On hand ${result.previous.onHand} → ${result.current.onHand} ${unit}; expiring ${result.previous.expiring} → ${result.current.expiring} ${unit} at revision ${result.revision}.${result.orderPreviewInvalidated ? " Order preview is stale." : ""}`,
         "draft",
         tool,
         "stock",
+        { anchor: `stock-${skuId}`, label: stockItemName(state.stock, skuId) },
       );
       setState({
         ...state,
@@ -1246,6 +1288,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         tool,
         "stock",
+        { anchor: "waste-log", label: stockItemName(state.stock, skuId) },
       );
       setState({
         ...state,
@@ -1281,6 +1324,9 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       }
       const staffName = laborStaffName(state.labor, result.signal.staffId);
       const nextRevision = state.revision + 1;
+      const resultSummary = result.signal.kind === "absence"
+        ? `Marked absent at revision ${nextRevision}.`
+        : `Added ${result.signal.hours} ${result.signal.daypart} hours at revision ${nextRevision}.`;
       const entry = activityEntry(
         createId,
         now,
@@ -1288,12 +1334,11 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         result.signal.kind === "absence"
           ? `Record ${staffName} absent.`
           : `Add ${result.signal.hours} ${result.signal.daypart} hours for ${staffName}.`,
-        result.laborPreviewInvalidated
-          ? `Labor signal added at revision ${nextRevision}; prior labor preview cleared.`
-          : `Labor signal added at revision ${nextRevision}.`,
+        `${resultSummary}${result.laborPreviewInvalidated ? " Prior labor preview cleared." : ""}`,
         "draft",
         tool,
         "labor",
+        { anchor: `staff-${result.signal.staffId}`, label: staffName },
       );
       setState({
         ...state,
@@ -1331,6 +1376,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         tool,
         "labor",
+        { anchor: "labor-preview", label: "Labor proposal" },
       );
       setState({
         ...state,
@@ -1360,6 +1406,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         tool,
         "labor",
+        { anchor: "labor-roster", label: "Roster" },
       );
       setState({
         ...state,
@@ -1395,6 +1442,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         tool,
         "labor",
+        { anchor: "labor-roster", label: "Roster" },
       );
       setState({
         ...state,
@@ -1426,6 +1474,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         undefined,
         "labor",
+        { anchor: "labor-preview", label: "Labor proposal" },
       );
       setState({
         ...state,
@@ -1489,9 +1538,11 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         now,
         actor,
         `Handoff: ${managerSummary}`,
-        `Receipt ${receipt.id} saved locally. Nothing was sent outside this page.`,
+        `Saved locally at revision ${nextRevision}. Nothing was sent outside this page.`,
         "save",
         tool,
+        "order",
+        { anchor: "handoff-receipt", label: "Handoff receipt" },
       );
       setState({
         ...state,
@@ -1526,7 +1577,8 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       const receiptIsRecorded =
         state.lastReceipt === null ||
         state.activity.some((entry) =>
-          entry.resultSummary.includes(state.lastReceipt?.id ?? ""),
+          entry.target?.anchor === "handoff-receipt" &&
+          entry.at === state.lastReceipt?.savedAt,
         );
       const receiptEntries: ShiftLogEntry[] =
         state.lastReceipt && !receiptIsRecorded
@@ -1571,6 +1623,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         "draft",
         tool,
         section,
+        { anchor: "shift-notes", label: "Shift note", section: "log" },
       );
       setState({
         ...state,

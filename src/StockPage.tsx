@@ -91,7 +91,11 @@ function StockCountRow({
   const hasFeedback = Boolean(error || notice);
 
   return [
-    <tr key={`${item.id}-count`} className={hasFeedback ? "has-feedback" : undefined}>
+    <tr
+      id={`stock-${item.id}`}
+      key={`${item.id}-count`}
+      className={hasFeedback ? "has-feedback" : undefined}
+    >
       <th scope="row">
         <span className="item-identity">
           <StockItemThumbnail skuId={item.id} />
@@ -232,7 +236,7 @@ function WasteForm({
   };
 
   return (
-    <section className="waste-form-panel" aria-labelledby="waste-form-heading">
+    <section id="waste-log" className="waste-form-panel" aria-labelledby="waste-form-heading">
       <p className="panel-step">Step 2</p>
       <p className="eyebrow">Waste log</p>
       <h2 id="waste-form-heading">Record what left the shelf</h2>

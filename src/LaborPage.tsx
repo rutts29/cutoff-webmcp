@@ -339,7 +339,7 @@ export function LaborPage({ state, store }: LaborPageProps) {
         </section>
       ) : null}
 
-      <section className="labor-dayparts" aria-labelledby="labor-roster-heading">
+      <section id="labor-roster" className="labor-dayparts" aria-labelledby="labor-roster-heading">
         <div className="section-heading">
           <div>
             <p className="panel-step">Step 1</p>
@@ -366,7 +366,10 @@ export function LaborPage({ state, store }: LaborPageProps) {
               <LaborBars required={daypart.required} scheduled={daypart.scheduled} />
               <ul className="labor-shift-list" aria-label={`${DAYPART_LABELS[daypart.id]} shifts`}>
                 {daypart.shifts.map((shift, index) => (
-                  <li key={`${shift.staffId}-${shift.daypart}-${index}`}>
+                  <li
+                    id={`staff-${shift.staffId}`}
+                    key={`${shift.staffId}-${shift.daypart}-${index}`}
+                  >
                     <span className="staff-identity">
                       <StaffAvatar name={shift.name} />
                       <span className="staff-identity-copy">
@@ -389,7 +392,11 @@ export function LaborPage({ state, store }: LaborPageProps) {
       <div className="labor-workspace-grid">
         <LaborSignalForm state={state} store={store} />
 
-        <section className="controls-panel labor-preview-panel" aria-labelledby="labor-preview-heading">
+        <section
+          id="labor-preview"
+          className="controls-panel labor-preview-panel"
+          aria-labelledby="labor-preview-heading"
+        >
           <p className="panel-step">Step 2</p>
           <p className="eyebrow">Labor preview</p>
           <h2 id="labor-preview-heading">Review proposed shift changes</h2>

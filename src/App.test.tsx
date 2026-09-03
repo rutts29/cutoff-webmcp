@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "./App";
 import { RouteView } from "./RouteView";
+import type { Section } from "./domain/sections";
 import { createReviewStore, type ReceiptStorage } from "./store/reviewStore";
 import trajectory from "../docs/trajectory.json";
 
@@ -23,6 +25,18 @@ function makeStore(storage = memoryStorage()) {
     now: () => "2026-09-02T12:00:00.000Z",
     createId: (prefix) => `${prefix}-${++id}`,
   });
+}
+
+function NavigableTestApp({ store }: Readonly<{ store: ReturnType<typeof makeStore> }>) {
+  const [section, setSection] = useState<Section>("order");
+  return (
+    <App
+      store={store}
+      modelContext={undefined}
+      section={section}
+      navigate={setSection}
+    />
+  );
 }
 
 async function addLockedSignals(user: ReturnType<typeof userEvent.setup>) {
@@ -86,6 +100,86 @@ afterEach(() => {
 });
 
 describe("order review UI", () => {
+  it("shows only targeted agent writes and reveals a cross-page change on click", async () => {
+    const user = userEvent.setup();
+    const store = makeStore();
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(Element.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
+      callback(0);
+      return 1;
+    });
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
+
+    render(<NavigableTestApp store={store} />);
+
+    act(() => store.recordSectionOpen("stock", "tool", "open_section"));
+    expect(screen.queryByRole("complementary", { name: "Agent changes" })).not.toBeInTheDocument();
+
+    act(() => {
+      expect(
+        store.recordStockCount(
+          "chicken",
+          30,
+          6,
+          store.getState().revision,
+          "tool",
+          "record_stock_count",
+        ).ok,
+      ).toBe(true);
+    });
+
+    expect(screen.getByRole("button", { name: "Agent · 1 change" })).toBeVisible();
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: "Order" })).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Agent · 1 change" }));
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: /Chicken thighs.*On hand 42 → 30/ }));
+
+    expect(screen.getByRole("heading", { name: "Stock" })).toBeVisible();
+    expect(document.getElementById("stock-chicken")).toHaveClass("agent-highlight");
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      block: "center",
+      behavior: "smooth",
+    });
+    expect(screen.queryByRole("complementary", { name: "Agent changes" })).not.toBeInTheDocument();
+  });
+
+  it("does not show page writes and clears tool changes when the demo resets", () => {
+    const store = makeStore();
+    render(<App store={store} modelContext={undefined} />);
+
+    act(() => {
+      expect(
+        store.addLocalSignal(
+          { kind: "booking", label: "Manager booking", covers: 20 },
+          store.getState().revision,
+          "page",
+        ).ok,
+      ).toBe(true);
+    });
+    expect(screen.queryByRole("complementary", { name: "Agent changes" })).not.toBeInTheDocument();
+
+    act(() => {
+      expect(
+        store.addLocalSignal(
+          { kind: "event_cancelled", label: "Derby cancelled" },
+          store.getState().revision,
+          "tool",
+          "add_local_signal",
+        ).ok,
+      ).toBe(true);
+    });
+    expect(screen.getByRole("button", { name: "Agent · 1 change" })).toBeVisible();
+
+    act(() => store.resetDemo("page"));
+    expect(screen.queryByRole("complementary", { name: "Agent changes" })).not.toBeInTheDocument();
+  });
+
   it("describes the whole shift desk in the shared header", () => {
     render(<App store={makeStore()} modelContext={undefined} section="log" />);
 

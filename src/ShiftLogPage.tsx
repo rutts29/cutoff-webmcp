@@ -78,7 +78,7 @@ export function ShiftLogPage({ state, store }: ShiftLogPageProps) {
 
   return (
     <div className="shift-log-grid">
-      <section className="shift-log-panel" aria-labelledby="shift-log-heading">
+      <section id="shift-notes" className="shift-log-panel" aria-labelledby="shift-log-heading">
         <div className="section-heading">
           <div>
             <p className="eyebrow">Service-day record</p>
