@@ -149,6 +149,14 @@ table { border-collapse: collapse; min-width: 820px; width: 100%; }
 th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: right; vertical-align: middle; }
 thead th { color: var(--muted); font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
 th:first-child, td:first-child { padding-left: 0; text-align: left; }
+.sheet-panel th:first-child,
+.sheet-panel td:first-child,
+.stock-count-panel th:first-child,
+.stock-count-panel td:first-child { padding-left: 12px; }
+.sheet-panel th:last-child,
+.sheet-panel td:last-child,
+.stock-count-panel th:last-child,
+.stock-count-panel td:last-child { padding-right: 12px; }
 tbody tr { cursor: pointer; }
 tbody tr:hover, tbody tr.selected { background: var(--accent-soft); }
 tbody th { font-family: Iowan Old Style, Palatino Linotype, Georgia, serif; font-size: 16px; font-weight: 500; }
