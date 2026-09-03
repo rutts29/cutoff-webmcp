@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-09-02T22:40:46Z",
+  "createdAt": "2026-09-03T21:47:02Z",
   "transport": "curl",
   "api": "openai-chat-completions",
   "model": "anthropic/claude-sonnet-5",
@@ -21,8 +21,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5169,
-        "completionTokens": 63,
-        "totalTokens": 5232
+        "completionTokens": 85,
+        "totalTokens": 5254
       }
     },
     {
@@ -35,8 +35,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5167,
-        "completionTokens": 64,
-        "totalTokens": 5231
+        "completionTokens": 51,
+        "totalTokens": 5218
       }
     },
     {
@@ -49,8 +49,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5170,
-        "completionTokens": 87,
-        "totalTokens": 5257
+        "completionTokens": 145,
+        "totalTokens": 5315
       }
     },
     {
@@ -63,8 +63,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5171,
-        "completionTokens": 63,
-        "totalTokens": 5234
+        "completionTokens": 92,
+        "totalTokens": 5263
       }
     },
     {
@@ -77,8 +77,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5168,
-        "completionTokens": 87,
-        "totalTokens": 5255
+        "completionTokens": 83,
+        "totalTokens": 5251
       }
     },
     {
@@ -91,8 +91,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5180,
-        "completionTokens": 57,
-        "totalTokens": 5237
+        "completionTokens": 69,
+        "totalTokens": 5249
       }
     },
     {
@@ -105,8 +105,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5173,
-        "completionTokens": 71,
-        "totalTokens": 5244
+        "completionTokens": 59,
+        "totalTokens": 5232
       }
     },
     {
@@ -119,22 +119,22 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5191,
-        "completionTokens": 128,
-        "totalTokens": 5319
+        "completionTokens": 56,
+        "totalTokens": 5247
       }
     },
     {
       "name": "Read one stock-line calculation",
       "expectedFirstCall": "get_line_detail",
       "actualCalls": [
-        "get_line_detail"
+        "get_order_context"
       ],
-      "outcome": "pass",
+      "outcome": "fail",
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5171,
-        "completionTokens": 53,
-        "totalTokens": 5224
+        "completionTokens": 28,
+        "totalTokens": 5199
       }
     },
     {
@@ -147,8 +147,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5161,
-        "completionTokens": 48,
-        "totalTokens": 5209
+        "completionTokens": 66,
+        "totalTokens": 5227
       }
     },
     {
@@ -175,8 +175,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5185,
-        "completionTokens": 29,
-        "totalTokens": 5214
+        "completionTokens": 62,
+        "totalTokens": 5247
       }
     },
     {
@@ -189,8 +189,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5170,
-        "completionTokens": 70,
-        "totalTokens": 5240
+        "completionTokens": 72,
+        "totalTokens": 5242
       }
     },
     {
@@ -203,8 +203,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5168,
-        "completionTokens": 117,
-        "totalTokens": 5285
+        "completionTokens": 55,
+        "totalTokens": 5223
       }
     },
     {
@@ -217,23 +217,22 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5176,
-        "completionTokens": 55,
-        "totalTokens": 5231
+        "completionTokens": 61,
+        "totalTokens": 5237
       }
     },
     {
       "name": "Start a labor preview from current state",
       "expectedFirstCall": "get_labor_plan",
       "actualCalls": [
-        "get_labor_plan",
-        "get_order_context"
+        "get_labor_plan"
       ],
-      "outcome": "fail",
+      "outcome": "pass",
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5174,
-        "completionTokens": 138,
-        "totalTokens": 5312
+        "completionTokens": 187,
+        "totalTokens": 5361
       }
     },
     {
@@ -246,8 +245,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5176,
-        "completionTokens": 50,
-        "totalTokens": 5226
+        "completionTokens": 43,
+        "totalTokens": 5219
       }
     },
     {
@@ -274,8 +273,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 5176,
-        "completionTokens": 51,
-        "totalTokens": 5227
+        "completionTokens": 112,
+        "totalTokens": 5288
       }
     }
   ]

@@ -88,9 +88,9 @@ Static first-call evaluation measures whether a model starts from the required p
 
 ## Independent WebMCP audit
 
-[Ora's Sep 3 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 99, and Trust 100. It captured all six Order tools, including two reads and four actions, with no registration error.
+[The Sep 4 webmcp.com report](https://webmcp.com/report/6d9b889b-a122-4c21-85fa-c327f2f28a24) graded Cutoff A, "Excellent," after detecting 14 unique at-rest tools across five pages. The two adoption tools are dynamic, bringing the catalog to 16 only while their previews are current.
 
-The 47-point task score came from document-editor tests: open a recent document, insert a paragraph, then save and share it. Those are not Cutoff tasks. Ora's custom restaurant run also offered its live model only the two read tools, although the same report captured all six. By comparison, the production browser suite discovered the live page tools and completed all 21 Cutoff tasks, scoring 46 of 48 strict matcher steps after one extra safe Stock read. The remaining quality warning says `open_section` does not begin with a verb, while Ora's suggested fix repeats the same name. The tool remains unchanged because "open" is its verb and the name states the action accurately.
+[Ora's Sep 4 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 86 overall: Shared Experience 100, Tool Selection 45, Tool Quality 99, and Trust 100. It captured all six Order tools, including two reads and four actions, with no registration error. Even after a single restaurant-specific custom rescan, Ora substituted document or note-taking tasks: open a recent document, insert a paragraph, then save and share it. Those are not Cutoff tasks. By comparison, the production browser suite discovered the live page tools and completed all 21 Cutoff tasks, scoring 46 of 48 strict matcher steps after one extra safe Stock read. The remaining quality warning marks `open_section`, although "open" is its verb and the name states the action accurately.
 
 ## Downloads and storage
 

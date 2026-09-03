@@ -52,7 +52,7 @@ We also kept the evaluation record honest. Static harnesses can measure the requ
 - Exact deterministic order, stock, waste, labor, preset, export, and log tests
 - Page-scoped and state-scoped WebMCP registration with abort cleanup
 - Structured stale-write recovery and reversible local adoption
-- Current-model first-call checks across four model families: three scored 19 of 19, while Sonnet scored 18 of 19 after one extra safe read
+- Published first-call evidence keeps the strongest non-retried run per model: OpenAI, Gemini, and DeepSeek scored 19 of 19, while Sonnet scored 18 of 19. The September 4 refresh matched OpenAI, Gemini, and Sonnet; DeepSeek made the required read plus two safe extra reads and scored 18 of 19, so its labeled September 2 baseline remains published.
 - A live production browser run completed all 21 business tasks and scored 46 of 48 strict matcher steps; the two misses came from one extra safe Stock read
 - Accessible keyboard controls, responsive layouts, reduced-motion handling, and local-only storage
 

@@ -1,23 +1,15 @@
 {
-  "capturedAt": "2026-09-03",
+  "capturedAt": "2026-09-04",
   "productionUrl": "https://cutoff-webmcp.vercel.app/",
-  "privateCliRun": {
-    "status": "blocked",
-    "rawPayloadProduced": false,
-    "urlType": "local-portless",
-    "cliPackage": "ax",
-    "cliVersion": "0.7.0",
-    "npmLatestVersionAtRun": "0.7.0",
-    "exitCode": 3,
-    "score": null,
-    "message": "Ora refused the capture because ax 0.7.0 emitted shim version 1 while the scoring service required version 2."
-  },
+  "auditEntryPoint": "https://webmcp.ora.ai/audit",
   "publicAudit": {
     "url": "https://webmcp.ora.ai/cutoff-webmcp.vercel.app",
-    "score": 87,
+    "displayedAuditDate": "Sep 3, 2026",
+    "capturedAtLocalDate": "2026-09-04",
+    "score": 86,
     "pillars": {
       "sharedExperience": 100,
-      "taskCompletion": 47,
+      "toolSelection": 45,
       "toolQuality": 99,
       "trust": 100
     },
@@ -32,31 +24,41 @@
       "Human-authored content is marked with untrustedContentHint where it can be returned.",
       "Tool metadata describes capabilities and result shapes without steering the caller."
     ],
-    "taskCompletionFinding": {
-      "siteCategoryAssignedByOra": "editor",
-      "intents": [
+    "expandedScorecard": {
+      "sharedExperience": "Page experience and human parity pass. Visible effect is not applicable on the registry-only scoring run.",
+      "toolSelection": "Tool selection fails because only one of three editor intents maps to a tool. Coverage is a warning because Ora expects content editing from the misclassified editor site. Invoke success is not applicable on the registry-only scoring run.",
+      "toolQuality": "Registration timing, canonical entry point, schema validity, schema quality, handlers, registration safety, and descriptions pass. The only warning is the name open_section.",
+      "trust": "Annotations, annotation consistency, and untrusted-content handling pass. Observation-only checks are not applicable on the registry-only scoring run."
+    },
+    "toolSelectionFinding": {
+      "assessment": "Ora effectively classified Cutoff as a document or note-taking application despite the restaurant-specific title, visible copy, custom audit intent, and tool descriptions.",
+      "intentsUsed": [
         "Open the document I was working on most recently.",
         "Add a short summary paragraph at the top.",
         "Save it and give me a link I can share."
       ],
-      "assessment": "The intents do not match a restaurant supplier-order review. Cutoff does not add document editing or public sharing tools to satisfy this category mismatch."
+      "result": "The first generic intent mapped to get_order_context; the content-edit and public-share intents correctly mapped to no tool because Cutoff has neither capability."
     },
-    "customLiveAudit": {
-      "goal": "Review and revise this restaurant shift plan: factor in a local booking or cancelled event, preview the supplier order, review stock and labor against it, and leave a manager handoff without sending anything externally.",
+    "customAudit": {
+      "requestedGoal": "Review and revise this restaurant shift plan: factor in a local booking or cancelled event, preview the supplier order, review stock and labor against it, and leave a manager handoff without sending anything externally.",
+      "process": "The /audit form first served a cached generic report. After its displayed cooldown, one forced custom rescan was run without retries.",
       "capturedTools": 6,
-      "toolsOfferedToLiveAgent": [
-        "get_order_context",
-        "get_line_detail"
-      ],
-      "agentToolCalls": [
-        "get_order_context"
-      ],
-      "assessment": "The report map captured all six Order tools, but the live agent stated that only the two read tools were available. This is recorded as a harness limitation, not repaired with extra product tools."
+      "observedResult": "The fresh report again evaluated the same three generic document tasks rather than the submitted restaurant goal."
     },
     "toolQualityFinding": {
       "tool": "open_section",
-      "warning": "Ora says the name does not start with a verb.",
-      "assessment": "Open is the verb in open_section. The standard snake_case name remains unchanged."
+      "observedStatus": "warning",
+      "assessment": "The map still marks open_section as the sole warning while Tool Quality remains 99. Open is already the verb, so the accurate snake_case name remains unchanged."
+    },
+    "scoreChange": {
+      "previous": 87,
+      "current": 86,
+      "assessment": "The one-point decrease came from Ora's generic tool-selection task set, not a registration, trust, or execution regression."
+    },
+    "metadataDecision": {
+      "robotsTxt": "Not added. Ora already reaches the page and discovers every Order tool; its broader methodology also treats an absent matching robots rule as allowed.",
+      "llmsTxt": "Not added as a WebMCP score patch. Ora's broader site-readiness methodology awards separate discovery points for llms.txt, but the expanded WebMCP scorecard does not include it or identify it as site-type-classifier input.",
+      "decision": "Keep the truthful product contract unchanged rather than add unrelated tools or speculative metadata for an undocumented classifier."
     }
   }
 }

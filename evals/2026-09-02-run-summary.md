@@ -16,16 +16,23 @@ Mutating tools require `expectedRevision` from a page read or the previous mutat
 
 ## Current first-call results
 
-The final 19-case fixture ran through Vercel AI Gateway with the production tool names, descriptions, and input schemas.
+On September 4, the unchanged 19-case fixture ran once per model through Vercel AI Gateway with the production tool names, descriptions, and input schemas. Results were accepted only when they matched or improved on the published artifact; there were no retries.
 
-| Model | Result | Raw result |
-|---|---:|---|
-| OpenAI GPT-5.6 Sol | 19 of 19 | `gateway-openai-gpt-5.6-sol-first-call-stage3-final.json` |
-| Gemini 3.8 Flash | 19 of 19 | `gateway-gemini-3.8-flash-first-call-stage3-final.json` |
-| DeepSeek V4 Pro | 19 of 19 | `gateway-deepseek-v4-pro-first-call-stage3-final.json` |
-| Claude Sonnet 5 | 18 of 19 | `gateway-claude-sonnet-5-first-call-stage3-final.json` |
+| Model | September 4 run | Published artifact | Publication decision |
+|---|---:|---:|---|
+| OpenAI GPT-5.6 Sol | 19 of 19 | 19 of 19 | refreshed |
+| Gemini 3.8 Flash | 19 of 19 | 19 of 19 | refreshed |
+| DeepSeek V4 Pro | 18 of 19 | 19 of 19 | September 2 artifact retained |
+| Claude Sonnet 5 | 18 of 19 | 18 of 19 | refreshed |
 
-Sonnet selected the correct `get_labor_plan` call and added one safe parallel `get_order_context` read. The strict first-call matcher records the additional read as a failure. No fixture or tool description was changed to hide it.
+The fresh DeepSeek run began the restrained-preview task with the required `get_order_context` call, then added the safe `get_labor_plan` and `get_stock_status` reads. The strict matcher therefore scored that run 18 of 19, and the repository keeps the earlier 19-of-19 artifact as an explicitly retained baseline rather than replacing it with a regression. Sonnet used `get_order_context` instead of `get_line_detail` for the stock-line calculation case, so its refreshed artifact remains 18 of 19. No fixture or tool description was changed, and neither model was retried to improve its score.
+
+The raw result filenames remain stable:
+
+- `gateway-openai-gpt-5.6-sol-first-call-stage3-final.json`
+- `gateway-gemini-3.8-flash-first-call-stage3-final.json`
+- `gateway-deepseek-v4-pro-first-call-stage3-final.json`
+- `gateway-claude-sonnet-5-first-call-stage3-final.json`
 
 The gateway was evaluation transport only. No model key enters the application bundle.
 
@@ -37,9 +44,11 @@ The deterministic suite contains 111 tests for engine calculations, shared revis
 
 ## Public auditor result
 
-[Ora's September 3 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 99, and Trust 100. It captured all six Order tools with no registration error.
+[The September 4 webmcp.com report](https://webmcp.com/report/6d9b889b-a122-4c21-85fa-c327f2f28a24) graded the production site A, "Excellent," with 14 unique tools detected across five pages. Those are the tools registered at rest; the two adoption tools remain intentionally dynamic, producing the complete 16-tool catalog only while their previews are current. Its findings praise the constrained inputs, revision guards, cross-section coverage, and naming. It asks for output schemas, but WebMCP has no standard `outputSchema` member, so Cutoff keeps its result shapes in the descriptions and generated `schema.json`.
 
-Ora assigned document-editor tasks to Cutoff. Its custom restaurant run captured all six Order tools but exposed only the two read tools to its live agent. The product does not add document editing, public sharing, or weaker revision rules to satisfy that mismatch. `ora-webmcp-audit.json` records the result and its limitations.
+[Ora's September 4 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 86 overall: Shared Experience 100, Tool Selection 45, Tool Quality 99, and Trust 100. It captured all six Order tools with no registration error. One custom audit was started from the required `/audit` page; after Ora's cooldown, a single forced run used the restaurant-specific goal. The resulting report still substituted three document or note-taking tasks: open a recent document, insert a summary, and save a public share link. Cutoff correctly has no tool for the last two. The product does not add unrelated editing or public-sharing capabilities to satisfy that classifier mismatch.
+
+Neither `robots.txt` nor `llms.txt` was added as a score patch. The expanded WebMCP scorecard does not include either file: Shared Experience and Trust are already 100, Tool Quality is 99 with only the `open_section` naming warning, and Tool Selection is 45 because of the incorrect editor classification. Ora's broader site-readiness methodology says an absent matching robots rule already permits crawling and gives separate discovery credit for `llms.txt`; it does not establish that either file changes WebMCP site-type classification.
 
 ## Committed artifacts
 
@@ -47,8 +56,8 @@ The public repository keeps:
 
 - the generated schema;
 - the five current fixtures;
-- the four final 19-case model results;
-- the current Ora record; and
+- three refreshed 19-case model results and the explicitly retained DeepSeek baseline;
+- the current Ora and webmcp.com records; and
 - this summary.
 
 Intermediate gateway snapshots and generated browser reports are ignored. They are local debugging artifacts, not submission evidence.

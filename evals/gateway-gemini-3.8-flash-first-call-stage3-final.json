@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-09-02T22:41:47Z",
+  "createdAt": "2026-09-03T21:44:28Z",
   "transport": "curl",
   "api": "openai-chat-completions",
   "model": "google/gemini-3.8-flash",
@@ -21,8 +21,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1987,
-        "completionTokens": 189,
-        "totalTokens": 2176
+        "completionTokens": 160,
+        "totalTokens": 2147
       }
     },
     {
@@ -35,8 +35,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1987,
-        "completionTokens": 71,
-        "totalTokens": 2058
+        "completionTokens": 67,
+        "totalTokens": 2054
       }
     },
     {
@@ -49,8 +49,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1990,
-        "completionTokens": 173,
-        "totalTokens": 2163
+        "completionTokens": 140,
+        "totalTokens": 2130
       }
     },
     {
@@ -63,8 +63,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1993,
-        "completionTokens": 77,
-        "totalTokens": 2070
+        "completionTokens": 206,
+        "totalTokens": 2199
       }
     },
     {
@@ -77,8 +77,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1990,
-        "completionTokens": 90,
-        "totalTokens": 2080
+        "completionTokens": 83,
+        "totalTokens": 2073
       }
     },
     {
@@ -91,8 +91,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1995,
-        "completionTokens": 95,
-        "totalTokens": 2090
+        "completionTokens": 104,
+        "totalTokens": 2099
       }
     },
     {
@@ -105,8 +105,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1992,
-        "completionTokens": 198,
-        "totalTokens": 2190
+        "completionTokens": 201,
+        "totalTokens": 2193
       }
     },
     {
@@ -119,8 +119,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2002,
-        "completionTokens": 122,
-        "totalTokens": 2124
+        "completionTokens": 64,
+        "totalTokens": 2066
       }
     },
     {
@@ -133,8 +133,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1989,
-        "completionTokens": 132,
-        "totalTokens": 2121
+        "completionTokens": 176,
+        "totalTokens": 2165
       }
     },
     {
@@ -147,8 +147,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1983,
-        "completionTokens": 92,
-        "totalTokens": 2075
+        "completionTokens": 65,
+        "totalTokens": 2048
       }
     },
     {
@@ -161,8 +161,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1991,
-        "completionTokens": 126,
-        "totalTokens": 2117
+        "completionTokens": 121,
+        "totalTokens": 2112
       }
     },
     {
@@ -175,8 +175,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1997,
-        "completionTokens": 92,
-        "totalTokens": 2089
+        "completionTokens": 95,
+        "totalTokens": 2092
       }
     },
     {
@@ -189,8 +189,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1987,
-        "completionTokens": 170,
-        "totalTokens": 2157
+        "completionTokens": 240,
+        "totalTokens": 2227
       }
     },
     {
@@ -203,8 +203,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1988,
-        "completionTokens": 140,
-        "totalTokens": 2128
+        "completionTokens": 82,
+        "totalTokens": 2070
       }
     },
     {
@@ -217,8 +217,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1991,
-        "completionTokens": 101,
-        "totalTokens": 2092
+        "completionTokens": 244,
+        "totalTokens": 2235
       }
     },
     {
@@ -231,8 +231,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1993,
-        "completionTokens": 160,
-        "totalTokens": 2153
+        "completionTokens": 226,
+        "totalTokens": 2219
       }
     },
     {
@@ -245,8 +245,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1992,
-        "completionTokens": 99,
-        "totalTokens": 2091
+        "completionTokens": 97,
+        "totalTokens": 2089
       }
     },
     {
@@ -259,8 +259,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1987,
-        "completionTokens": 63,
-        "totalTokens": 2050
+        "completionTokens": 75,
+        "totalTokens": 2062
       }
     },
     {
@@ -273,8 +273,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 1993,
-        "completionTokens": 106,
-        "totalTokens": 2099
+        "completionTokens": 133,
+        "totalTokens": 2126
       }
     }
   ]

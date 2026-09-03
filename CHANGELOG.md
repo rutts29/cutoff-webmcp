@@ -4,6 +4,14 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-04, evaluation refresh (Codex)
+
+- Regenerated the 16-tool evaluation schema with no catalog drift, then ran the unchanged 19-case first-call fixture once per model through Vercel AI Gateway. GPT-5.6 Sol and Gemini 3.8 Flash remained 19 of 19; Claude Sonnet 5 remained 18 of 19 and its fresh artifact replaced the earlier run.
+- DeepSeek V4 Pro made the required first call plus two safe reads and scored 18 of 19. Its fresh run was not retried or published over the stronger September 2 result; the summary labels the retained 19-of-19 artifact and the new regression separately.
+- Ran one fresh production audit from Ora's required `/audit` entry point after its cooldown. It captured all six Order tools and scored Shared Experience 100, Tool Selection 45, Tool Quality 99, and Trust 100; the report still classified the restaurant desk as an editor and substituted document-writing and public-sharing tasks.
+- Added the webmcp.com production scorecard: grade A, “Excellent,” with 14 unique at-rest tools across five pages. The two preview-only adoption tools remain intentionally dynamic, bringing the full catalog to 16 only when applicable.
+- Reviewed the expanded Ora checks. `robots.txt` is already unnecessary for access because an absent matching rule is allowed and the auditors reach the site; `llms.txt` belongs to Ora's separate discovery score, not this WebMCP tool-selection score. No application, tool, metadata, or fixture behavior changed for a leaderboard number.
+
 ### 2026-09-03, expansion Stage 4B (Codex, build lead)
 
 - Raised the interface to a 12-pixel text floor with 15-pixel body copy and a responsive type scale. The desk now uses the full viewport width instead of shrinking inside a framed sheet, while each route keeps normal vertical scrolling.

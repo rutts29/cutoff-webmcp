@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-09-02T22:40:42Z",
+  "createdAt": "2026-09-03T21:43:13Z",
   "transport": "curl",
   "api": "openai-chat-completions",
   "model": "openai/gpt-5.6-sol",
@@ -21,8 +21,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2315,
-        "completionTokens": 42,
-        "totalTokens": 2357
+        "completionTokens": 40,
+        "totalTokens": 2355
       }
     },
     {
@@ -35,8 +35,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2314,
-        "completionTokens": 26,
-        "totalTokens": 2340
+        "completionTokens": 46,
+        "totalTokens": 2360
       }
     },
     {
@@ -49,8 +49,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2317,
-        "completionTokens": 39,
-        "totalTokens": 2356
+        "completionTokens": 30,
+        "totalTokens": 2347
       }
     },
     {
@@ -63,8 +63,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2320,
-        "completionTokens": 39,
-        "totalTokens": 2359
+        "completionTokens": 56,
+        "totalTokens": 2376
       }
     },
     {
@@ -77,8 +77,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2316,
-        "completionTokens": 52,
-        "totalTokens": 2368
+        "completionTokens": 46,
+        "totalTokens": 2362
       }
     },
     {
@@ -91,8 +91,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2323,
-        "completionTokens": 37,
-        "totalTokens": 2360
+        "completionTokens": 41,
+        "totalTokens": 2364
       }
     },
     {
@@ -119,8 +119,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2328,
-        "completionTokens": 58,
-        "totalTokens": 2386
+        "completionTokens": 50,
+        "totalTokens": 2378
       }
     },
     {
@@ -133,8 +133,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2317,
-        "completionTokens": 44,
-        "totalTokens": 2361
+        "completionTokens": 41,
+        "totalTokens": 2358
       }
     },
     {
@@ -147,8 +147,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2311,
-        "completionTokens": 18,
-        "totalTokens": 2329
+        "completionTokens": 30,
+        "totalTokens": 2341
       }
     },
     {
@@ -161,8 +161,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2319,
-        "completionTokens": 28,
-        "totalTokens": 2347
+        "completionTokens": 27,
+        "totalTokens": 2346
       }
     },
     {
@@ -189,8 +189,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2315,
-        "completionTokens": 36,
-        "totalTokens": 2351
+        "completionTokens": 33,
+        "totalTokens": 2348
       }
     },
     {
@@ -203,8 +203,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2316,
-        "completionTokens": 29,
-        "totalTokens": 2345
+        "completionTokens": 16,
+        "totalTokens": 2332
       }
     },
     {
@@ -217,8 +217,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2320,
-        "completionTokens": 37,
-        "totalTokens": 2357
+        "completionTokens": 35,
+        "totalTokens": 2355
       }
     },
     {
@@ -231,8 +231,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2321,
-        "completionTokens": 38,
-        "totalTokens": 2359
+        "completionTokens": 46,
+        "totalTokens": 2367
       }
     },
     {
@@ -245,8 +245,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2320,
-        "completionTokens": 55,
-        "totalTokens": 2375
+        "completionTokens": 54,
+        "totalTokens": 2374
       }
     },
     {
@@ -259,8 +259,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2315,
-        "completionTokens": 45,
-        "totalTokens": 2360
+        "completionTokens": 49,
+        "totalTokens": 2364
       }
     },
     {
@@ -273,8 +273,8 @@
       "finishReason": "tool_calls",
       "usage": {
         "promptTokens": 2320,
-        "completionTokens": 47,
-        "totalTokens": 2367
+        "completionTokens": 44,
+        "totalTokens": 2364
       }
     }
   ]
