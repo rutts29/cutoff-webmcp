@@ -876,10 +876,7 @@ describe("order review UI", () => {
       "href",
       "/trajectory",
     );
-    expect(screen.getByRole("link", { name: "How the numbers work" })).toHaveAttribute(
-      "href",
-      "/#numbers",
-    );
+    expect(screen.queryByRole("link", { name: "How the numbers work" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Copy demo prompt" }));
 
     expect(writeText).toHaveBeenCalledWith(

@@ -152,7 +152,7 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
 
   if (!item) {
     return (
-      <aside id="numbers" className="detail-panel empty-detail" aria-label="Stock line math">
+      <aside className="detail-panel empty-detail" aria-label="Stock line math">
         <p className="eyebrow">Stock line math</p>
         <p>Select a line to inspect its order math and pin a quantity.</p>
       </aside>
@@ -180,7 +180,6 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
 
   return (
     <aside
-      id="numbers"
       className="detail-panel"
       aria-label={`${item.name} stock line math`}
       ref={panelRef}
@@ -839,8 +838,8 @@ export function App({
 
         <div className="main-grid">
           <OrderSheet state={state} store={store} serviceLabel={preset.serviceLabel} />
-          <DetailPanel state={state} store={store} />
           <SignalForm state={state} store={store} />
+          <DetailPanel state={state} store={store} />
           <section className="controls-panel" aria-label="Order plan">
             <p className="panel-step">Step 2</p>
             <p className="eyebrow">Order plan</p>
@@ -926,7 +925,6 @@ export function App({
           <nav aria-label="Project links">
             <a href="/trajectory">How this was built</a>
             <a href="https://github.com/rutts29/cutoff-webmcp" rel="noreferrer">GitHub repository</a>
-            <a href="/#numbers">How the numbers work</a>
             <button className="text-button" type="button" onClick={() => void copyDemoPrompt()}>Copy demo prompt</button>
           </nav>
           <p className="copy-notice" aria-live="polite">{promptNotice}</p>

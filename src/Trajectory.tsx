@@ -3,11 +3,6 @@ import trajectory from "../docs/trajectory.json";
 export function Trajectory() {
   return (
     <main className="trajectory-shell">
-      <aside className="cutoff-rail" aria-label="Project record">
-        <span>Cutoff</span>
-        <strong>Record</strong>
-        <span>Sep 2026</span>
-      </aside>
       <article className="trajectory-paper">
         <header className="trajectory-header">
           <p className="eyebrow">Project record</p>

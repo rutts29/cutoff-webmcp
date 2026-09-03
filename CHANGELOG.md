@@ -4,6 +4,15 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-03, expansion Stage 4B (Codex, build lead)
+
+- Raised the interface to a 12-pixel text floor with 15-pixel body copy and a responsive type scale. The desk now uses the full viewport width instead of shrinking inside a framed sheet, while each route keeps normal vertical scrolling.
+- Applied the locked dashboard palette through shared tokens. White cards, teal actions, muted surfaces, and semantic status colors replace the low-contrast paper treatment; color values are declared only in the root token block.
+- Removed the cutoff rail and the misleading “How the numbers work” link. Reordered the Order sidebar so Local signals, the first workflow step, appears before stock-line detail at laptop height.
+- Kept the pass at the presentation boundary: no engine, store, WebMCP tool, schema, fixture, or evaluation behavior changed.
+- Checked Order, Stock, Labor, Shift log, and Trajectory at 1,280 and 390 pixels through the canonical Portless URL. No rendered text fell below 12 pixels, the four decision routes had no root horizontal overflow at 390 pixels, and Local signals began inside the 1,440 by 900 Order viewport.
+- Captured eight review images at 1,440 by 900 and 390 by 844 pixels under ignored `output/playwright/stage4b/`. Production remains unchanged while the non-production candidate is reviewed.
+
 ### 2026-09-03, expansion Stage 4 (Codex, build lead)
 
 - Removed the decision-page cutoff rail and rewrote the header around the full shift desk, with exact service-day cutoff, service, and delivery details for both presets.
@@ -169,6 +178,7 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 | Date | Agent / browser | Flow | Result | Notes |
 |---|---|---|---|---|
+| 2026-09-03 | Playwright / `https://cutoff.localhost` | Stage 4B readability and responsive gate | Pass | Order, Stock, Labor, Shift log, and Trajectory each returned zero rendered text nodes below 12 pixels at 1,280 and 390 pixels. Eight decision-page captures were checked at 1,440 by 900 and 390 by 844; the mobile document width stayed at 390 and Local signals began inside the laptop viewport. |
 | 2026-09-03 | Ora dedicated public WebMCP audit / production | Post-expansion forced rescan and custom restaurant-shift goal | 87 overall | Fresh capture: Shared Experience 100, Task Completion 47, Tool Quality 99, Trust 100, with all 6 Order tools detected. Ora still graded document-editor intents and offered only the 2 read tools to its live agent. Its sole tool-quality warning incorrectly says `open_section` does not begin with a verb. Result retained without product distortion. |
 | 2026-09-03 | `webmcp-evals` / Claude Sonnet 5 / production | Expanded 21-case live browser suite | 46 of 48 matcher steps; 21 of 21 tasks completed | The two misses are one conservative `get_stock_status` read before a successful count write. The strict fixture also permits the direct write because `open_section` returns the current revision. No tool call or business result failed; the raw report remains local and ignored. |
 | 2026-09-03 | `webmcp-evals` / production | Browser runner startup | Infrastructure corrected before inference | The CLI defaulted to uninstalled Chrome Canary and stopped before case 1. The same logical run then used installed stable Chrome; no model call or app action occurred in the failed start. |
