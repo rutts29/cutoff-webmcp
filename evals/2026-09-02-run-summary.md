@@ -33,7 +33,7 @@ The gateway was evaluation transport only. No model key enters the application b
 
 The final production browser suite discovered the page-owned tools and completed all 21 tasks without a tool execution error. It scored 46 of 48 strict matcher steps. For the chicken-count task, Sonnet called `open_section`, read `get_stock_status`, and recorded the exact count. The fixture permits the shorter navigation-and-mutation chain because `open_section` already returns the current revision, so the additional safe read displaced two strict step matches.
 
-The deterministic suite contains 109 tests for engine calculations, shared revisions, stale writes, route-scoped registration, dynamic adoption tools, storage bounds, exports, accessibility, and UI state transitions.
+The deterministic suite contains 111 tests for engine calculations, shared revisions, stale writes, route-scoped registration, dynamic adoption tools, storage bounds, exports, accessibility, and UI state transitions.
 
 ## Public auditor result
 
