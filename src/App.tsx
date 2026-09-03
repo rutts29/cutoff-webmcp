@@ -671,7 +671,7 @@ export function App({
               <span className="synthetic-tag">Synthetic</span>
             </div>
             <h1>Cutoff</h1>
-            <p className="hero-copy">Revise the supplier order when the forecast is wrong. Covers, labor hours, and stock cases for one location before cutoff.</p>
+            <p className="hero-copy">Review the order, live stock, labor plan, and shift record for one location before cutoff.</p>
             <p className="header-subtitle">Northgate · service {preset.serviceLabel} · delivery 06:30</p>
           </div>
           <div className="header-actions">

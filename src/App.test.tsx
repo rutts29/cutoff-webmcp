@@ -83,6 +83,16 @@ afterEach(cleanup);
 afterEach(() => vi.unstubAllGlobals());
 
 describe("order review UI", () => {
+  it("describes the whole shift desk in the shared header", () => {
+    render(<App store={makeStore()} modelContext={undefined} section="log" />);
+
+    expect(
+      screen.getByText(
+        "Review the order, live stock, labor plan, and shift record for one location before cutoff.",
+      ),
+    ).toBeVisible();
+  });
+
   it("uses section-specific workflow copy", () => {
     render(
       <App

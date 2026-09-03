@@ -246,6 +246,13 @@
       "actor": "builder",
       "summary": "Reviewed every finding in Ora's current six-tool production report before reviewer handoff.",
       "outcome": "Shared Experience and Trust have no open warning. The Task Completion grader used document-editor actions and its custom live runner withheld four tools that the capture recorded. Ora's only quality warning says open_section lacks a verb while proposing the same name as its fix. No product contract changed for those mismatches."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "freeze",
+      "actor": "builder",
+      "summary": "Applied the two copy changes from the final review.",
+      "outcome": "The header describes the full operations desk. Shift-log summaries name staff and omit generated order and labor preview identifiers, while structured tool results retain those identifiers for safe follow-up calls."
     }
   ]
 }

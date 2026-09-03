@@ -702,6 +702,14 @@ function activityEntry(
   };
 }
 
+function laborStaffName(labor: LaborEngineState, staffId: string): string {
+  return (
+    labor.shifts.find((shift) => shift.staffId === staffId)?.name ??
+    labor.onCall.find((staff) => staff.staffId === staffId)?.name ??
+    "Unknown staff member"
+  );
+}
+
 export function createReviewStore(options: StoreOptions = {}): ReviewStore {
   const storage =
     options.storage ??
@@ -843,7 +851,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         now,
         actor,
         rationale?.trim() || "Recompute the working order.",
-        `Preview ${preview.id} created for ${preview.covers.after} covers.`,
+        `Order preview created for ${preview.covers.after} covers.`,
         "draft",
         tool,
       );
@@ -900,7 +908,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         createId,
         now,
         actor,
-        note?.trim() || `Adopt preview ${previewId}.`,
+        note?.trim() || "Adopt the current order preview.",
         `Order preview adopted at revision ${nextRevision}. Nothing was sent to a supplier.`,
         "draft",
         tool,
@@ -1271,14 +1279,15 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
       if (!result.ok) {
         return result;
       }
+      const staffName = laborStaffName(state.labor, result.signal.staffId);
       const nextRevision = state.revision + 1;
       const entry = activityEntry(
         createId,
         now,
         actor,
         result.signal.kind === "absence"
-          ? `Record ${result.signal.staffId} absent.`
-          : `Add ${result.signal.hours} ${result.signal.daypart} hours for ${result.signal.staffId}.`,
+          ? `Record ${staffName} absent.`
+          : `Add ${result.signal.hours} ${result.signal.daypart} hours for ${staffName}.`,
         result.laborPreviewInvalidated
           ? `Labor signal added at revision ${nextRevision}; prior labor preview cleared.`
           : `Labor signal added at revision ${nextRevision}.`,
@@ -1318,7 +1327,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         now,
         actor,
         note?.trim() || "Check the roster against the working order.",
-        `Labor preview ${result.preview.id} created for ${result.preview.requiredTotal} required hours.`,
+        `Labor preview created for ${result.preview.requiredTotal} required hours.`,
         "draft",
         tool,
         "labor",
@@ -1346,7 +1355,7 @@ export function createReviewStore(options: StoreOptions = {}): ReviewStore {
         createId,
         now,
         actor,
-        note?.trim() || `Adopt labor preview ${previewId}.`,
+        note?.trim() || "Adopt the current labor preview.",
         `Labor plan adopted at revision ${nextRevision}. Nothing was sent outside this page.`,
         "draft",
         tool,

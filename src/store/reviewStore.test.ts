@@ -854,6 +854,65 @@ describe("review store", () => {
     expect(log.entries[0]?.summary).toContain("Check the walk-in before lunch.");
   });
 
+  it("uses staff names and omits preview identifiers in shift-log summaries", () => {
+    const store = makeStore();
+    expectSuccess(
+      store.addLaborSignal(
+        { kind: "absence", staffId: "s11" },
+        store.getState().revision,
+        "page",
+      ),
+    );
+    expectSuccess(
+      store.addLaborSignal(
+        { kind: "extra_shift", staffId: "oc1", daypart: "lunch", hours: 4 },
+        store.getState().revision,
+        "page",
+      ),
+    );
+    const laborPreview = store.previewLaborPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(laborPreview);
+    expectSuccess(
+      store.adoptLaborPlan(
+        laborPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+    const orderPreview = store.previewOrderPlan(
+      undefined,
+      store.getState().revision,
+      "page",
+    );
+    expectSuccess(orderPreview);
+    expectSuccess(
+      store.adoptOrderDraft(
+        orderPreview.preview.id,
+        store.getState().revision,
+        undefined,
+        "page",
+      ),
+    );
+
+    const summaries = store.getShiftLog().entries.map((entry) => entry.summary);
+    expect(summaries).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("Record Rosa Alvarez absent."),
+        expect.stringContaining("Add 4 lunch hours for Nadia Haddad."),
+        expect.stringContaining("Order preview created"),
+        expect.stringContaining("Labor preview created"),
+      ]),
+    );
+    expect(summaries.join(" ")).not.toMatch(/\bs11\b/);
+    expect(summaries.join(" ")).not.toMatch(/\boc1\b/);
+    expect(summaries.join(" ")).not.toMatch(/\b(?:labor-)?preview-[a-z0-9-]+\b/i);
+  });
+
   it("restores a saved receipt into the shift log after reload", () => {
     const storage = createMemoryStorage();
     const store = makeStore(storage);
