@@ -89,10 +89,10 @@ Codex's in-app browser was used for route-scoped discovery and direct production
 ## Screenshot assets
 
 1. `docs/screenshots/01-order-overview.png`: the four-section desk and Saturday seed.
-2. `docs/screenshots/02-order-preview.png`: cancelled derby plus the 80-person booking, with 910 covers, 76 hours, and 2,767 units.
-3. `docs/screenshots/03-labor-preview.png`: Rosa Alvarez's absence, two releases, and Nadia Haddad's four-hour cover.
-4. `docs/screenshots/04-stock-reconciliation.png`: chicken recorded at 30 kg on hand with 6 kg expiring.
-5. `docs/screenshots/05-shift-log.png`: the filtered Labor activity record with staff names and readable outcomes.
+2. `docs/screenshots/02-order-preview.png`: cancelled derby plus the 80-person booking, with 910 covers, 76 hours, 2,767 units, and the new agent-change pill.
+3. `docs/screenshots/03-labor-preview.png`: Rosa Alvarez's absence, two releases, Nadia Haddad's four-hour cover, and the accumulated agent-change count.
+4. `docs/screenshots/04-stock-reconciliation.png`: chicken recorded at 30 kg on hand with 6 kg expiring, in the same shared revision.
+5. `docs/screenshots/05-shift-log.png`: the complete service-day record with the Agent changes panel expanded to show direct links back to tool-written changes.
 
 ## Links
 
