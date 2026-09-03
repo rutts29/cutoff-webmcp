@@ -24,6 +24,7 @@ import { StockPage } from "./StockPage";
 import { LaborPage } from "./LaborPage";
 import { ShiftLogPage } from "./ShiftLogPage";
 import { ServiceBand } from "./ServiceBand";
+import { BrandMark, StockItemThumbnail } from "./VisualIdentity";
 import {
   createReviewStore,
   type HandoffReceipt,
@@ -186,10 +187,13 @@ function DetailPanel({ state, store }: Readonly<{ state: ReviewState; store: Rev
       tabIndex={-1}
     >
       <div className="detail-heading">
-        <div>
+        <div className="item-detail-identity">
+          <StockItemThumbnail skuId={item.id} />
+          <div>
           <p className="eyebrow">Stock line math</p>
           <h2>{item.name}</h2>
           <p className="mono item-id">{item.id} / {item.unit} / case {item.caseSize}</p>
+          </div>
         </div>
         <span className="reason-chip">{reasonLabel(reason)}</span>
       </div>
@@ -296,8 +300,13 @@ function OrderSheet({
                         selectLine(item.id);
                       }}
                     >
-                      <span>{item.name}</span>
-                      <small className="mono">{item.id}</small>
+                      <span className="item-identity">
+                        <StockItemThumbnail skuId={item.id} />
+                        <span className="item-identity-copy">
+                          <span>{item.name}</span>
+                          <small className="mono">{item.id}</small>
+                        </span>
+                      </span>
                     </button>
                   </th>
                   <td className="mono">{item.onHand}</td>
@@ -695,7 +704,10 @@ export function App({
               <p className="eyebrow">Cutoff · Shift operations desk</p>
               <span className="synthetic-tag">Synthetic</span>
             </div>
-            <h1>Cutoff</h1>
+            <div className="brand-title-row">
+              <BrandMark />
+              <h1>Cutoff</h1>
+            </div>
             <p className="hero-copy">Order, stock, labor and the shift record for one location, before the supplier cutoff.</p>
             <p className="header-subtitle">Northgate · burger QSR · cutoff 22:00 {preset.cutoffLabel} · service {preset.serviceLabel} · delivery 06:30</p>
           </div>

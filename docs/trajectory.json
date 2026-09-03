@@ -344,6 +344,13 @@
       "actor": "human",
       "summary": "Checked the first Stage 4B preview at normal zoom and found two remaining hierarchy defects.",
       "outcome": "The larger labor labels overlapped their thin tracks, and the agent-collaboration message still read like a footer rule instead of an important capability. Both are presentation-only corrections within the locked palette."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Requested stronger visual identity and one coherent action language across the dashboard.",
+      "outcome": "The candidate adds local stock illustrations, neutral staff initials, a compact Cutoff mark, and enclosed secondary actions without loading remote assets or changing operational behavior."
     }
   ]
 }

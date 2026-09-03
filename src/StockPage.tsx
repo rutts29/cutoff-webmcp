@@ -3,6 +3,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { WASTE_REASONS, type CountedStockItem, type WasteReason } from "./domain/stock";
 import { summarizeSkuWaste, summarizeWaste } from "./engine/stockEngine";
 import type { ReviewState, ReviewStore } from "./store/reviewStore";
+import { StockItemThumbnail } from "./VisualIdentity";
 
 type StockPageProps = Readonly<{
   state: ReviewState;
@@ -90,8 +91,13 @@ function StockCountRow({
   return (
     <tr>
       <th scope="row">
-        <span>{item.name}</span>
-        <small className="mono">{item.unit}</small>
+        <span className="item-identity">
+          <StockItemThumbnail skuId={item.id} />
+          <span className="item-identity-copy">
+            <span>{item.name}</span>
+            <small className="mono">{item.unit}</small>
+          </span>
+        </span>
       </th>
       <td>
         <input

@@ -9,6 +9,7 @@ import {
 import { getLaborPlan } from "./engine/laborEngine";
 import { LaborBars, laborVarianceClass } from "./ServiceBand";
 import type { ReviewState, ReviewStore } from "./store/reviewStore";
+import { StaffAvatar } from "./VisualIdentity";
 
 type LaborPageProps = Readonly<{
   state: ReviewState;
@@ -271,11 +272,16 @@ function LaborSignalForm({
             const name = allStaff.find((staff) => staff.staffId === signal.staffId)?.name ?? signal.staffId;
             return (
               <li key={signal.id}>
-                <span>
-                  {signal.kind === "absence"
-                    ? `${name} absent`
-                    : `${name}, ${DAYPART_LABELS[signal.daypart]}, ${signal.hours}h`}
-                  {signal.note ? <small className="labor-signal-note">{signal.note}</small> : null}
+                <span className="staff-identity">
+                  <StaffAvatar name={name} />
+                  <span className="staff-identity-copy">
+                    <span>
+                      {signal.kind === "absence"
+                        ? `${name} absent`
+                        : `${name}, ${DAYPART_LABELS[signal.daypart]}, ${signal.hours}h`}
+                    </span>
+                    {signal.note ? <small className="labor-signal-note">{signal.note}</small> : null}
+                  </span>
                 </span>
                 <span className="reason-chip">{signal.kind === "absence" ? "Absence" : "Extra shift"}</span>
               </li>
@@ -361,7 +367,13 @@ export function LaborPage({ state, store }: LaborPageProps) {
               <ul className="labor-shift-list" aria-label={`${DAYPART_LABELS[daypart.id]} shifts`}>
                 {daypart.shifts.map((shift, index) => (
                   <li key={`${shift.staffId}-${shift.daypart}-${index}`}>
-                    <span>{shift.name}<small>{shift.hours}h</small></span>
+                    <span className="staff-identity">
+                      <StaffAvatar name={shift.name} />
+                      <span className="staff-identity-copy">
+                        <span>{shift.name}</span>
+                        <small>{shift.hours}h</small>
+                      </span>
+                    </span>
                     <span className={`reason-chip labor-shift-status status-${shift.status}`}>
                       {shift.status}
                     </span>
@@ -400,7 +412,12 @@ export function LaborPage({ state, store }: LaborPageProps) {
                       <ul className="labor-action-list">
                         {daypart.actions.map((action) => (
                           <li key={`${action.type}-${action.staffId}`}>
-                            {action.type === "release" ? "Release" : "Cover with"} {action.name}, {action.hours}h
+                            <span className="staff-identity">
+                              <StaffAvatar name={action.name} />
+                              <span className="staff-identity-copy">
+                                <span>{action.type === "release" ? "Release" : "Cover with"} {action.name}, {action.hours}h</span>
+                              </span>
+                            </span>
                           </li>
                         ))}
                       </ul>
