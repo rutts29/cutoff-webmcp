@@ -88,8 +88,10 @@ function StockCountRow({
     }
   };
 
-  return (
-    <tr>
+  const hasFeedback = Boolean(error || notice);
+
+  return [
+    <tr key={`${item.id}-count`} className={hasFeedback ? "has-feedback" : undefined}>
       <th scope="row">
         <span className="item-identity">
           <StockItemThumbnail skuId={item.id} />
@@ -144,17 +146,20 @@ function StockCountRow({
         >
           Record
         </button>
-        <span
-          className="field-error row-error"
-          id={errorId}
-          role={error ? "alert" : undefined}
-        >
-          {error}
-        </span>
-        {notice ? <span className="field-status row-status" role="status">{notice}</span> : null}
       </td>
-    </tr>
-  );
+    </tr>,
+    hasFeedback ? (
+      <tr key={`${item.id}-feedback`} className="stock-row-feedback">
+        <td colSpan={7}>
+          {error ? (
+            <span className="field-error" id={errorId} role="alert">{error}</span>
+          ) : (
+            <span className="field-status" role="status">{notice}</span>
+          )}
+        </td>
+      </tr>
+    ) : null,
+  ];
 }
 
 function WasteSummaryPanel({ state }: Readonly<{ state: ReviewState }>) {

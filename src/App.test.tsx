@@ -424,6 +424,9 @@ describe("order review UI", () => {
     expect(onHand).toHaveAccessibleDescription(
       "Expiring stock cannot exceed on hand",
     );
+    const stockError = screen.getByText("Expiring stock cannot exceed on hand");
+    expect(stockError.closest("td")).toHaveAttribute("colspan", "7");
+    expect(stockError.closest("tr")).toHaveClass("stock-row-feedback");
 
     const wasteQuantity = screen.getByLabelText("Waste quantity");
     await user.clear(wasteQuantity);
