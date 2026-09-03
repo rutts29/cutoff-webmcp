@@ -5,9 +5,9 @@ import {
   type AddLaborSignalInput,
   type LaborDaypart,
   type LaborReason,
-  type LaborShift,
 } from "./domain/labor";
 import { getLaborPlan } from "./engine/laborEngine";
+import { LaborBars, laborVarianceClass } from "./ServiceBand";
 import type { ReviewState, ReviewStore } from "./store/reviewStore";
 
 type LaborPageProps = Readonly<{
@@ -37,17 +37,6 @@ const REASON_LABELS = {
 
 function isLaborDaypart(value: string): value is LaborDaypart {
   return LABOR_DAYPARTS.some((daypart) => daypart === value);
-}
-
-function isActiveShift(shift: LaborShift): boolean {
-  return shift.status === "scheduled" || shift.status === "cover";
-}
-
-function sumActiveHours(shifts: readonly LaborShift[]): number {
-  return shifts.reduce(
-    (total, shift) => total + (isActiveShift(shift) ? shift.hours : 0),
-    0,
-  );
 }
 
 function uniqueStaff(
@@ -306,16 +295,6 @@ export function LaborPage({ state, store }: LaborPageProps) {
     forecastCovers: state.draft.plan.covers,
   });
   const preview = state.labor.preview;
-  const scheduledTotal = plan.dayparts.reduce(
-    (total, daypart) => total + daypart.scheduled,
-    0,
-  );
-  const scheduledBefore =
-    preview?.totals.scheduledBefore ??
-    (state.labor.undoSnapshot
-      ? sumActiveHours(state.labor.undoSnapshot.shifts)
-      : scheduledTotal);
-  const scheduledAfter = preview?.totals.scheduledAfter ?? scheduledTotal;
   const [controlError, setControlError] = useState("");
   const [controlNotice, setControlNotice] = useState("");
 
@@ -344,45 +323,6 @@ export function LaborPage({ state, store }: LaborPageProps) {
 
   return (
     <div className="labor-page">
-      <section className="forecast-strip labor-forecast-strip" aria-label="Labor forecast summary">
-        <div className="labor-primary-metric">
-          <p className="eyebrow">
-            {preview ? "Scheduled to preview" : state.labor.undoSnapshot ? "Scheduled to adopted" : "Scheduled hours"}
-          </p>
-          <strong
-            className="big-number"
-            aria-label={`${scheduledBefore} scheduled hours to ${scheduledAfter}`}
-          >
-            <span className="metric-pair" aria-hidden="true">
-              {scheduledBefore}
-              <span className="metric-arrow" aria-hidden="true">→</span>
-              <span
-                key={`${state.revision}-${scheduledAfter}`}
-                className={scheduledAfter === scheduledBefore ? "metric-current" : "metric-current changed-cell"}
-              >
-                {scheduledAfter}
-              </span>
-            </span>
-          </strong>
-          <small>hours</small>
-        </div>
-        <div>
-          <p className="eyebrow">Required</p>
-          <strong className="big-number">{plan.requiredTotal}</strong>
-          <small>hours</small>
-        </div>
-        <div>
-          <p className="eyebrow">Working forecast</p>
-          <strong className="big-number">{plan.forecastCovers}</strong>
-          <small>covers</small>
-        </div>
-        <div className="forecast-notes labor-forecast-notes">
-          <p>Service-day roster</p>
-          <p>{state.labor.shifts.length} listed shifts</p>
-          <p>{state.labor.onCall.length} people on call</p>
-        </div>
-      </section>
-
       {state.laborPreviewStaleReason ? (
         <section className="stale-preview-strip labor-stale-notice" role="status">
           <p>
@@ -403,19 +343,21 @@ export function LaborPage({ state, store }: LaborPageProps) {
           <p className="mono section-note">revision {state.revision}</p>
         </div>
         <div className="labor-daypart-grid">
-          {plan.dayparts.map((daypart) => (
-            <article className="labor-daypart-card" key={daypart.id}>
+          {plan.dayparts.map((daypart) => {
+            const headingId = `labor-${daypart.id}-heading`;
+            return (
+            <article
+              aria-labelledby={headingId}
+              className="labor-daypart-card"
+              key={daypart.id}
+            >
               <div className="labor-daypart-heading">
-                <h3>{DAYPART_LABELS[daypart.id]}</h3>
-                <span className={`labor-gap ${daypart.gap > 0 ? "is-over" : daypart.gap < 0 ? "is-under" : "is-balanced"}`}>
+                <h3 id={headingId}>{DAYPART_LABELS[daypart.id]}</h3>
+                <span className={`labor-gap ${laborVarianceClass(daypart.gap)}`}>
                   {formatGap(daypart.gap)}h gap
                 </span>
               </div>
-              <dl className="labor-daypart-metrics">
-                <div><dt>Required</dt><dd>{daypart.required}h</dd></div>
-                <div><dt>Scheduled</dt><dd>{daypart.scheduled}h</dd></div>
-                <div><dt>Gap</dt><dd>{formatGap(daypart.gap)}h</dd></div>
-              </dl>
+              <LaborBars required={daypart.required} scheduled={daypart.scheduled} />
               <ul className="labor-shift-list" aria-label={`${DAYPART_LABELS[daypart.id]} shifts`}>
                 {daypart.shifts.map((shift, index) => (
                   <li key={`${shift.staffId}-${shift.daypart}-${index}`}>
@@ -427,7 +369,8 @@ export function LaborPage({ state, store }: LaborPageProps) {
                 ))}
               </ul>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 

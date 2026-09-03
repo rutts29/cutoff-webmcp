@@ -4,6 +4,20 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-03, expansion Stage 4 (Codex, build lead)
+
+- Removed the decision-page cutoff rail and rewrote the header around the full shift desk, with exact service-day cutoff, service, and delivery details for both presets.
+- Replaced the static synthetic-data banner with a dismissible orientation strip. Its local dismissal survives navigation and reload, while Reset demo restores it.
+- Added one shared five-tile service band to Order, Stock, Labor, and Shift log. Covers, scheduled and required labor, order cost, weekly waste, and ordered exceptions now update from the same live store on every page.
+- Replaced Labor's repeated summary and daypart metric lists with required-versus-scheduled CSS bars and signed variance chips. The chips use neutral, amber, and red bands without relying on color alone.
+- Kept Stage 4 at the presentation boundary: no engine, store, tool, schema, description, or eval fixture changed, so no Ora rescan was run.
+- The conditional review found that an active order preview mixed preview totals with seed breakdown values and used preview covers for labor exceptions. Split the proposal display from the working-order labor basis. Preview cover and cost lines now identify themselves, the cover arithmetic uses the preview fields, and Labor plus Needs attention agree until adoption.
+- A follow-up review found the adopted breakdown still used the seed event uplift. Exported the order engine's active-event and pinned-booking selectors and made the band use them in every state. The regression now continues through the 910-cover adoption and checks the post-adopt breakdown, Labor gap, and daypart alerts.
+- The final Undo check exposed a valid state where recorded signals no longer describe the restored working order. The Covers tile now enforces its arithmetic invariant: it prints terms only when they sum to the displayed covers, otherwise it reports how many signals are recorded but not reflected in the working order. The same guard covers pending changes, stale previews, discarded previews, Undo, and later changes after adoption.
+- Passed all 109 current tests and a clean TypeScript and Vite build. The added regression covers the cancelled-derby preview arithmetic, proposal labels, working-order labor gap, and absence of premature daypart alerts. Captured Order, Stock, Labor, and Shift log at 1,280 px and 390 px under ignored `output/review4/`.
+- Deployed the corrected build candidate only as a non-production Vercel Preview at `https://cutoff-webmcp-ax9j8jzmm-ruttansh-bhatelias-projects.vercel.app`. The in-app browser verified the full pending, preview, adopt, and Undo sequence: exact Covers arithmetic appears only when valid, Labor and its alerts use one working-order basis, and the conditional adoption tool follows the preview lifecycle. All five public routes return 200 with the expected no-index and security headers. Production remains unchanged pending Review 4.
+- Re-timed the demo to 2 minutes 39 seconds. Its opening now establishes the shared service band before the agent workflow begins.
+
 ### 2026-09-03, expansion Stage 3 (Codex, build lead)
 
 - Added the Shift log as the fourth decision page. It reads the existing activity and receipts newest first, filters by section, accepts bounded local notes, and downloads filtered service-day JSON without maintaining a second audit store.

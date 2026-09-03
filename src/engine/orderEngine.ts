@@ -132,7 +132,7 @@ function getReason({
   };
 }
 
-function getActiveEventCovers(
+export function getActiveEventCovers(
   eventUplifts: readonly EventUplift[],
   signals: readonly LocalSignal[],
 ): number {
@@ -148,7 +148,7 @@ function getActiveEventCovers(
   }, 0);
 }
 
-function getPinnedBookingCovers(
+export function getPinnedBookingCovers(
   signals: readonly LocalSignal[],
   pins: ReviewPins,
 ): number {

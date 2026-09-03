@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -80,7 +80,10 @@ function adoptLockedOrder(store: ReturnType<typeof makeStore>) {
 }
 
 afterEach(cleanup);
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  window.localStorage.clear();
+  vi.unstubAllGlobals();
+});
 
 describe("order review UI", () => {
   it("describes the whole shift desk in the shared header", () => {
@@ -88,9 +91,206 @@ describe("order review UI", () => {
 
     expect(
       screen.getByText(
-        "Review the order, live stock, labor plan, and shift record for one location before cutoff.",
+        "Order, stock, labor and the shift record for one location, before the supplier cutoff.",
       ),
     ).toBeVisible();
+    expect(
+      screen.getByText(
+        "Northgate · burger QSR · cutoff 22:00 Fri 4 Sep · service Sat 5 Sep · delivery 06:30",
+      ),
+    ).toBeVisible();
+    expect(screen.queryByLabelText("Supplier cutoff")).not.toBeInTheDocument();
+  });
+
+  it("dismisses the orientation strip until the manager resets the demo", async () => {
+    const user = userEvent.setup();
+    const store = makeStore();
+    const { unmount } = render(
+      <App store={store} modelContext={undefined} section="order" />,
+    );
+    const orientation =
+      "A shift manager and their browser agent work this page together. Everything here is synthetic and stays in this tab; nothing reaches a supplier or rota.";
+
+    expect(screen.getByText(orientation)).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Dismiss orientation" }));
+    expect(screen.queryByText(orientation)).not.toBeInTheDocument();
+
+    unmount();
+    render(<App store={store} modelContext={undefined} section="order" />);
+    expect(screen.queryByText(orientation)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Reset demo" }));
+    expect(screen.getByText(orientation)).toBeVisible();
+  });
+
+  it("shows one live service band on every desk section", () => {
+    const store = makeStore();
+    const { rerender } = render(
+      <App store={store} modelContext={undefined} section="order" />,
+    );
+
+    for (const section of ["order", "stock", "labor", "log"] as const) {
+      rerender(<App store={store} modelContext={undefined} section={section} />);
+      const band = screen.getByRole("region", { name: "Tonight's service" });
+      expect(band).toBeVisible();
+      expect(within(band).getByText("1,140")).toBeVisible();
+      expect(
+        within(band).getByText(
+          "saved 1,140 · base 830 + derby 310 + bookings 0",
+        ),
+      ).toBeVisible();
+      expect(band).toHaveTextContent("required 95 · gap 0");
+      expect(
+        within(band).getByText(
+          "3.18 per cover · 78 cases across 10 lines · no sales feed",
+        ),
+      ).toBeVisible();
+      expect(within(band).getByText("top reason: expired 44.60")).toBeVisible();
+      expect(
+        within(band).getByRole("link", { name: "4 lines with expiring stock" }),
+      ).toHaveAttribute("href", "/stock");
+    }
+
+    expect(
+      screen.queryByRole("region", { name: "Labor forecast summary" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Forecast and order summary" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("updates service-band numbers and attention from shared store state", () => {
+    const store = makeStore();
+    render(<App store={store} modelContext={undefined} section="log" />);
+    act(() => {
+      expect(store.addLocalSignal(
+        { kind: "booking", label: "Private booking", covers: 80 },
+        store.getState().revision,
+        "page",
+      ).ok).toBe(true);
+    });
+    const pendingBand = screen.getByRole("region", { name: "Tonight's service" });
+    expect(pendingBand).toHaveTextContent(
+      "saved 1,140 · 1 signal recorded, not in working order",
+    );
+    expect(within(pendingBand).getByText("2", { selector: ".service-attention-count" })).toBeVisible();
+    expect(within(pendingBand).getByRole("link", { name: "1 change not previewed" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+
+    act(() => {
+      expect(store.previewOrderPlan(
+        "Preview the booking.",
+        store.getState().revision,
+        "page",
+      ).ok).toBe(true);
+    });
+    const previewBand = screen.getByRole("region", { name: "Tonight's service" });
+    expect(within(previewBand).getByText("1,220")).toBeVisible();
+    expect(previewBand).toHaveTextContent(
+      "preview 1,220 · saved 1,140 · base 830 + derby 310 + bookings 80",
+    );
+    expect(within(previewBand).queryByText("1 change not previewed")).not.toBeInTheDocument();
+  });
+
+  it("keeps preview totals, breakdown, and working-order labor on explicit bases", () => {
+    const store = makeStore();
+    expect(
+      store.addLocalSignal(
+        { kind: "booking", label: "Private booking", covers: 80 },
+        store.getState().revision,
+        "page",
+      ).ok,
+    ).toBe(true);
+    expect(
+      store.addLocalSignal(
+        { kind: "event_cancelled", label: "Derby cancelled" },
+        store.getState().revision,
+        "page",
+      ).ok,
+    ).toBe(true);
+    const preview = store.previewOrderPlan(
+      "Replan after the cancelled derby.",
+      store.getState().revision,
+      "page",
+    );
+    expect(preview.ok).toBe(true);
+    if (!preview.ok) {
+      throw new Error("Expected an order preview");
+    }
+
+    render(<App store={store} modelContext={undefined} section="order" />);
+    const band = screen.getByRole("region", { name: "Tonight's service" });
+    const coversTile = within(band).getByText("Covers").closest("article");
+    if (!coversTile) {
+      throw new Error("Expected the Covers service tile");
+    }
+
+    expect(within(coversTile).getByText("910")).toBeVisible();
+    expect(
+      within(coversTile).getByText(
+        "preview 910 · saved 1,140 · base 830 + derby 0 (cancelled) + bookings 80",
+      ),
+    ).toBeVisible();
+    expect(within(band).getByText(/^preview 2,767 · /)).toBeVisible();
+    expect(band).toHaveTextContent("required 95 · gap 0");
+    expect(within(band).queryByRole("link", { name: /Lunch over/ })).not.toBeInTheDocument();
+    expect(within(band).queryByRole("link", { name: /Dinner over/ })).not.toBeInTheDocument();
+
+    act(() => {
+      expect(
+        store.adoptOrderDraft(
+          preview.preview.id,
+          store.getState().revision,
+          undefined,
+          "page",
+        ).ok,
+      ).toBe(true);
+    });
+
+    expect(within(coversTile).getByText("910")).toBeVisible();
+    expect(
+      within(coversTile).getByText(
+        "saved 1,140 · base 830 + derby 0 (cancelled) + bookings 80",
+      ),
+    ).toBeVisible();
+    expect(within(coversTile).queryByText(/^preview 910/)).not.toBeInTheDocument();
+    expect(band).toHaveTextContent("required 76 · gap +19");
+    expect(within(band).getByRole("link", { name: "Lunch over by 6h" })).toBeVisible();
+    expect(within(band).getByRole("link", { name: "Dinner over by 10h" })).toBeVisible();
+
+    act(() => {
+      expect(store.undoAdoption(store.getState().revision, "page").ok).toBe(true);
+    });
+
+    expect(within(coversTile).getByText("1,140")).toBeVisible();
+    expect(
+      within(coversTile).getByText(
+        "saved 1,140 · 2 signals recorded, not in working order",
+      ),
+    ).toBeVisible();
+    expect(coversTile).not.toHaveTextContent("derby 0");
+    expect(band).toHaveTextContent("required 95 · gap 0");
+    expect(within(band).queryByRole("link", { name: /Lunch over/ })).not.toBeInTheDocument();
+    expect(within(band).queryByRole("link", { name: /Dinner over/ })).not.toBeInTheDocument();
+  });
+
+  it("uses required and scheduled bars with signed variance bands", () => {
+    const store = makeStore();
+    expect(
+      store.addLaborSignal(
+        { kind: "absence", staffId: "s11" },
+        store.getState().revision,
+        "page",
+      ).ok,
+    ).toBe(true);
+    render(<App store={store} modelContext={undefined} section="labor" />);
+
+    const prep = screen.getByRole("article", { name: "Prep and close" });
+    expect(within(prep).getByText("Required 14h")).toBeVisible();
+    expect(within(prep).getByText("Scheduled 7h")).toBeVisible();
+    expect(within(prep).getByText("-7h gap")).toHaveClass("variance-critical");
   });
 
   it("uses section-specific workflow copy", () => {
@@ -123,7 +323,6 @@ describe("order review UI", () => {
     expect(screen.getByRole("heading", { name: "Dinner" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "Prep and close" })).toBeVisible();
     expect(screen.getAllByText("Amara Osei")[0]).toBeVisible();
-    expect(screen.getByText("2 people on call")).toBeVisible();
   });
 
   it("previews, adopts, and undoes the locked Labor flow", async () => {
@@ -180,8 +379,11 @@ describe("order review UI", () => {
       />,
     );
 
-    expect(screen.getByText("74.97")).toBeVisible();
-    expect(screen.getByText(/Top reason: expired/i)).toBeVisible();
+    expect(
+      within(screen.getByRole("complementary", { name: "Waste this week" })).getByText("74.97"),
+    ).toBeVisible();
+    const wasteSummary = screen.getByRole("complementary", { name: "Waste this week" });
+    expect(within(wasteSummary).getByText(/Top reason: expired/i)).toBeVisible();
 
     await user.clear(screen.getByLabelText("Chicken thighs on hand"));
     await user.type(screen.getByLabelText("Chicken thighs on hand"), "30");
@@ -205,7 +407,9 @@ describe("order review UI", () => {
     expect(
       store.getState().stock.items.find((item) => item.id === "lettuce"),
     ).toMatchObject({ onHand: 7, expiring: 2 });
-    expect(screen.getByText("77.30")).toBeVisible();
+    expect(
+      within(screen.getByRole("complementary", { name: "Waste this week" })).getByText("77.30"),
+    ).toBeVisible();
     expect(screen.getByText("Iceberg lettuce waste recorded")).toHaveAttribute(
       "role",
       "status",
@@ -498,7 +702,7 @@ describe("order review UI", () => {
     await user.type(screen.getByLabelText("Signal label"), "Private booking");
     await user.click(screen.getByRole("button", { name: "Add signal" }));
 
-    expect(screen.getByText("1 change not previewed")).toBeVisible();
+    expect(screen.getAllByText("1 change not previewed")).toHaveLength(2);
     await user.click(
       screen.getByRole("button", { name: "Preview pending changes" }),
     );
@@ -711,7 +915,7 @@ describe("order review UI", () => {
 
     await user.type(screen.getByLabelText("Signal label"), "Private booking");
     await user.click(screen.getByRole("button", { name: "Add signal" }));
-    expect(screen.getByText("1 change not previewed")).toBeVisible();
+    expect(screen.getAllByText("1 change not previewed")).toHaveLength(2);
 
     await user.click(screen.getByRole("link", { name: "Stock" }));
     expect(screen.getByRole("heading", { name: "Stock" })).toBeVisible();
@@ -720,7 +924,7 @@ describe("order review UI", () => {
 
     await user.click(screen.getByRole("link", { name: "Order" }));
     expect(screen.getByText("Private booking · 80 covers")).toBeVisible();
-    expect(screen.getByText("1 change not previewed")).toBeVisible();
+    expect(screen.getAllByText("1 change not previewed")).toHaveLength(2);
     window.history.pushState({}, "", "/");
   });
 
@@ -734,8 +938,14 @@ describe("order review UI", () => {
     expect(store.getState().presetId).toBe("tuesday");
     expect(store.getState().revision).toBe(0);
     expect(screen.getByText(/service Tue 8 Sep/)).toBeVisible();
-    expect(screen.getByText("Base 520")).toBeVisible();
-    expect(screen.getByText("No event uplift")).toBeVisible();
+    expect(
+      screen.getByRole("region", { name: "Tonight's service" }),
+    ).toHaveTextContent("saved 520 · base 520 + events 0 + bookings 0");
+    expect(
+      screen.getByText(
+        "Northgate · burger QSR · cutoff 22:00 Mon 7 Sep · service Tue 8 Sep · delivery 06:30",
+      ),
+    ).toBeVisible();
     expect(screen.getByRole("heading", { name: "Stock lines for Tue 8 Sep" })).toBeVisible();
   });
 

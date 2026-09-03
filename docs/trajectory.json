@@ -253,6 +253,62 @@
       "actor": "builder",
       "summary": "Applied the two copy changes from the final review.",
       "outcome": "The header describes the full operations desk. Shift-log summaries name staff and omit generated order and labor preview identifiers, while structured tool results retain those identifiers for safe follow-up calls."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "build",
+      "actor": "builder",
+      "summary": "Applied a locked legibility pass without changing engines, state transitions, tools, schemas, or evaluation fixtures.",
+      "outcome": "All four decision pages now share one live service band for covers, labor, order cost, waste, and exceptions. The header establishes the service day, and Labor compares required and scheduled hours with compact bars and signed variance."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Verified the legibility pass across deterministic tests, production build output, desktop and mobile captures, and a non-production deployment.",
+      "outcome": "All 108 current tests passed. Eight route screenshots cover 1,280 px and 390 px, the preview serves every route with the expected headers, and the deployed Order page exposes its six WebMCP tools. Production was left unchanged for review."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Conditionally passed the Stage 4 layout and found two data-basis defects in the shared band during an active order preview.",
+      "outcome": "The preview total used a stale event breakdown, and labor exceptions used preview demand while the Labor tile described the working order. The review also requested explicit preview labels for proposed covers and cost."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Separated proposed order values from the working-order labor basis and repeated the cancelled-event preview flow.",
+      "outcome": "The band now shows preview 830 as base 830 plus zero derby covers, marks the cancellation, labels the proposed 2,437-unit cost, and keeps Labor at required 95 with gap zero until adoption. Only the expiring-stock exception remains. All 109 tests and the build pass."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Extended the Stage 4 check through adoption and found that the working-order breakdown restored the seed event uplift.",
+      "outcome": "The displayed 910 covers incorrectly sat beside base 830, derby 310, and bookings 80. The engine result was correct; only the band used the wrong source after adoption."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Made the band use the order engine's active-event and pinned-booking selectors in preview and working states.",
+      "outcome": "The regression now covers preview and adoption. After adoption, 910 covers resolve to base 830, zero active derby covers, and 80 pinned booking covers. Labor shows required 76 with gap plus 19, with Lunch and Dinner alerts. All 109 tests and the build pass."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Checked Undo and found that retained signals no longer described the restored saved order.",
+      "outcome": "After Undo, the working order returned to 1,140 covers while the retained cancellation and booking still summed to 910. The tile needed an invariant rather than another state branch."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "verification",
+      "actor": "builder",
+      "summary": "Made the Covers tile print arithmetic only when its terms equal the displayed total, then reviewed every service-band data source.",
+      "outcome": "Undo and other unmatched states now say that recorded signals are not in the working order. Seed, preview, and adopted states keep their exact arithmetic. Labor, order cost, waste, and attention each use one consistent basis. All 109 tests and the build pass."
     }
   ]
 }

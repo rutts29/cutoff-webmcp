@@ -23,6 +23,7 @@ import { calculateLine } from "./engine/orderEngine";
 import { StockPage } from "./StockPage";
 import { LaborPage } from "./LaborPage";
 import { ShiftLogPage } from "./ShiftLogPage";
+import { ServiceBand } from "./ServiceBand";
 import {
   createReviewStore,
   type HandoffReceipt,
@@ -49,6 +50,27 @@ const defaultStatus: WebMCPStatus = {
 
 const DEMO_PROMPT =
   "The derby has been cancelled. Add that to the order review and replan, but keep my booking.";
+const ORIENTATION_STORAGE_KEY = "cutoff:orientation-dismissed";
+
+function orientationWasDismissed(): boolean {
+  try {
+    return window.localStorage.getItem(ORIENTATION_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function storeOrientationDismissal(dismissed: boolean): void {
+  try {
+    if (dismissed) {
+      window.localStorage.setItem(ORIENTATION_STORAGE_KEY, "true");
+    } else {
+      window.localStorage.removeItem(ORIENTATION_STORAGE_KEY);
+    }
+  } catch {
+    // The orientation strip still works for this tab when storage is blocked.
+  }
+}
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
@@ -529,6 +551,9 @@ export function App({
   const [promptNotice, setPromptNotice] = useState("");
   const [orderControlError, setOrderControlError] = useState("");
   const [orderControlNotice, setOrderControlNotice] = useState("");
+  const [orientationVisible, setOrientationVisible] = useState(
+    () => !orientationWasDismissed(),
+  );
   const sectionDefinition = SECTION_DEFINITIONS.find(
     (candidate) => candidate.id === section,
   ) ?? SECTION_DEFINITIONS[0];
@@ -563,9 +588,6 @@ export function App({
     }
   }, [state.preview]);
 
-  const forecastAfter = state.preview?.covers.after ?? state.draft.plan.covers;
-  const laborAfter = state.preview?.laborHours.after ?? state.draft.plan.laborHours;
-  const costAfter = state.preview?.totals.afterCost ?? state.draft.plan.totalCost;
   const hasPreview = state.preview !== null;
   const canAdopt =
     state.preview !== null &&
@@ -603,6 +625,15 @@ export function App({
     }
     store.recordSectionOpen(nextSection, "page");
     navigate?.(nextSection);
+  };
+  const resetDemo = () => {
+    storeOrientationDismissal(false);
+    setOrientationVisible(true);
+    store.resetDemo("page");
+  };
+  const dismissOrientation = () => {
+    storeOrientationDismissal(true);
+    setOrientationVisible(false);
   };
   const copyDemoPrompt = async () => {
     setPromptNotice("");
@@ -658,11 +689,6 @@ export function App({
   return (
     <main className="app-shell">
       <a className="skip-link" href="#page-title">Skip to current section</a>
-      <aside className="cutoff-rail" aria-label="Supplier cutoff">
-        <span>Cutoff</span>
-        <strong>22:00</strong>
-        <span>{preset.cutoffLabel}</span>
-      </aside>
       <div className="paper">
         <header className="app-header">
           <div>
@@ -671,8 +697,8 @@ export function App({
               <span className="synthetic-tag">Synthetic</span>
             </div>
             <h1>Cutoff</h1>
-            <p className="hero-copy">Review the order, live stock, labor plan, and shift record for one location before cutoff.</p>
-            <p className="header-subtitle">Northgate · service {preset.serviceLabel} · delivery 06:30</p>
+            <p className="hero-copy">Order, stock, labor and the shift record for one location, before the supplier cutoff.</p>
+            <p className="header-subtitle">Northgate · burger QSR · cutoff 22:00 {preset.cutoffLabel} · service {preset.serviceLabel} · delivery 06:30</p>
           </div>
           <div className="header-actions">
             <label htmlFor="preset-select">
@@ -692,11 +718,23 @@ export function App({
                 ))}
               </select>
             </label>
-            <button className="text-button reset-button" type="button" onClick={() => store.resetDemo("page")}>Reset demo</button>
+            <button className="text-button reset-button" type="button" onClick={resetDemo}>Reset demo</button>
           </div>
         </header>
 
-        <p className="demo-banner">Synthetic demo data. One fictional restaurant, ten stock items. No supplier is connected.</p>
+        {orientationVisible ? (
+          <aside className="orientation-strip" aria-label="Demo orientation">
+            <p>A shift manager and their browser agent work this page together. Everything here is synthetic and stays in this tab; nothing reaches a supplier or rota.</p>
+            <button
+              aria-label="Dismiss orientation"
+              className="orientation-dismiss"
+              type="button"
+              onClick={dismissOrientation}
+            >
+              Dismiss
+            </button>
+          </aside>
+        ) : null}
 
         <nav className="section-tabs" aria-label="Shift desk sections">
           {SECTION_DEFINITIONS.map((candidate) => (
@@ -723,6 +761,8 @@ export function App({
             </a>
           ))}
         </nav>
+
+        <ServiceBand state={state} navigate={moveToSection} />
 
         <section className="page-intro" aria-labelledby="page-title">
           <p className="eyebrow">Current section</p>
@@ -766,13 +806,6 @@ export function App({
           </>
         ) : (
           <>
-
-        <section className="forecast-strip" aria-label="Forecast and order summary">
-          <div><p className="eyebrow">Forecast covers</p><strong className="big-number"><span className="metric-pair">{formatNumber(state.savedPlan.covers)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${forecastAfter}`} className={forecastAfter === state.savedPlan.covers ? "metric-current" : "metric-current changed-cell"}>{formatNumber(forecastAfter)}</span></span></strong><small>covers</small></div>
-          <div><p className="eyebrow">Labor hours</p><strong className="big-number"><span className="metric-pair">{state.savedPlan.laborHours} <span className="metric-arrow">→</span> <span key={`${state.revision}-${laborAfter}`} className={laborAfter === state.savedPlan.laborHours ? "metric-current" : "metric-current changed-cell"}>{laborAfter}</span></span></strong><small>hours</small></div>
-          <div><p className="eyebrow">Supplier order cost</p><strong className="big-number"><span className="metric-pair">{formatNumber(state.savedPlan.totalCost)} <span className="metric-arrow">→</span> <span key={`${state.revision}-${costAfter}`} className={costAfter === state.savedPlan.totalCost ? "metric-current" : "metric-current changed-cell"}>{formatNumber(costAfter)}</span></span></strong><small>units</small></div>
-          <div className="forecast-notes"><p>Base {formatNumber(state.baseCovers)}</p><p>{preset.eventSummary}</p><p>Pinned bookings +{state.preview?.covers.pinnedBookings ?? 0}</p></div>
-        </section>
 
         {state.orderPreviewStaleReason ? (
           <section className="stale-preview-strip" role="status">
