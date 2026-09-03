@@ -119,7 +119,6 @@ Short dated entries, newest first. One entry per working session. Also holds the
 - Verified both fixes in a headed browser over `https://cutoff.localhost`. The receipt rendered at revision 1, stated that nothing left the page, and produced no console error.
 - Added `DEMO.md`, `DEVPOST.md`, and the MIT `LICENSE`. Rewrote the README around the problem, audience, product tour, WebMCP need, five tools, local use, deployment, demo prompts, synthetic data, and affiliation limits.
 - Trimmed `docs/trajectory.json` from 22 implementation and infrastructure entries to 14 decision-level entries. Failed eval attempts remain visible in the eval summary and test log.
-- Replaced the stale Review 1 screenshot with `docs/cutoff-review3.png`. The current capture uses the fixed dates, opens the lettuce formula, and includes the visible handoff control without browser chrome or third-party marks.
 - Deployed the current non-production preview at `https://cutoff-webmcp-ekm8ou384-ruttansh-bhatelias-projects.vercel.app`. The root and `/trajectory` return 200, the production alias returns 404, and the app still registers four base tools in the in-app browser.
 - Removed the unreferenced intermediate preview created during the documentation pass. Its URL now returns 404; the current preview returns 200.
 - Stopped retrying the Ora CLI. Its current capture shim and service are incompatible. The public audit remains a GO LIVE check against the production URL only.

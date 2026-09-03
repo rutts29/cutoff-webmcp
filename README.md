@@ -84,7 +84,7 @@ npm run build
 
 The current deterministic suite covers all locked order, stock, waste, labor, preset, shift-log, CSV, store, adapter, registration, accessibility, and UI transitions. The model-backed first-call suite uses the Vercel AI Gateway only as an eval transport; no model key enters the application bundle.
 
-Static first-call evaluation measures whether a model starts from the required page state. Full ordered selection is measured in a real browser because mutations need the revision returned by a prior tool. Raw successes, safe over-reads, infrastructure failures, and fixture corrections remain in [`evals/2026-09-02-run-summary.md`](evals/2026-09-02-run-summary.md).
+Static first-call evaluation measures whether a model starts from the required page state. Full ordered selection is measured in a real browser because mutations need the revision returned by a prior tool. Current results, limitations, and the committed-artifact policy are in [`evals/2026-09-02-run-summary.md`](evals/2026-09-02-run-summary.md).
 
 ## Independent WebMCP audit
 

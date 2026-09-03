@@ -3,4 +3,5 @@
 _reference/
 coverage/
 evals/reports/
+evals/gateway-*.json
 output/

@@ -9,6 +9,7 @@ coverage/
 output/
 .playwright-cli/
 evals/reports/
+evals/gateway-*.json
 .vercel/
 .DS_Store
 *.log
