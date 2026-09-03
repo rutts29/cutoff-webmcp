@@ -81,13 +81,13 @@ p { margin: 0; }
 .service-comparison { color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 1.45; margin-top: 7px; }
 .labor-comparison { align-items: center; display: flex; flex-wrap: wrap; gap: 3px; }
 .labor-bars { display: grid; gap: 6px; margin-top: 11px; }
-.labor-bars > div { align-items: center; display: grid; gap: 7px; grid-template-columns: 78px minmax(24px, 1fr); }
+.labor-bars > div { align-items: center; display: grid; gap: 10px; grid-template-columns: max-content minmax(24px, 1fr); }
 .labor-bars > div > span:first-child { color: var(--muted); font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
-.labor-bar-track { background: var(--surface-muted); display: block; height: 5px; overflow: hidden; }
-.labor-bar-fill { display: block; height: 100%; min-width: 1px; }
+.labor-bar-track { background: var(--surface-muted); border-radius: var(--radius); display: block; height: 8px; overflow: hidden; }
+.labor-bar-fill { border-radius: var(--radius); display: block; height: 100%; min-width: 1px; }
 .labor-bar-fill.is-required { background: var(--line-dark); }
 .labor-bar-fill.is-scheduled { background: var(--accent); }
-.waste-stack { background: var(--surface-muted); display: flex; height: 6px; margin-top: 12px; overflow: hidden; }
+.waste-stack { background: var(--surface-muted); border-radius: var(--radius); display: flex; height: 8px; margin-top: 12px; overflow: hidden; }
 .waste-stack-segment { display: block; height: 100%; }
 .waste-expired { background: var(--alert); }
 .waste-overproduction { background: var(--warn); }
@@ -108,7 +108,16 @@ p { margin: 0; }
 .workflow-strip span { color: var(--accent); font-family: var(--font-mono); font-size: 13px; grid-row: span 2; }
 .workflow-strip strong { font-size: 15px; }
 .workflow-strip small { color: var(--muted); font-size: 13px; line-height: 1.35; }
-.agent-collaboration-note { border-bottom: 1px solid var(--line); color: var(--muted); font-size: 14px; padding: 0 0 14px; }
+.agent-collaboration-note {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 14px;
+  padding: 11px 14px;
+}
 .panel-step { color: var(--accent); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; margin-bottom: 4px; text-transform: uppercase; }
 
 .pending-strip { align-items: center; background: color-mix(in srgb, var(--warn) 8%, var(--surface)); border: 1px solid var(--warn); border-radius: var(--radius); display: flex; gap: 18px; justify-content: space-between; margin-top: 18px; padding: 12px 14px; }
@@ -273,7 +282,7 @@ button { background: var(--accent); border: 1px solid var(--accent); border-radi
 .labor-gap.variance-moderate { color: var(--warn); }
 .labor-gap.variance-critical { color: var(--alert); }
 .labor-daypart-card > .labor-bars { border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); margin: 14px 0 0; padding: 10px 0; }
-.labor-daypart-card > .labor-bars > div { grid-template-columns: 82px minmax(40px, 1fr); }
+.labor-daypart-card > .labor-bars > div { grid-template-columns: max-content minmax(40px, 1fr); }
 .labor-shift-list, .labor-preview-list, .labor-action-list { list-style: none; margin: 0; padding: 0; }
 .labor-shift-list > li { align-items: center; border-bottom: 1px solid var(--line); display: flex; font-size: 14px; gap: 8px; justify-content: space-between; padding: 9px 0; }
 .labor-shift-list > li > span:first-child { display: grid; gap: 2px; }

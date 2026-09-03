@@ -337,6 +337,13 @@
       "actor": "builder",
       "summary": "Applied and checked the Stage 4B presentation-only candidate through the canonical local HTTPS route.",
       "outcome": "All five routes have a 12-pixel text floor at desktop and mobile widths. The four decision pages have no root mobile overflow, the first Order step is visible at laptop height, and eight route screenshots record the responsive dashboard treatment. Production remains unchanged for review."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Checked the first Stage 4B preview at normal zoom and found two remaining hierarchy defects.",
+      "outcome": "The larger labor labels overlapped their thin tracks, and the agent-collaboration message still read like a footer rule instead of an important capability. Both are presentation-only corrections within the locked palette."
     }
   ]
 }
