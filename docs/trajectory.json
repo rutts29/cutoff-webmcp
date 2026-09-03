@@ -309,6 +309,20 @@
       "actor": "builder",
       "summary": "Made the Covers tile print arithmetic only when its terms equal the displayed total, then reviewed every service-band data source.",
       "outcome": "Undo and other unmatched states now say that recorded signals are not in the working order. Seed, preview, and adopted states keep their exact arithmetic. Labor, order cost, waste, and attention each use one consistent basis. All 109 tests and the build pass."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Approved Review 4 after the preview, adoption, and Undo states used consistent service-band data.",
+      "outcome": "The approved build became the production candidate. No further product or contract changes were requested before the video."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "release",
+      "actor": "builder",
+      "summary": "Deployed the approved build and refreshed the submission screenshots from the canonical production domain.",
+      "outcome": "Five 1,440 by 900 production captures now cover the seed desk, order preview, labor preview, stock reconciliation, and filtered shift log. Each image was inspected before the release commit."
     }
   ]
 }
