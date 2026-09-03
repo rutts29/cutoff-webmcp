@@ -86,6 +86,12 @@ The current deterministic suite covers all locked order, stock, waste, labor, pr
 
 Static first-call evaluation measures whether a model starts from the required page state. Full ordered selection is measured in a real browser because mutations need the revision returned by a prior tool. Raw successes, safe over-reads, infrastructure failures, and fixture corrections remain in [`evals/2026-09-02-run-summary.md`](evals/2026-09-02-run-summary.md).
 
+## Independent WebMCP audit
+
+[Ora's Sep 3 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 87 overall: Shared Experience 100, Task Completion 47, Tool Quality 99, and Trust 100. It captured all six Order tools, including two reads and four actions, with no registration error.
+
+The 47-point task score came from document-editor tests: open a recent document, insert a paragraph, then save and share it. Those are not Cutoff tasks. Ora's custom restaurant run also offered its live model only the two read tools, although the same report captured all six. By comparison, the production browser suite discovered the live page tools and completed all 21 Cutoff tasks, scoring 46 of 48 strict matcher steps after one extra safe Stock read. The remaining quality warning says `open_section` does not begin with a verb, while Ora's suggested fix repeats the same name. The tool remains unchanged because "open" is its verb and the name states the action accurately.
+
 ## Downloads and storage
 
 The Order page downloads the current working order as CSV. Shift log downloads filtered activity as JSON. Handoff receipts use bounded local storage. No action submits an order, updates a rota, contacts a supplier, or writes to a server.

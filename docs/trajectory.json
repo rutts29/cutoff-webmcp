@@ -239,6 +239,13 @@
       "actor": "builder",
       "summary": "Reduced the public evaluation package to the evidence a reviewer needs.",
       "outcome": "Generated browser-eval reports now stay in the ignored local workspace. Public files retain the fixtures, exact scores, model names, failure analysis, and auditor results without repetitive raw trajectories."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "audit",
+      "actor": "builder",
+      "summary": "Reviewed every finding in Ora's current six-tool production report before reviewer handoff.",
+      "outcome": "Shared Experience and Trust have no open warning. The Task Completion grader used document-editor actions and its custom live runner withheld four tools that the capture recorded. Ora's only quality warning says open_section lacks a verb while proposing the same name as its fix. No product contract changed for those mismatches."
     }
   ]
 }
