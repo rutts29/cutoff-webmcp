@@ -24,14 +24,18 @@ import { StockPage } from "./StockPage";
 import { LaborPage } from "./LaborPage";
 import { ShiftLogPage } from "./ShiftLogPage";
 import { ServiceBand } from "./ServiceBand";
-import { BrandMark, StockItemThumbnail } from "./VisualIdentity";
+import { AgentGlyph, BrandMark, StockItemThumbnail } from "./VisualIdentity";
 import {
   createReviewStore,
   type HandoffReceipt,
   type ReviewState,
   type ReviewStore,
 } from "./store/reviewStore";
-import { mountWebMCPTools, type WebMCPStatus } from "./webmcp/registerTools";
+import {
+  getToolNamesForSection,
+  mountWebMCPTools,
+  type WebMCPStatus,
+} from "./webmcp/registerTools";
 import "./styles.css";
 
 type AppProps = Readonly<{
@@ -51,27 +55,6 @@ const defaultStatus: WebMCPStatus = {
 
 const DEMO_PROMPT =
   "The derby has been cancelled. Add that to the order review and replan, but keep my booking.";
-const ORIENTATION_STORAGE_KEY = "cutoff:orientation-dismissed";
-
-function orientationWasDismissed(): boolean {
-  try {
-    return window.localStorage.getItem(ORIENTATION_STORAGE_KEY) === "true";
-  } catch {
-    return false;
-  }
-}
-
-function storeOrientationDismissal(dismissed: boolean): void {
-  try {
-    if (dismissed) {
-      window.localStorage.setItem(ORIENTATION_STORAGE_KEY, "true");
-    } else {
-      window.localStorage.removeItem(ORIENTATION_STORAGE_KEY);
-    }
-  } catch {
-    // The orientation strip still works for this tab when storage is blocked.
-  }
-}
 
 function formatNumber(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
@@ -559,12 +542,10 @@ export function App({
   const [promptNotice, setPromptNotice] = useState("");
   const [orderControlError, setOrderControlError] = useState("");
   const [orderControlNotice, setOrderControlNotice] = useState("");
-  const [orientationVisible, setOrientationVisible] = useState(
-    () => !orientationWasDismissed(),
-  );
   const sectionDefinition = SECTION_DEFINITIONS.find(
     (candidate) => candidate.id === section,
   ) ?? SECTION_DEFINITIONS[0];
+  const toolNames = getToolNamesForSection(section, store);
   const preset = getPreset(state.presetId);
   const pageTitleRef = useRef<HTMLHeadingElement>(null);
   const previousSection = useRef(section);
@@ -635,13 +616,7 @@ export function App({
     navigate?.(nextSection);
   };
   const resetDemo = () => {
-    storeOrientationDismissal(false);
-    setOrientationVisible(true);
     store.resetDemo("page");
-  };
-  const dismissOrientation = () => {
-    storeOrientationDismissal(true);
-    setOrientationVisible(false);
   };
   const copyDemoPrompt = async () => {
     setPromptNotice("");
@@ -696,7 +671,7 @@ export function App({
 
   return (
     <main className="app-shell">
-      <a className="skip-link" href="#page-title">Skip to current section</a>
+      <a className="skip-link" href="#page-title">Skip to page content</a>
       <div className="paper">
         <header className="app-header">
           <div>
@@ -733,19 +708,7 @@ export function App({
           </div>
         </header>
 
-        {orientationVisible ? (
-          <aside className="orientation-strip" aria-label="Demo orientation">
-            <p>A shift manager and their browser agent work this page together. Everything here is synthetic and stays in this tab; nothing reaches a supplier or rota.</p>
-            <button
-              aria-label="Dismiss orientation"
-              className="orientation-dismiss"
-              type="button"
-              onClick={dismissOrientation}
-            >
-              Dismiss
-            </button>
-          </aside>
-        ) : null}
+        <ServiceBand state={state} navigate={moveToSection} />
 
         <nav className="section-tabs" aria-label="Shift desk sections">
           {SECTION_DEFINITIONS.map((candidate) => (
@@ -773,10 +736,7 @@ export function App({
           ))}
         </nav>
 
-        <ServiceBand state={state} navigate={moveToSection} />
-
         <section className="page-intro" aria-labelledby="page-title">
-          <p className="eyebrow">Current section</p>
           <h2 id="page-title" ref={pageTitleRef} tabIndex={-1}>
             {sectionDefinition.label}
           </h2>
@@ -794,8 +754,6 @@ export function App({
             </li>
           ))}
         </ol>
-        <p className="agent-collaboration-note">Your agent can do every step with you on this page.</p>
-
         {section === "stock" ? (
           <>
             <StockPage
@@ -940,6 +898,30 @@ export function App({
             <button className="text-button" type="button" onClick={() => void copyDemoPrompt()}>Copy demo prompt</button>
           </nav>
           <p className="copy-notice" aria-live="polite">{promptNotice}</p>
+          <div className="agent-footer-note">
+            <AgentGlyph />
+            <p>
+              A browser agent can review this desk, apply local changes, and leave a handoff with you.
+              <span>Synthetic data stays in this tab; no supplier or rota is connected.</span>
+            </p>
+            <details className="tool-disclosure">
+              <summary>
+                <span className={`webmcp-dot${status.supported ? " is-ready" : ""}`} aria-hidden="true" />
+                <span>WebMCP</span>
+                <span>{status.supported ? `${status.toolCount} tools` : "off"}</span>
+              </summary>
+              <div className="tool-popover">
+                <p>{status.supported ? "Available on this page" : "Not available in this browser"}</p>
+                {status.supported ? (
+                  <ul>
+                    {toolNames.map((toolName) => <li key={toolName}><code>{toolName}</code></li>)}
+                  </ul>
+                ) : (
+                  <small>The desk still works without browser tool support.</small>
+                )}
+              </div>
+            </details>
+          </div>
         </footer>
       </div>
     </main>

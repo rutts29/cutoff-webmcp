@@ -102,25 +102,14 @@ describe("order review UI", () => {
     expect(screen.queryByLabelText("Supplier cutoff")).not.toBeInTheDocument();
   });
 
-  it("dismisses the orientation strip until the manager resets the demo", async () => {
-    const user = userEvent.setup();
-    const store = makeStore();
-    const { unmount } = render(
-      <App store={store} modelContext={undefined} section="order" />,
-    );
-    const orientation =
-      "A shift manager and their browser agent work this page together. Everything here is synthetic and stays in this tab; nothing reaches a supplier or rota.";
+  it("keeps the synthetic and local-only explanation in the footer", () => {
+    render(<App store={makeStore()} modelContext={undefined} section="order" />);
 
-    expect(screen.getByText(orientation)).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Dismiss orientation" }));
-    expect(screen.queryByText(orientation)).not.toBeInTheDocument();
-
-    unmount();
-    render(<App store={store} modelContext={undefined} section="order" />);
-    expect(screen.queryByText(orientation)).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("button", { name: "Reset demo" }));
-    expect(screen.getByText(orientation)).toBeVisible();
+    expect(
+      screen.getByText(
+        "Synthetic data stays in this tab; no supplier or rota is connected.",
+      ),
+    ).toBeVisible();
   });
 
   it("shows one live service band on every desk section", () => {
@@ -495,7 +484,8 @@ describe("order review UI", () => {
     expect(store.getState().preview?.totals.afterCost).toBe(2_835);
   });
 
-  it("keeps WebMCP detection out of the operator UI", async () => {
+  it("shows the live WebMCP tool count and names in the footer", async () => {
+    const user = userEvent.setup();
     const context = {
       registerTool: vi.fn(async () => undefined),
       getTools: vi.fn(async () => []),
@@ -506,10 +496,15 @@ describe("order review UI", () => {
     } satisfies WebMCP.ModelContext;
 
     render(<App store={makeStore()} modelContext={context} />);
-    expect(
-      screen.queryByText(/agent tools available on this page/i),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText(/webmcp detected/i)).not.toBeInTheDocument();
+
+    expect(await screen.findByText("6 tools")).toBeVisible();
+    await user.click(screen.getByText("6 tools"));
+    expect(screen.getByText("get_order_context")).toBeVisible();
+    expect(screen.getByText("open_section")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Preview replan" }));
+    expect(await screen.findByText("7 tools")).toBeVisible();
+    expect(screen.getByText("adopt_order_preview")).toBeVisible();
   });
 
   it("keeps the seeded saved quantities intact before any action", () => {

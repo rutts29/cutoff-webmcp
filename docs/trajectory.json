@@ -351,6 +351,27 @@
       "actor": "human",
       "summary": "Requested stronger visual identity and one coherent action language across the dashboard.",
       "outcome": "The candidate adds local stock illustrations, neutral staff initials, a compact Cutoff mark, and enclosed secondary actions without loading remote assets or changing operational behavior."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Found an outlined-button hover conflict and moved a repeated agent-capability line out of the workflow.",
+      "outcome": "The shared hover cascade now preserves readable outlined actions on every route. One quiet note at the end of the desk explains the browser agent's role without interrupting each page introduction."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Removed a redundant section label and asked for a clearer transition from navigation into page content.",
+      "outcome": "The shared service statistics now sit above the section tabs. Each active tab leads directly into its page title and workflow without repeating 'Current section'."
+    },
+    {
+      "at": "2026-09-03",
+      "phase": "review",
+      "actor": "human",
+      "summary": "Moved the WebMCP and synthetic-data explanation to a quieter location and asked for stronger status bars.",
+      "outcome": "The footer now shows the live per-page WebMCP tool count with an accessible tool list and the local-only safety note. Labor and waste tracks are thicker, outlined, and visually separated at normal zoom."
     }
   ]
 }

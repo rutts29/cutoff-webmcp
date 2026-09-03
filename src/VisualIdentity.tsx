@@ -48,3 +48,14 @@ export function StaffAvatar({ name }: Readonly<{ name: string }>) {
 export function BrandMark() {
   return <span className="brand-mark" aria-hidden="true">C</span>;
 }
+
+export function AgentGlyph() {
+  return (
+    <span className="agent-glyph" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <path d="M12 3c.7 4.5 2.5 6.3 7 7-4.5.7-6.3 2.5-7 7-.7-4.5-2.5-6.3-7-7 4.5-.7 6.3-2.5 7-7Z" />
+        <path d="M19 16.5c.25 1.7 1.05 2.5 2.75 2.75-1.7.25-2.5 1.05-2.75 2.75-.25-1.7-1.05-2.5-2.75-2.75 1.7-.25 2.5-1.05 2.75-2.75ZM4.5 3c.2 1.3.8 1.9 2.1 2.1-1.3.2-1.9.8-2.1 2.1-.2-1.3-.8-1.9-2.1-2.1 1.3-.2 1.9-.8 2.1-2.1Z" />
+      </svg>
+    </span>
+  );
+}
