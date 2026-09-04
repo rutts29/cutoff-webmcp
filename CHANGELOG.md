@@ -4,6 +4,13 @@ Short dated entries, newest first. One entry per working session. Also holds the
 
 ## Unreleased
 
+### 2026-09-04, submission package (Codex)
+
+- Added the public 2:48 YouTube demo and replaced the recording plan with the final sequence and claims shown.
+- Condensed the README from 1,411 to 914 words and moved the 16-tool catalog into page-specific disclosure panels without dropping its route or lifecycle semantics.
+- Reconciled the Devpost copy with the final production run, current screenshots, tested clients, required AI-tools field, and current repository evidence.
+- Regenerated the 16-tool schema, passed all 111 tests and the production build, confirmed all five production routes return 200, found no npm vulnerabilities, and found no secrets across 62 commits.
+
 ### 2026-09-04, evaluation refresh (Codex)
 
 - Regenerated the 16-tool evaluation schema with no catalog drift, then ran the unchanged 19-case first-call fixture once per model through Vercel AI Gateway. GPT-5.6 Sol and Gemini 3.8 Flash remained 19 of 19; Claude Sonnet 5 remained 18 of 19 and its fresh artifact replaced the earlier run.

@@ -1,8 +1,8 @@
 # Cutoff
 
-Cutoff is a four-section shift operations desk for a fictional restaurant. A manager and their browser agent can revise the supplier order, reconcile stock and waste, adjust labor, and leave one service-day record without sending data to a supplier.
+Cutoff is a WebMCP shift operations desk for a fictional restaurant. A manager and their browser agent can revise the supplier order, reconcile stock and waste, adjust labor, and leave one service-day record without sending anything to a supplier or rota.
 
-Live app: [cutoff-webmcp.vercel.app](https://cutoff-webmcp.vercel.app/)
+[Live app](https://cutoff-webmcp.vercel.app/) · [2:48 demo with audio](https://www.youtube.com/watch?v=PGvSlkhThFQ) · [Build record](https://cutoff-webmcp.vercel.app/trajectory)
 
 All names, dates, stock, costs, bookings, and events are synthetic.
 
@@ -10,71 +10,84 @@ All names, dates, stock, costs, bookings, and events are synthetic.
 
 A saved forecast can miss facts that exist only on the floor: a cancelled event, a late booking, a shelf count, or an absence. Those facts affect more than one plan. Cutoff keeps them in one revisioned browser store so that the manager and agent work from the same state on every page.
 
-The Saturday preset starts at 1,140 covers, 95 labor hours, and a 3,629-unit supplier order. Recording an 80-person booking and a cancelled derby produces a preview of 910 covers, 76 required labor hours, and a 2,767-unit order. The manager can inspect every line, adopt or undo proposals, and leave a local handoff.
+The Saturday preset starts at 1,140 covers, 95 labor hours, and a 3,629-unit supplier order. An 80-person booking and a cancelled derby produce a preview of 910 covers, 76 required hours, and a 2,767-unit order. A later chicken count changes the recommendation from 15 to 16 cases and the preview cost to 2,835 units.
 
-## Workflows
+## What the desk does
 
-**Order.** Record a booking, event cancellation, operational note, or quantity pin; preview the deterministic replan; inspect line math and reasons; then adopt or undo the working order. A preview is a proposal. It never changes the working order on its own.
+- **Order:** record local signals or quantity pins, preview the deterministic replan, inspect line math, then adopt or undo the working order.
+- **Stock:** record shelf counts and waste against the same catalogue. A new count makes an older order preview stale.
+- **Labor:** compare the adopted order's covers with scheduled shifts by daypart, then preview releases or on-call cover. Labor never reads demand from an unapproved order preview.
+- **Shift log:** read and filter the newest activity, add a note, or download the filtered service-day record as JSON.
 
-**Stock.** Record shelf counts and waste against the same stock catalogue. Counts feed the order engine, and a count made after an order preview marks that preview stale. The weekly waste summary shows cost by reason without adding a backend or transmitting a record.
-
-**Labor.** Compare the working order's covers with scheduled shifts by lunch, dinner, and prep. Absences and extra shifts produce a deterministic preview of releases or on-call cover. Labor reads the adopted working order, not an unapproved order preview.
-
-**Shift log.** Read the newest signals, pins, previews, adoptions, counts, waste, receipts, section changes, and notes in one service-day record. Filter by section, add a note, or download the filtered rows as JSON.
-
-The header switches between a derby Saturday and a rainy Tuesday. Changing the preset is a full reset to that service day's synthetic seed at revision 0; it clears previews, undo state, and receipts.
+Switching between the derby Saturday and rainy Tuesday presets is a full reset to that service day's synthetic seed at revision 0.
 
 ## Why WebMCP
 
-The useful state is not all visible in the DOM. It includes live counts, unsaved signals, quantity pins, labor signals, preview identifiers, and one monotonic revision shared across routes. Scraping pixels cannot reliably recover that state or run the same calculations as the page.
+The useful state is not all visible in the DOM. It includes live counts, unsaved signals, pins, roster absences, preview identifiers, and one revision shared across routes. Scraping pixels cannot reliably recover that state or run the page's calculations.
 
-Cutoff exposes hand-built tools for those decisions. Tools are registered only for the page the manager is looking at, and dynamic adoption tools exist only while their page has a current preview. `open_section` moves the manager and replaces the route's tool set before it resolves. This is page-owned functionality, not an API wrapper.
+Cutoff registers hand-built tools with `document.modelContext.registerTool`. Each route exposes only the tools relevant to the page the manager is viewing. The two adoption tools appear only while their preview is current, and `open_section` changes the visible route and its tool set before resolving.
 
-The app is static and client-side. It needs no MCP server, application API key, account, or supplier connection. Direct tool calls and visible controls use the same store methods. Mutations require an `expectedRevision`; stale writes return a structured recovery error.
+The app is static and client-side. Visible controls and tool calls use the same store methods. Every mutation requires an `expectedRevision`; a stale write returns the current revision instead of silently overwriting newer work. Human-authored text is marked as untrusted where it enters tool results.
 
-## Tools by page
+## WebMCP tools
 
-| Page | Tool | WebMCP hints | Purpose and result |
-|---|---|---|---|
-| Order | `get_order_context` | Read-only; untrusted content | Reads the complete order context, preset, guidance, current revision, signals, pins, and working plan. |
-| Order | `get_line_detail` | Read-only | Explains one SKU with inventory inputs, calculated and pinned cases, reason, and safety math. |
-| Order | `add_local_signal` | Read-only: no; untrusted content | Records a booking, event cancellation, or operator note and reports the new revision and preview state. |
-| Order | `create_order_preview` | Read-only: no | Creates a revisioned proposal with covers, labor, line deltas, cost, reasons, and warnings. |
-| Order | `adopt_order_preview` | Read-only: no | Adopts the current proposal into the working order while it is current and confirms that no external action occurred. |
-| Order | `save_handoff_receipt` | Read-only: no; untrusted content | Stores a manager summary in this browser and returns the receipt id, preset, and revision. |
-| Stock | `get_stock_status` | Read-only; untrusted content | Reads counts, last-counted times, waste totals, preview staleness, and revision. |
-| Stock | `record_stock_count` | Read-only: no | Records on-hand and expiring quantities and reports whether an order preview was invalidated. |
-| Stock | `log_waste` | Read-only: no; untrusted content | Adds a waste entry, updates on-hand stock, and returns item and weekly cost effects. |
-| Labor | `get_labor_plan` | Read-only; untrusted content | Reads working-order covers, required hours, roster gaps, shifts, on-call staff, signals, and revision. |
-| Labor | `add_labor_signal` | Read-only: no; untrusted content | Records an absence or extra shift and reports whether a labor preview was invalidated. |
-| Labor | `create_labor_preview` | Read-only: no | Creates release and cover proposals by daypart with before-and-after staffing totals. |
-| Labor | `adopt_labor_plan` | Read-only: no | Applies the current roster proposal while it is current and keeps one undo point. |
-| Shift log | `get_shift_log` | Read-only; untrusted content | Reads newest activity with an optional section filter and limit. |
-| Shift log | `add_shift_note` | Read-only: no; untrusted content | Adds one bounded service-day note without invalidating either preview. |
-| Every decision page | `open_section` | Read-only: no | Moves the visible page and returns the destination tool names and shared revision. |
+The catalog contains **16 unique tool names**. Order exposes 6 tools at rest and 7 with a current preview; Stock exposes 4; Labor exposes 4 at rest and 5 with a current preview; Shift log exposes 3. `open_section` is one shared tool registered on every decision page. `/trajectory` registers none.
 
-Order registers six tools at rest and seven with an adoptable preview. Stock registers four. Labor registers four at rest and five with an adoptable preview. Shift log registers three. `/trajectory` registers none.
+<details>
+<summary><strong>Order — 6 at rest, 7 with a preview</strong></summary>
 
-WebMCP has no standard `outputSchema` field. Each description states its result shape, and [`evals/schema.json`](evals/schema.json) is generated from the same catalog used by runtime registration.
+- `get_order_context` reads the complete order state and revision.
+- `get_line_detail` explains one SKU's inventory and safety math.
+- `add_local_signal` records a booking, cancellation, or operator note.
+- `create_order_preview` creates a reasoned, revisioned proposal.
+- `save_handoff_receipt` stores a bounded local manager summary.
+- `open_section` moves to another decision page.
+- `adopt_order_preview` appears only while the active preview is adoptable.
 
-## Engine rules
+</details>
 
-Each decision page has a small pure engine. The order engine calculates demand, removes usable and inbound stock, applies safety, rounds to cases, and keeps one reason per line. The stock engine validates counts and prices waste from each item's unit cost. The labor engine derives required hours with `ceil(covers / 12)`, splits them across dayparts, and proposes deterministic releases or on-call cover. The CSV exporter serializes only the working order, never an unapproved preview.
+<details>
+<summary><strong>Stock — 4</strong></summary>
+
+- `get_stock_status` reads counts, waste, staleness, and revision.
+- `record_stock_count` records on-hand and expiring quantities.
+- `log_waste` records a local waste entry and its cost effect.
+- `open_section` moves to another decision page.
+
+</details>
+
+<details>
+<summary><strong>Labor — 4 at rest, 5 with a preview</strong></summary>
+
+- `get_labor_plan` reads working-order demand, shifts, gaps, and signals.
+- `add_labor_signal` records an absence or extra shift.
+- `create_labor_preview` proposes deterministic releases or cover.
+- `open_section` moves to another decision page.
+- `adopt_labor_plan` appears only while the active preview is adoptable.
+
+</details>
+
+<details>
+<summary><strong>Shift log — 3</strong></summary>
+
+- `get_shift_log` reads newest activity with optional filtering.
+- `add_shift_note` adds one bounded service-day note.
+- `open_section` moves to another decision page.
+
+</details>
+
+Exact input schemas, behavior hints, and result descriptions are generated from the runtime catalog into [`evals/schema.json`](evals/schema.json). WebMCP does not define a standard `outputSchema` field.
 
 ## Run locally
-
-Install dependencies and start the required local HTTPS route:
 
 ```bash
 npm install
 npm run dev:portless
 ```
 
-Open `https://cutoff.localhost`. Portless may ask macOS to trust its local certificate authority and bind port 443 on the first run.
+Open `https://cutoff.localhost`. Portless may ask macOS to trust its local certificate authority and bind port 443 on first use. `npm run dev` starts direct Vite for isolated debugging.
 
-`npm run dev` starts direct Vite for isolated debugging. A direct `127.0.0.1` URL is not accepted as the Portless test rung.
-
-## Test and build
+## Test and evidence
 
 ```bash
 npm run evals:generate
@@ -82,24 +95,12 @@ npm test -- --run
 npm run build
 ```
 
-The current deterministic suite covers all locked order, stock, waste, labor, preset, shift-log, CSV, store, adapter, registration, accessibility, and UI transitions. The model-backed first-call suite uses the Vercel AI Gateway only as an eval transport; no model key enters the application bundle.
+The deterministic suite has 111 tests across the engines, shared revision rules, storage, exports, registration, accessibility, and UI transitions. Model-backed first-call evaluation uses the Vercel AI Gateway only as eval transport; no model key enters the app bundle. Current results and limitations are in the [evaluation summary](evals/2026-09-02-run-summary.md).
 
-Static first-call evaluation measures whether a model starts from the required page state. Full ordered selection is measured in a real browser because mutations need the revision returned by a prior tool. Current results, limitations, and the committed-artifact policy are in [`evals/2026-09-02-run-summary.md`](evals/2026-09-02-run-summary.md).
+Independent checks: [webmcp.com graded the production site A](https://webmcp.com/report/6d9b889b-a122-4c21-85fa-c327f2f28a24), detecting its 14 at-rest tools; the two dynamic adoption tools complete the 16-tool catalog. [Ora scored it 86](https://webmcp.ora.ai/cutoff-webmcp.vercel.app), with 100 for Shared Experience and Trust and 99 for Tool Quality. Ora's lower Tool Selection score came from classifying Cutoff as a document editor and generating unrelated tasks; the limitation is recorded without adding capabilities the product does not need.
 
-## Independent WebMCP audit
+## Boundaries and project record
 
-[The Sep 4 webmcp.com report](https://webmcp.com/report/6d9b889b-a122-4c21-85fa-c327f2f28a24) graded Cutoff A, "Excellent," after detecting 14 unique at-rest tools across five pages. The two adoption tools are dynamic, bringing the catalog to 16 only while their previews are current.
+Order CSV, Shift-log JSON, and handoff receipts stay in the browser. No action submits an order, updates a rota, contacts a supplier, or writes to a server.
 
-[Ora's Sep 4 production report](https://webmcp.ora.ai/cutoff-webmcp.vercel.app) scored 86 overall: Shared Experience 100, Tool Selection 45, Tool Quality 99, and Trust 100. It captured all six Order tools, including two reads and four actions, with no registration error. Even after a single restaurant-specific custom rescan, Ora substituted document or note-taking tasks: open a recent document, insert a paragraph, then save and share it. Those are not Cutoff tasks. By comparison, the production browser suite discovered the live page tools and completed all 21 Cutoff tasks, scoring 46 of 48 strict matcher steps after one extra safe Stock read. The remaining quality warning marks `open_section`, although "open" is its verb and the name states the action accurately.
-
-## Downloads and storage
-
-The Order page downloads the current working order as CSV. Shift log downloads filtered activity as JSON. Handoff receipts use bounded local storage. No action submits an order, updates a rota, contacts a supplier, or writes to a server.
-
-## Project record
-
-The human-readable build record is at [`/trajectory`](https://cutoff-webmcp.vercel.app/trajectory). Source decisions and test evidence are in [`CHANGELOG.md`](CHANGELOG.md), while the timed recording plan is in [`DEMO.md`](DEMO.md).
-
-## License
-
-Cutoff is available under the [MIT License](LICENSE).
+Submission copy and testing instructions are in [`DEVPOST.md`](DEVPOST.md). The final demo flow is in [`DEMO.md`](DEMO.md), implementation history is in [`CHANGELOG.md`](CHANGELOG.md), and the source is available under the [MIT License](LICENSE).
